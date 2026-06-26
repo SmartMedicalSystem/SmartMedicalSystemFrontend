@@ -1,8 +1,6 @@
 import { Routes } from '@angular/router';
 import { authRoutes } from './features/authentication/auth.routes';
-import { adminRoutes } from './features/admin/admin.routes';
-import { doctorRoutes } from './features/doctor/doctor.routes';
-import { laboratoryRoutes } from './features/laboratory/lab.routes';
+import { mainRoutes } from './features/main/main.routes';
 
 export const routes: Routes = [
   {
@@ -12,9 +10,7 @@ export const routes: Routes = [
   },
 
   ...authRoutes,
-  ...adminRoutes,
-  ...doctorRoutes,
-  ...laboratoryRoutes,
+  ...mainRoutes,
 
   {
     path: '**',
