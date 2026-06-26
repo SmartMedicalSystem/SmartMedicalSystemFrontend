@@ -1,1 +1,7 @@
-<p>login works!</p>
+<button [disabled]="isLoading()">
+  @if (isLoading()) {
+    Logging in...
+  } @else {
+    Login
+  }
+</button>
