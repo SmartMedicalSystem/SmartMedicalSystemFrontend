@@ -10,10 +10,6 @@ export const mainRoutes: Routes = [
     path: '',
     component: Main,
     canActivate: [authGuard],
-    children: [
-      ...adminRoutes,
-      ...doctorRoutes,
-      ...laboratoryRoutes
-    ]
-  }
+    children: [...adminRoutes, ...doctorRoutes, ...laboratoryRoutes],
+  },
 ];

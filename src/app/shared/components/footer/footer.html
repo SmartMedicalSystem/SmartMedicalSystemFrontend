@@ -1,1 +1,43 @@
-<p>footer works!</p>
+<footer class="bg-surface border-t border-app py-4 px-6">
+  <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+    <!-- Copyright -->
+    <div class="text-sm text-muted">
+      © {{ currentYear }}
+
+      <span class="font-semibold text-primary"> AI Medical Lab </span>
+
+      <span class="hidden sm:inline"> - All rights reserved </span>
+    </div>
+
+    <!-- Status -->
+    <div class="flex items-center gap-4 text-sm">
+      <div class="flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-success-solid"></span>
+        <span class="text-app"> System Online </span>
+      </div>
+
+      <mat-divider vertical class="h-4"></mat-divider>
+
+      <span class="text-muted"> v2.0.0 </span>
+    </div>
+
+    <!-- Links -->
+    <div class="flex items-center gap-4 text-sm">
+      <a href="#" class="text-muted hover:text-primary transition-colors hover-text-primary">
+        Privacy
+      </a>
+
+      <a href="#" class="text-muted hover:text-primary transition-colors hover-text-primary">
+        Terms
+      </a>
+
+      <a href="#" class="text-muted hover:text-primary transition-colors hover-text-primary">
+        Support
+      </a>
+
+      <a href="#" class="text-muted hover:text-primary transition-colors hover-text-primary">
+        <mat-icon class="text-sm"> help_outline </mat-icon>
+      </a>
+    </div>
+  </div>
+</footer>

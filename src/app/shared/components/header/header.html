@@ -1,0 +1,135 @@
+<header class="sticky top-0 z-50 bg-surface border-b border-app shadow-sm">
+  <div class="flex items-center justify-between px-4 h-16 lg:px-6">
+    <!-- Logo -->
+    <div class="flex items-center gap-2">
+      <img src="assets/icons/logo.png" alt="Logo" class="h-8 w-8" />
+
+      <span class="hidden text-xl font-bold text-primary sm:block"> AI Medical Lab </span>
+
+      <span class="hidden text-xs text-muted lg:block"> v2.0.0 </span>
+    </div>
+
+    <!-- Desktop Navigation -->
+    <nav class="hidden md:flex items-center gap-1">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        routerLinkActive="bg-primary-soft text-primary"
+        class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-app hover-surface transition-colors"
+      >
+        <mat-icon class="mr-1 text-sm">
+          {{ item.icon }}
+        </mat-icon>
+
+        {{ item.label }}
+      </a>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2">
+      <!-- Search -->
+      <button mat-icon-button (click)="openSearch()" class="text-muted hover:text-app">
+        <mat-icon>search</mat-icon>
+      </button>
+
+      <!-- Notifications -->
+      <button
+        mat-icon-button
+        (click)="openNotifications()"
+        class="relative text-muted hover:text-app"
+      >
+        <mat-icon>notifications</mat-icon>
+
+        <span
+          *ngIf="notificationCount > 0"
+          class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center"
+        >
+          {{ notificationCount }}
+        </span>
+      </button>
+
+      <!-- Theme -->
+      <button
+        mat-icon-button
+        (click)="toggleTheme()"
+        class="text-muted hover:text-app cursor-pointer"
+      >
+        <mat-icon>
+          {{ isDarkMode ? 'light_mode' : 'dark_mode' }}
+        </mat-icon>
+      </button>
+
+      <!-- Status -->
+      <div class="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-success">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+
+        <span class="text-xs font-medium text-success"> All Systems OK </span>
+      </div>
+
+      <!-- Divider -->
+      <mat-divider vertical class="h-8 mx-1"></mat-divider>
+
+      <!-- User -->
+      <button
+        mat-button
+        [matMenuTriggerFor]="userMenu"
+        class="flex items-center gap-2 rounded-lg px-2 py-1 text-app hover-surface"
+      >
+        <img
+          [src]="user?.avatar ?? 'assets/images/default-avatar.png'"
+          alt="User"
+          class="w-8 h-8 rounded-full border-2 border-primary"
+        />
+
+        <span class="hidden sm:inline text-sm font-medium">
+          {{ user?.fullName || 'User' }}
+        </span>
+
+        <mat-icon class="text-sm"> arrow_drop_down </mat-icon>
+      </button>
+
+      <mat-menu #userMenu="matMenu">
+        <button mat-menu-item [routerLink]="'/profile'">
+          <mat-icon>account_circle</mat-icon>
+          <span>Profile</span>
+        </button>
+
+        <button mat-menu-item [routerLink]="'/settings'">
+          <mat-icon>settings</mat-icon>
+          <span>Settings</span>
+        </button>
+
+        <mat-divider></mat-divider>
+
+        <button mat-menu-item (click)="logout()" class="text-danger">
+          <mat-icon>logout</mat-icon>
+          <span>Logout</span>
+        </button>
+      </mat-menu>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button mat-icon-button (click)="toggleMobileMenu()" class="md:hidden text-muted">
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div *ngIf="isMobileMenuOpen" class="md:hidden bg-surface border-t border-app">
+    <nav class="flex flex-col p-4 gap-1">
+      <a
+        *ngFor="let item of navItems"
+        [routerLink]="item.route"
+        (click)="closeMobileMenu()"
+        routerLinkActive="bg-primary-soft text-primary"
+        class="flex items-center px-3 py-2 rounded-lg text-sm font-medium text-app hover-surface transition-colors"
+      >
+        <mat-icon class="mr-2 text-sm">
+          {{ item.icon }}
+        </mat-icon>
+
+        {{ item.label }}
+      </a>
+    </nav>
+  </div>
+</header>

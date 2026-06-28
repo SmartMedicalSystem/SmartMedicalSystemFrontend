@@ -5,7 +5,10 @@ import { AuthenticationService } from '../services/authenticationService';
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthenticationService);
   const router = inject(Router);
-  return authService.isAuthenticated()
-    ? true
-    : router.navigate(['/auth']);
+
+  if (!authService.getCurrentUser().role.includes('Admin')) {
+    router.navigate(['/403']);
+    return false;
+  }
+  return true; //authService.isAuthenticated() ? true : router.navigate(['/auth']);
 };

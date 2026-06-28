@@ -1,3 +1,264 @@
-/* You can add global styles to this file, and also import other style files */
-
 @import 'tailwindcss';
+
+/* ==========================
+   Dark Mode Variant
+========================== */
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================
+   Theme Tokens - Light
+========================== */
+
+:root {
+  color-scheme: light;
+
+  /* Brand */
+  --primary: #0d9488;
+  --primary-hover: #0f766e;
+  --primary-soft: #ccfbf1;
+
+  /* Backgrounds */
+  --background: #f9fafb;
+  --surface: #ffffff;
+  --surface-hover: #f3f4f6;
+
+  /* Text */
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-inverse: #ffffff;
+
+  /* Border */
+  --border: #e5e7eb;
+
+  /* Status */
+  --success: #16a34a;
+  --success-bg: #dcfce7;
+
+  --danger: #dc2626;
+  --danger-bg: #fee2e2;
+
+  --warning: #d97706;
+  --warning-bg: #fef3c7;
+
+  --info: #2563eb;
+  --info-bg: #dbeafe;
+}
+
+/* ==========================
+   Theme Tokens - Dark
+========================== */
+
+.dark {
+  color-scheme: dark;
+
+  /* Brand */
+  --primary: #2dd4bf;
+  --primary-hover: #5eead4;
+  --primary-soft: rgba(45, 212, 191, 0.15);
+
+  /* Backgrounds */
+  --background: #030712;
+  --surface: #111827;
+  --surface-hover: #1f2937;
+
+  /* Text */
+  --text-primary: #f9fafb;
+  --text-secondary: #9ca3af;
+  --text-inverse: #111827;
+
+  /* Border */
+  --border: #374151;
+
+  /* Status */
+  --success: #4ade80;
+  --success-bg: rgba(34, 197, 94, 0.15);
+
+  --danger: #f87171;
+  --danger-bg: rgba(239, 68, 68, 0.15);
+
+  --warning: #fbbf24;
+  --warning-bg: rgba(245, 158, 11, 0.15);
+
+  --info: #60a5fa;
+  --info-bg: rgba(59, 130, 246, 0.15);
+}
+
+/* ==========================
+   Theme Utilities
+========================== */
+
+@layer utilities {
+  /* Background */
+
+  .bg-app {
+    background-color: var(--background);
+  }
+
+  .bg-surface {
+    background-color: var(--surface);
+  }
+
+  .bg-surface-hover {
+    background-color: var(--surface-hover);
+  }
+
+  .bg-primary {
+    background-color: var(--primary);
+  }
+
+  .bg-primary-soft {
+    background-color: var(--primary-soft);
+  }
+
+  .bg-success {
+    background-color: var(--success-bg);
+  }
+
+  .bg-danger {
+    background-color: var(--danger-bg);
+  }
+
+  .bg-warning {
+    background-color: var(--warning-bg);
+  }
+
+  .bg-info {
+    background-color: var(--info-bg);
+  }
+
+  .bg-success-solid {
+    background-color: var(--success);
+  }
+
+  .bg-danger-solid {
+    background-color: var(--danger);
+  }
+
+  .bg-warning-solid {
+    background-color: var(--warning);
+  }
+
+  .bg-info-solid {
+    background-color: var(--info);
+  }
+
+  /* Text */
+
+  .text-app {
+    color: var(--text-primary);
+  }
+
+  .text-muted {
+    color: var(--text-secondary);
+  }
+
+  .text-primary {
+    color: var(--primary);
+  }
+
+  .text-success {
+    color: var(--success);
+  }
+
+  .text-danger {
+    color: var(--danger);
+  }
+
+  .text-warning {
+    color: var(--warning);
+  }
+
+  .text-info {
+    color: var(--info);
+  }
+
+  /* Border */
+
+  .border-app {
+    border-color: var(--border);
+  }
+
+  .border-primary {
+    border-color: var(--primary);
+  }
+
+  /* Hover */
+
+  .hover-surface:hover {
+    background-color: var(--surface-hover);
+  }
+
+  .hover-primary:hover {
+    background-color: var(--primary-hover);
+  }
+
+  .hover-text-primary:hover {
+    color: var(--primary);
+  }
+
+  .hover-text-muted:hover {
+    color: var(--text-secondary);
+  }
+
+  .hover-border-primary:hover {
+    border-color: var(--primary);
+  }
+
+  /* SVG */
+
+  .fill-primary {
+    fill: var(--primary);
+  }
+
+  .stroke-primary {
+    stroke: var(--primary);
+  }
+
+  /* Ring */
+
+  .ring-primary {
+    --tw-ring-color: var(--primary);
+  }
+}
+
+/* ==========================
+   Base
+========================== */
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--text-primary);
+    font-family: Inter, sans-serif;
+    transition:
+      background-color 0.25s ease,
+      color 0.25s ease;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  button {
+    cursor: pointer;
+  }
+
+  a {
+    text-decoration: none;
+    color: inherit;
+  }
+
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+}

@@ -6,11 +6,13 @@ import { Observable, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthenticationService {
-  constructor(private _httpClient: HttpClient) {
-  }
+  constructor(private _httpClient: HttpClient) {}
 
   login(email: string, password: string): Observable<any> {
-    return this._httpClient.post('', { email, password })
+    return this._httpClient.post('', { email, password });
+  }
+  getCurrentUser() {
+    return { user: 'Ahmed', role: 'Admin' };
   }
 
   private accessToken = signal<string | null>(null);
