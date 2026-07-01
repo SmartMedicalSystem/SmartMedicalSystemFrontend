@@ -9,10 +9,19 @@ export class AuthenticationService {
   constructor(private _httpClient: HttpClient) {
   }
 
-  login(email: string, password: string): Observable<any> {
-    return this._httpClient.post('', { email, password })
+  login(loginObj: Object): Observable<any> {
+    return this._httpClient.post('', loginObj);
   }
 
+  resetPassword(email: string): Observable<any> {
+    return this._httpClient.post('', email);
+  }
+
+  updatePassword(passwordObj: Object): Observable<any> {
+    return this._httpClient.post('', passwordObj);
+  }
+  
+  //refresh token required
   private accessToken = signal<string | null>(null);
   private isAuth = signal<boolean>(false);
 
