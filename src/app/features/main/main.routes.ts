@@ -9,7 +9,7 @@ export const mainRoutes: Routes = [
   {
     path: '',
     component: Main,
-    canActivate: [authGuard],
+    //canActivate: [authGuard],
     children: [
       ...adminRoutes,
       ...doctorRoutes,

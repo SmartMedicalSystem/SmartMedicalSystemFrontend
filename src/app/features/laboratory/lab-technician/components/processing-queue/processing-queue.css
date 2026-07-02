@@ -1,0 +1,21 @@
+:host{
+    display:block;
+}
+
+table{
+
+    border-collapse:collapse;
+
+}
+
+th{
+
+    font-weight:600;
+
+}
+
+td{
+
+    font-size:15px;
+
+}
