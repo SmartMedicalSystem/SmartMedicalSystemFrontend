@@ -13,6 +13,20 @@ export const routes: Routes = [
   ...mainRoutes,
 
   {
+    path: '403',
+    loadComponent: () =>
+      import('./errors/unauthorized/unauthorized')
+        .then(m => m.Unauthorized)
+  },
+
+  {
+    path: '404',
+    loadComponent: () =>
+      import('./errors/not-found/not-found')
+        .then(m => m.NotFound)
+  },
+
+  {
     path: '**',
     loadComponent: () =>
       import('./errors/not-found/not-found')
