@@ -5,7 +5,7 @@ import { AuthenticationService } from '../services/authenticationService';
 
 export const adminGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthenticationService);
-  const token = authService.getToken();
+  const token = authService.getAccessToken();
   if (!token) {
     return false;
   }

@@ -5,8 +5,9 @@ import { laboratoryGuard } from '../../core/guards/laboratory-guard';
 export const laboratoryRoutes: Routes = [
   {
     path: 'laboratory',
-    canActivate: [authGuard, laboratoryGuard],
+    // canActivate: [authGuard, laboratoryGuard],
     children: [
+      
     ]
   }
 ];
