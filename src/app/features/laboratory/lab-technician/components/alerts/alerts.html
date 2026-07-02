@@ -1,0 +1,42 @@
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+  <div class="flex items-center justify-between px-5 py-4 border-b border-gray-200">
+    <div class="flex items-center gap-3">
+      <fa-icon [icon]="faBell" class="text-gray-700"></fa-icon>
+      <h2 class="text-xl font-semibold text-gray-900">Lab Insights &amp; Alerts</h2>
+    </div>
+
+    <button class="text-blue-600 text-sm font-medium hover:underline">
+      View All
+    </button>
+  </div>
+
+  <div class="divide-y divide-gray-200">
+    @for (item of alerts; track item.title) {
+      <div class="px-5 py-4 flex gap-4">
+        <div [class]="item.iconBg + ' w-11 h-11 rounded-full flex items-center justify-center shrink-0'">
+          <fa-icon [icon]="item.icon" [class]="item.iconColor"></fa-icon>
+        </div>
+
+        <div class="flex-1 min-w-0">
+          <h3 class="font-medium text-gray-900 leading-5">
+            {{ item.title }}
+          </h3>
+
+          <p class="text-sm text-gray-600 mt-1 leading-5">
+            {{ item.description }}
+          </p>
+
+          @if (item.description2) {
+            <p class="text-sm text-gray-600 leading-5">
+              {{ item.description2 }}
+            </p>
+          }
+
+          <p class="text-xs text-gray-400 mt-2 font-medium">
+            {{ item.time }}
+          </p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

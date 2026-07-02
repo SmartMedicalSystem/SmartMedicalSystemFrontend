@@ -1,0 +1,17 @@
+:host{
+
+    display:block;
+
+}
+
+.card{
+
+    transition:.3s;
+
+}
+
+.card:hover{
+
+    transform:translateY(-5px);
+
+}
