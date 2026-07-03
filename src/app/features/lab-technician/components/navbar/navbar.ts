@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import {
@@ -8,7 +8,8 @@ import {
   faClockRotateLeft,
   faComment,
   faFileExport,
-  faChartColumn
+  faChartColumn,
+  faBars
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -41,5 +42,12 @@ export class Navbar {
     role: 'Senior Lab Technician',
     image: 'https://i.pravatar.cc/150?img=47'
   };
+
+  bars = faBars;
+  @Output() toggleSidebar = new EventEmitter();
+
+  openSidebar(): void {
+    this.toggleSidebar.emit();
+  }
 
 }
