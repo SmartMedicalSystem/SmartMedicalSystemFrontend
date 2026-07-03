@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
@@ -11,7 +11,9 @@ import {
   faPlus,
   faGear,
   faCircleQuestion,
-  faHospital
+  faHospital,
+  faBars,
+  faXmark
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -36,5 +38,13 @@ export class Sidebar {
   plus = faPlus;
   settings = faGear;
   support = faCircleQuestion;
+
+
+  @Input() isOpen = false;
+  @Output() close = new EventEmitter();
+  closeSidebar(): void {
+    this.close.emit();
+  }
+
 
 }

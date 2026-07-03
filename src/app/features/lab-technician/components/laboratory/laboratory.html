@@ -1,0 +1,24 @@
+<!-- Header -->
+<app-dashboard-header></app-dashboard-header>
+
+<!-- Statistics -->
+<app-statistics-cards></app-statistics-cards>
+
+<!-- Queue + Sidebar -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
+  <!-- Queue -->
+  <div class="xl:col-span-8">
+    <app-processing-queue></app-processing-queue>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="xl:col-span-4 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-1 gap-6">
+    <app-alerts></app-alerts>
+    <app-recent-submissions></app-recent-submissions>
+  </div>
+</div>
+
+<!-- AI Banner -->
+<div class="mt-6">
+  <app-ai-banner></app-ai-banner>
+</div>

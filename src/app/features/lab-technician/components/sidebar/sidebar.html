@@ -1,0 +1,102 @@
+<!-- Overlay -->
+@if (isOpen) {
+  <div class="fixed inset-0 bg-black/40 z-40 lg:hidden" (click)="closeSidebar()"></div>
+}
+
+<!-- Sidebar -->
+<aside
+  class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col justify-between transform transition-transform duration-300 ease-in-out -translate-x-full lg:static lg:translate-x-0 lg:h-auto lg:flex-shrink-0"
+  [class.translate-x-0]="isOpen"
+>
+  <!-- Top -->
+  <div>
+    <!-- Logo -->
+    <div class="p-4 lg:px-7 lg:py-8 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-xl bg-primary text-white flex items-center justify-center">
+          <fa-icon [icon]="hospital"></fa-icon>
+        </div>
+        <div class="flex flex-col items-center">
+          <h1 class="text-3xl font-bold text-primary">MediAI</h1>
+          <h1 class="text-xl text-secondary">Laboratory</h1>
+        </div>
+      </div>
+
+      <button class="cursor-pointer lg:hidden text-xl" (click)="closeSidebar()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <!-- Menu -->
+    <nav class="space-y-2 px-4">
+      <a
+        routerLink="diagnostics"
+        (click)="closeSidebar()"
+        class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+      >
+        <fa-icon [icon]="diagnostics"></fa-icon>
+
+        Diagnostics
+      </a>
+
+      <a
+        routerLink="laboratory"
+        routerLinkActive="bg-primary text-white"
+        (click)="closeSidebar()"
+        class="flex items-center gap-4 px-5 py-4 rounded-xl transition"
+      >
+        <fa-icon [icon]="laboratory"></fa-icon>
+
+        Laboratory
+      </a>
+
+      <a
+        routerLink="patients"
+        (click)="closeSidebar()"
+        class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+      >
+        <fa-icon [icon]="patient"></fa-icon>
+
+        Patient Records
+      </a>
+
+      <a
+        routerLink="admin"
+        (click)="closeSidebar()"
+        class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+      >
+        <fa-icon [icon]="admin"></fa-icon>
+
+        Admin Console
+      </a>
+    </nav>
+  </div>
+
+  <!-- Bottom -->
+  <div class="p-4">
+    <button
+      class="w-full bg-primary hover:bg-primary/90 cursor-pointer text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition"
+    >
+      <fa-icon [icon]="plus"></fa-icon>
+
+      New Analysis
+    </button>
+
+    <div class="mt-4 lg:mt-8 space-y-2">
+      <a
+        class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+      >
+        <fa-icon [icon]="settings"></fa-icon>
+
+        Settings
+      </a>
+
+      <a
+        class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+      >
+        <fa-icon [icon]="support"></fa-icon>
+
+        Support
+      </a>
+    </div>
+  </div>
+</aside>
