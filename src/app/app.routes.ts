@@ -3,7 +3,15 @@ import { authRoutes } from './features/authentication/auth.routes';
 import { mainRoutes } from './features/main/main.routes';
 
 export const routes: Routes = [
+
+    {
+    path: 'patient',
+    loadComponent: () =>
+      import('./features/Patient/patient-managment/patient-managment')
+        .then(m => m.PatientManagment)
+  },
   {
+    
     path: '',
     redirectTo: 'auth',
     pathMatch: 'full'

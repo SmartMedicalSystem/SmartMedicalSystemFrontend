@@ -32,6 +32,12 @@ export const laboratoryRoutes: Routes = [
             loadComponent: () =>
               import('./components/laboratory/laboratory')
                 .then(m => m.Laboratory)
+          }, 
+          {
+            path: 'patient-managment',
+            loadComponent: () =>
+              import('../Patient/patient-managment/patient-managment')
+                .then(m => m.PatientManagment)
           }
         ]
       },
