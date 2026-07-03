@@ -29,7 +29,17 @@
     <!-- Menu -->
     <nav class="space-y-2 px-4">
       <a
+        routerLink="home"
+        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
+        (click)="closeSidebar()"
+        class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+      >
+        <fa-icon [icon]="home"></fa-icon>
+        Home
+      </a>
+      <a
         routerLink="diagnostics"
+        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
         (click)="closeSidebar()"
         class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
       >
@@ -40,7 +50,7 @@
 
       <a
         routerLink="laboratory"
-        routerLinkActive="bg-primary text-white"
+        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
         (click)="closeSidebar()"
         class="flex items-center gap-4 px-5 py-4 rounded-xl transition"
       >
@@ -51,6 +61,7 @@
 
       <a
         routerLink="patients"
+        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition cursor-pointer hover:bg-primary/90 transition"
         (click)="closeSidebar()"
         class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
       >
@@ -61,6 +72,7 @@
 
       <a
         routerLink="admin"
+        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
         (click)="closeSidebar()"
         class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
       >

@@ -2,7 +2,9 @@
   <!-- Pending -->
   <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-xl transition">
     <div class="flex justify-between">
-      <div class="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center"></div>
+      <div class="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
+        <fa-icon [icon]="pending" class="text-blue-600 text-xl"></fa-icon>
+      </div>
       <span class="text-red-500 font-semibold"> ↑ 12% </span>
     </div>
     <h4 class="uppercase tracking-widest text-gray-500 mt-6">Pending Requests</h4>
@@ -20,7 +22,9 @@
 
   <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-xl transition">
     <div class="flex justify-between">
-      <div class="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center"></div>
+      <div class="w-14 h-14 rounded-xl bg-teal-100 flex items-center justify-center">
+        <fa-icon [icon]="circleCheck" class="text-teal-600 text-xl"></fa-icon>
+      </div>
 
       <span class="text-green-600"> ✔ On Track </span>
     </div>
@@ -39,7 +43,9 @@
   <!-- Monthly -->
 
   <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 hover:shadow-xl transition">
-    <div class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center"></div>
+    <div class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
+      <fa-icon [icon]="flask" class="text-purple-600 text-xl"></fa-icon>
+    </div>
 
     <h4 class="uppercase tracking-widest text-gray-500 mt-6">Monthly Total</h4>
 

@@ -13,7 +13,8 @@ import {
   faCircleQuestion,
   faHospital,
   faBars,
-  faXmark
+  faXmark,
+  faHome
 } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
@@ -29,7 +30,7 @@ import {
   styleUrl: './sidebar.css'
 })
 export class Sidebar {
-
+  home = faHome
   hospital = faHospital;
   diagnostics = faStethoscope;
   laboratory = faFlask;

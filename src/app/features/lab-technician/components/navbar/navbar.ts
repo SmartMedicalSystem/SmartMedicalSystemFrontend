@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, output, Output } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import {
@@ -36,7 +36,6 @@ export class Navbar {
   export = faFileExport;
   aiScan = faChartColumn;
 
-  // User Data
   user = {
     name: 'Dr. Sarah Miller',
     role: 'Senior Lab Technician',

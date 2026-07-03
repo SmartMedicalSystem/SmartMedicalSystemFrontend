@@ -22,7 +22,6 @@ import { Footer } from "../../../shared/components/footer/footer";
 export class Dashboard {
 
   sidebarOpen = signal(false);
-  
   openSidebar(): void {
     this.sidebarOpen.set(true);
   }
