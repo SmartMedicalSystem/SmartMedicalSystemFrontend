@@ -17,6 +17,17 @@ export const laboratoryRoutes: Routes = [
             .then(m => m.Dashboard),
         children: [
           {
+            path: '',
+            redirectTo: 'home',
+            pathMatch: 'full'
+          },
+          {
+            path: 'home',
+            loadComponent: () =>
+              import('./components/home/home')
+                .then(m => m.Home)
+          },
+          {
             path: 'laboratory',
             loadComponent: () =>
               import('./components/laboratory/laboratory')
