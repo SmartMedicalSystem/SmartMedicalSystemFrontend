@@ -37,8 +37,8 @@ export class Navbar {
   aiScan = faChartColumn;
 
   user = {
-    name: 'Dr. Sarah Miller',
-    role: 'Doctor',
+    name: 'Sarah Miller',
+    role: 'Adminstrator',
     image: 'https://i.pravatar.cc/150?img=47'
   };
 
