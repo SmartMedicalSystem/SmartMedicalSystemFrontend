@@ -18,7 +18,7 @@
         </div>
         <div class="flex flex-col items-center">
           <h1 class="text-3xl font-bold text-primary">MediAI</h1>
-          <h1 class="text-xl text-secondary">Laboratory</h1>
+          <h1 class="text-xl text-secondary">Adminstrator</h1>
         </div>
       </div>
 
@@ -26,8 +26,16 @@
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
+
     <!-- Menu -->
     <nav class="space-y-2 px-4">
+      <button
+        class="w-full bg-primary hover:bg-primary/90 cursor-pointer text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition"
+      >
+        <fa-icon [icon]="plus"></fa-icon>
+
+        New Analysis
+      </button>
       <a
         routerLink="diagnostics"
         routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
@@ -35,7 +43,6 @@
         class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
       >
         <fa-icon [icon]="diagnostics"></fa-icon>
-
         Diagnostics
       </a>
 
@@ -46,7 +53,6 @@
         class="flex items-center gap-4 px-5 py-4 rounded-xl transition"
       >
         <fa-icon [icon]="laboratory"></fa-icon>
-
         Laboratory
       </a>
 
@@ -76,14 +82,6 @@
 
   <!-- Bottom -->
   <div class="p-4">
-    <button
-      class="w-full bg-primary hover:bg-primary/90 cursor-pointer text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition"
-    >
-      <fa-icon [icon]="plus"></fa-icon>
-
-      New Analysis
-    </button>
-
     <div class="mt-4 lg:mt-8 space-y-2">
       <a
         routerLink="LabTechSettings"
