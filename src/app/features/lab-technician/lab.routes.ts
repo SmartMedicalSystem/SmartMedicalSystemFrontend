@@ -38,6 +38,12 @@ export const laboratoryRoutes: Routes = [
             loadComponent: () =>
               import('../Patient/patient-managment/patient-managment')
                 .then(m => m.PatientManagment)
+          },
+          {
+            path: 'LabTechSettings',
+            loadComponent: () =>
+              import('../LabTechSettings/lab-tech-settings/lab-tech-settings')
+                .then(m => m.LabTechSettings)
           }
         ]
       },
