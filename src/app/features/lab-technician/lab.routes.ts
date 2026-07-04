@@ -32,7 +32,7 @@ export const laboratoryRoutes: Routes = [
             loadComponent: () =>
               import('./components/laboratory/laboratory')
                 .then(m => m.Laboratory)
-          }, 
+          },
           {
             path: 'patient-managment',
             loadComponent: () =>
@@ -42,7 +42,7 @@ export const laboratoryRoutes: Routes = [
           {
             path: 'LabTechSettings',
             loadComponent: () =>
-              import('../LabTechSettings/lab-tech-settings/lab-tech-settings')
+              import('./components/lab-tech-settings/lab-tech-settings')
                 .then(m => m.LabTechSettings)
           }
         ]
