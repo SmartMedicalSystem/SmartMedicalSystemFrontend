@@ -48,6 +48,12 @@ export const adminRoutes: Routes = [
                 (m) => m.PatientManagment,
               ),
           },
+          {
+            path: 'laboratory',
+            loadComponent: () =>
+              import('./components/laboratory/laboratory')
+                .then(m => m.Laboratory)
+          }
         ]
       }
     ]
