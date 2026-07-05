@@ -34,7 +34,14 @@ export const adminRoutes: Routes = [
             loadComponent: () =>
               import('./components/diagnostics/diagnostics')
                 .then(m => m.Diagnostics)
-          }
+          }, 
+           {
+            path: 'patient-managment',
+            loadComponent: () =>
+              import('../Patient/patient-managment/patient-managment').then(
+                (m) => m.PatientManagment,
+              ),
+          },
         ]
       }
     ]
