@@ -1,0 +1,63 @@
+<header class="bg-white border-b border-gray-200">
+  <div
+    class="px-4 md:px-6 flex-col-reverse lg:flex-row lg:px-8 py-4 flex lg:items-center lg:justify-between gap-4"
+  >
+    <!-- Left -->
+    <div class="flex flex-1 items-center gap-3">
+      <!-- Hamburger -->
+      <button
+        class="cursor-pointer lg:hidden w-11 h-11 rounded-xl border border-gray-200 flex items-center justify-center hover:bg-gray-100 transition"
+        (click)="openSidebar()"
+      >
+        <fa-icon [icon]="bars"></fa-icon>
+      </button>
+      <!-- Search -->
+      <div class="relative w-full">
+        <fa-icon [icon]="search" class="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400">
+        </fa-icon>
+        <input
+          type="text"
+          placeholder="Search samples, patients, or results..."
+          class="w-full h-11 bg-[#F3F4F6] rounded-xl pl-14 pr-4 text-sm border border-transparent focus:outline-none focus:border-primary"
+        />
+      </div>
+    </div>
+    <!-- Right -->
+    <div class="flex gap-4 items-center justify-between">
+      <!-- Icons -->
+      <div class="flex items-center gap-4">
+        <!-- Notification -->
+        <button class="relative hover:text-primary transition">
+          <fa-icon [icon]="bell" class="text-lg md:text-xl text-gray-700"> </fa-icon>
+          <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"> </span>
+        </button>
+        <!-- History -->
+        <button class="hover:text-primary transition">
+          <fa-icon [icon]="clock" class="text-lg md:text-xl text-gray-700"> </fa-icon>
+        </button>
+        <!-- Chat -->
+        <button class="hover:text-primary transition">
+          <fa-icon [icon]="message" class="text-lg md:text-xl text-gray-700"> </fa-icon>
+        </button>
+      </div>
+      <!-- User -->
+      <div class="flex items-center gap-3">
+        <div class="md:block text-right">
+          <h3 class="font-semibold text-primary text-base text-lg">
+            {{ user.name }}
+          </h3>
+
+          <p class="text-md text-gray-500">
+            {{ user.role }}
+          </p>
+        </div>
+
+        <img
+          [src]="user.image"
+          alt="User"
+          class="w-14 h-14 rounded-full border-2 border-primary object-cover"
+        />
+      </div>
+    </div>
+  </div>
+</header>
