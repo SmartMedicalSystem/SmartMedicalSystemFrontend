@@ -10,18 +10,16 @@ interface Report {
 }
 
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-diagnostics',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  templateUrl: './diagnostics.html',
+  styleUrls: ['./diagnostics.css']
 })
-export class DashboardComponent {
+export class Diagnostics {
 
   pendingReviews = 12;
-
   approvedToday = 28;
-
   accuracy = 94.2;
 
   reports: Report[] = [
@@ -47,5 +45,4 @@ export class DashboardComponent {
       status: 'Moderate'
     }
   ];
-
 }
