@@ -1,0 +1,235 @@
+<div class="w-full p-4 sm:p-6 font-sans">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-[var(--color-primary)]">
+        Lab Technician Admin Console
+      </h1>
+      <p class="text-sm text-gray-500 mt-1">Manage lab tests, AI reports, and patient data.</p>
+    </div>
+
+    <div class="flex gap-3 shrink-0">
+      <button
+        class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-semibold hover:opacity-90 transition"
+      >
+        <mat-icon class="w-4 h-4 text-white">add</mat-icon>
+        New Test
+      </button>
+
+      <button
+        class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition"
+      >
+        <mat-icon class="w-4 h-4 text-gray-500">refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+    @for (stat of stats; track stat.label) {
+      <div
+        class="flex items-center gap-3 bg-white rounded-2xl border border-gray-100 shadow-sm p-4"
+      >
+        <div
+          class="w-10 h-10 rounded-full bg-[var(--color-primary)]/10 flex items-center justify-center text-[var(--color-primary)]"
+        >
+          <mat-icon>{{ stat.icon }}</mat-icon>
+        </div>
+
+        <div>
+          <p class="text-xs text-gray-500">{{ stat.label }}</p>
+          <p class="text-lg font-bold text-gray-800">{{ stat.value }}</p>
+          <p class="text-[11px] text-[var(--color-secondary)] font-medium">{{ stat.change }}</p>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- Lab Tests Management -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+    <div class="flex items-center justify-between p-4 border-b border-gray-100">
+      <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+        <mat-icon [ngStyle]="{ color: 'var(--color-primary)' }">science</mat-icon>
+        Lab Tests Management
+      </h2>
+      <button class="text-sm font-medium text-(--color-primary) hover:underline">View All</button>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full min-w-205 text-sm">
+        <thead>
+          <tr class="bg-(--color-neutral) text-gray-500 text-xs uppercase tracking-wide">
+            <th class="text-left font-semibold px-4 py-3">ID</th>
+            <th class="text-left font-semibold px-4 py-3">Patient</th>
+            <th class="text-left font-semibold px-4 py-3">Test Type</th>
+            <th class="text-left font-semibold px-4 py-3">Status</th>
+            <th class="text-left font-semibold px-4 py-3">Technician</th>
+            <th class="text-left font-semibold px-4 py-3">Date</th>
+            <th class="text-left font-semibold px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (test of labTests; track test.testId) {
+            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+              <td class="px-4 py-4 font-semibold text-(--color-primary) whitespace-nowrap">
+                #{{ test.testId }}
+              </td>
+              <td class="px-4 py-4 text-gray-800 font-medium">{{ test.patientName }}</td>
+              <td class="px-4 py-4">
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600"
+                  >{{ test.testType }}</span
+                >
+              </td>
+              <td class="px-4 py-4">
+                <span
+                  class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+                  [ngClass]="
+                    test.status === 'done'
+                      ? 'bg-(--color-secondary)/10 text-(--color-secondary)'
+                      : 'bg-amber-100 text-amber-600'
+                  "
+                >
+                  <mat-icon class="text-[14px] w-auto h-auto">
+                    {{ test.status === 'done' ? 'check_circle' : 'pending' }}
+                  </mat-icon>
+                  {{ test.status === 'done' ? 'Completed' : 'Pending' }}
+                </span>
+              </td>
+              <td class="px-4 py-4 text-gray-600 whitespace-nowrap">{{ test.technicianName }}</td>
+              <td class="px-4 py-4 text-gray-600 whitespace-nowrap">
+                {{ test.testDate | date: 'MMM d, y' }}
+              </td>
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-1 text-gray-400">
+                  <button class="hover:text-(--color-primary) p-1" title="View">
+                    <mat-icon class="text-[18px]">visibility</mat-icon>
+                  </button>
+                  <button class="hover:text-(--color-primary) p-1" title="Edit">
+                    <mat-icon class="text-[18px]">edit</mat-icon>
+                  </button>
+                  <button class="hover:text-red-500 p-1" title="Delete">
+                    <mat-icon class="text-[18px]">delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- AI Reports + Patients -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- AI Reports -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-gray-100">
+        <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+          <mat-icon [ngStyle]="{ color: 'var(--color-primary)' }">auto_awesome</mat-icon>
+          AI Reports
+        </h2>
+        <button class="text-sm font-medium text-(--color-primary) hover:underline">View All</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-120 text-sm">
+          <thead>
+            <tr class="bg-(--color-neutral) text-gray-500 text-xs uppercase tracking-wide">
+              <th class="text-left font-semibold px-4 py-3">ID</th>
+              <th class="text-left font-semibold px-4 py-3">Patient</th>
+              <th class="text-left font-semibold px-4 py-3">Test</th>
+              <th class="text-left font-semibold px-4 py-3">Confidence</th>
+              <th class="text-left font-semibold px-4 py-3">Generated</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (report of aiReports; track report.reportId) {
+              <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+                <td class="px-4 py-4 font-semibold text-(--color-primary) whitespace-nowrap">
+                  #{{ report.reportId }}
+                </td>
+                <td class="px-4 py-4 text-gray-800 font-medium">{{ report.patientName }}</td>
+                <td class="px-4 py-4">
+                  <span
+                    class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600"
+                    >{{ report.testType }}</span
+                  >
+                </td>
+                <td class="px-4 py-4">
+                  <div class="flex items-center gap-2 w-24">
+                    <div class="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                      <div
+                        class="h-full rounded-full bg-(--color-primary)"
+                        [style.width.%]="report.confidenceScore"
+                      ></div>
+                    </div>
+                    <span class="text-xs font-bold text-(--color-primary)"
+                      >{{ report.confidenceScore }}%</span
+                    >
+                  </div>
+                </td>
+                <td class="px-4 py-4 text-gray-600 whitespace-nowrap">
+                  {{ report.generatedAt | date: 'MMM d, y' }}
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Patients -->
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div class="flex items-center justify-between p-4 border-b border-gray-100">
+        <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+          <mat-icon [ngStyle]="{ color: 'var(--color-primary)' }">people</mat-icon>
+          Patients
+        </h2>
+        <button class="text-sm font-medium text-(--color-primary) hover:underline">View All</button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-120 text-sm">
+          <thead>
+            <tr class="bg-(--color-neutral) text-gray-500 text-xs uppercase tracking-wide">
+              <th class="text-left font-semibold px-4 py-3">ID</th>
+              <th class="text-left font-semibold px-4 py-3">Name</th>
+              <th class="text-left font-semibold px-4 py-3">Blood Type</th>
+              <th class="text-left font-semibold px-4 py-3">Conditions</th>
+              <th class="text-left font-semibold px-4 py-3">Allergies</th>
+              <th class="text-left font-semibold px-4 py-3">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (patient of patients; track patient.patientId) {
+              <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+                <td class="px-4 py-4 font-semibold text-(--color-primary) whitespace-nowrap">
+                  #{{ patient.patientId }}
+                </td>
+                <td class="px-4 py-4 text-gray-800 font-medium">{{ patient.name }}</td>
+                <td class="px-4 py-4">
+                  <span
+                    class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600"
+                    >{{ patient.bloodType }}</span
+                  >
+                </td>
+                <td class="px-4 py-4 text-gray-600">{{ patient.chronicConditions }}</td>
+                <td class="px-4 py-4 text-gray-600">{{ patient.allergies }}</td>
+                <td class="px-4 py-4">
+                  <button
+                    class="text-gray-400 hover:text-(--color-primary) p-1"
+                    title="View History"
+                  >
+                    <mat-icon class="text-[20px]">history</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
