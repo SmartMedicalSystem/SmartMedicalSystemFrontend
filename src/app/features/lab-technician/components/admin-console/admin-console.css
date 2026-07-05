@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+::ng-deep .mat-icon {
+  fill: currentColor;
+}
