@@ -5,7 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 
 export const doctorGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthenticationService);
-  const token = authService.getToken();
+  const token = authService.getAccessToken();
   if (!token) {
     return false;
   }

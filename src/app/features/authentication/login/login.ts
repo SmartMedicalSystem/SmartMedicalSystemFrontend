@@ -11,8 +11,6 @@ import { jwtDecode } from 'jwt-decode';
   styleUrl: './login.css',
 })
 export class Login {
-
-
   isLoading = signal(false);
   constructor(private authService: AuthenticationService, private router: Router) {
   }
@@ -37,18 +35,21 @@ export class Login {
   get passwordInvalid() {
     return this.loginForm.get('password')?.touched && this.loginForm.get('password')?.hasError('minlength');
   }
-
   // end getters
+
   login() {
-    let loginObj = {
+    const loginObj = {
       email: this.loginForm.get('email')?.value || '',
       password: this.loginForm.get('password')?.value || ''
     }
     this.isLoading.set(true);
     this.authService.login(loginObj).subscribe({
       next: (res) => {
-        this.authService.setToken('// token here //');
-        const decoded = jwtDecode(res.token) as any;
+        this.authService.setToken(
+          res.accessToken,
+          res.refreshToken
+        );
+        const decoded = jwtDecode(res.accessToken) as any;
         const role = decoded.role;
         switch (role) {
           case 'Doctor':
