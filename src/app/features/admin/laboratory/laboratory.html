@@ -1,0 +1,74 @@
+<div class="flex h-screen bg-[#F8F9FA] overflow-hidden">
+
+  <!-- Overlay -->
+  <div
+    *ngIf="isSidebarOpen"
+    (click)="closeSidebar()"
+    class="fixed inset-0 bg-black/40 z-40 md:hidden">
+  </div>
+
+  <!-- Sidebar -->
+  <app-sidebar
+    [isOpen]="isSidebarOpen"
+    class="fixed md:relative z-50 md:z-0
+           h-screen w-72
+           transition-transform duration-300
+           md:translate-x-0"
+    [class.-translate-x-full]="!isSidebarOpen"
+    [class.translate-x-0]="isSidebarOpen">
+  </app-sidebar>
+
+  <!-- Main -->
+  <div class="flex flex-col flex-1 min-w-0 h-screen">
+
+    <!-- Navbar -->
+    <app-navbar
+      (toggleSidebar)="toggleSidebar()">
+    </app-navbar>
+
+    <!-- Scroll Area -->
+    <main
+      class="flex-1 overflow-y-auto p-4 md:p-6">
+
+      <app-laboratory-header></app-laboratory-header>
+
+      <app-laboratory-stats></app-laboratory-stats>
+
+      <div
+        class="grid grid-cols-1
+               xl:grid-cols-12
+               gap-6
+               mt-6">
+
+        <!-- Table -->
+        <div class="xl:col-span-8">
+
+          <app-laboratory-table></app-laboratory-table>
+
+        </div>
+
+        <!-- Right Side -->
+        <div
+          class="xl:col-span-4
+                 flex flex-col
+                 gap-6">
+
+          <app-laboratory-summary></app-laboratory-summary>
+
+          <app-laboratory-ai-card></app-laboratory-ai-card>
+
+        </div>
+
+      </div>
+
+      <div class="mt-6">
+
+        <app-footer></app-footer>
+
+      </div>
+
+    </main>
+
+  </div>
+
+</div>

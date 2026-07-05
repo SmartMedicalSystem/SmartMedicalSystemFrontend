@@ -1,0 +1,134 @@
+<div class="bg-white rounded-2xl border border-gray-200 shadow-sm flex flex-col">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+    <h2 class="text-lg md:text-xl font-semibold text-gray-900">
+      Facility Management
+    </h2>
+
+    <button
+      class="inline-flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition"
+    >
+      <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M4 6h16M7 12h10M10 18h4" stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+      Filter
+    </button>
+  </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto flex-1">
+    <table class="min-w-full">
+
+      <thead class="bg-[#F5F7FA]">
+        <tr class="text-left text-gray-600 uppercase tracking-wide text-sm">
+          <th class="px-6 py-5 font-semibold">
+            <span class="block">LABORATORY</span>
+            <span class="block">NAME</span>
+          </th>
+
+          <th class="px-6 py-5 font-semibold">LOCATION</th>
+
+          <th class="px-6 py-5 font-semibold">
+            <span class="block">HEAD</span>
+            <span class="block">OF LAB</span>
+          </th>
+
+          <th class="px-6 py-5 font-semibold">CAPACITY</th>
+          <th class="px-6 py-5 font-semibold">STATUS</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @for (facility of facilities; track facility.id) {
+          <tr class="border-t border-gray-200 hover:bg-gray-50 transition">
+
+            <!-- Name -->
+            <td class="px-6 py-6">
+              <div class="font-semibold text-[#005EB8]">
+                {{ facility.name }}
+              </div>
+              <div class="text-xs text-gray-500 mt-1">
+                {{ facility.id }}
+              </div>
+            </td>
+
+            <!-- Location -->
+            <td class="px-6 py-6 text-gray-800">
+              {{ facility.location }}
+            </td>
+
+            <!-- Head -->
+            <td class="px-6 py-6">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-semibold"
+                  [ngClass]="facility.initialsBg">
+                  {{ facility.initials }}
+                </div>
+
+                <div class="text-gray-900 font-medium">
+                  {{ facility.headName }}
+                </div>
+              </div>
+            </td>
+
+            <!-- Capacity -->
+            <td class="px-6 py-6">
+              <div class="flex items-center gap-3">
+                <span class="text-gray-800 font-medium">
+                  {{ facility.capacity }}%
+                </span>
+
+                <div class="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full"
+                    [ngClass]="facility.capacityColor"
+                    [style.width.%]="facility.capacity">
+                  </div>
+                </div>
+              </div>
+            </td>
+
+            <!-- Status -->
+            <td class="px-6 py-6">
+              <span
+                class="px-3 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="facility.statusClass">
+                {{ facility.status }}
+              </span>
+            </td>
+
+          </tr>
+        }
+      </tbody>
+
+    </table>
+  </div>
+
+  <!-- Footer -->
+  <div class="flex flex-col md:flex-row items-center justify-between gap-4 px-6 py-4 border-t border-gray-200 bg-white">
+
+    <p class="text-sm text-gray-500">
+      Showing
+      <span class="font-semibold text-gray-900">8</span>
+      of
+      <span class="font-semibold text-gray-900">42</span>
+      facilities
+    </p>
+
+    <div class="flex items-center gap-2">
+
+      <button class="px-4 py-2 rounded-lg border border-gray-300 text-sm hover:bg-gray-100 transition">
+        Previous
+      </button>
+
+      <button class="px-4 py-2 rounded-lg bg-[#005EB8] text-white text-sm hover:opacity-90 transition">
+        Next
+      </button>
+
+    </div>
+
+  </div>
+
+</div>

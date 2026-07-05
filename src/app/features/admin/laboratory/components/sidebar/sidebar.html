@@ -1,0 +1,124 @@
+<aside
+  class="h-screen w-72 bg-white border-r border-gray-200 flex flex-col justify-between
+         transition-transform duration-300 ease-in-out">
+
+  <!-- Logo -->
+  <div>
+
+    <div class="px-6 pt-8 pb-6">
+
+      <div class="flex items-center gap-4">
+
+        <div
+          class="w-14 h-14 rounded-xl bg-[#005EB8] text-white flex items-center justify-center">
+
+          <fa-icon [icon]="hospital"></fa-icon>
+
+        </div>
+
+        <div>
+
+          <h1 class="text-2xl font-bold text-[#005EB8]">
+            MediAI
+          </h1>
+
+          <p class="text-sm text-gray-500">
+            Enterprise
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Menu -->
+
+    <nav class="px-4 space-y-2">
+
+      <a
+        routerLink="/diagnostics"
+        routerLinkActive="bg-[#005EB8] text-white"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition">
+
+        <fa-icon [icon]="diagnostics"></fa-icon>
+
+        <span>Diagnostics</span>
+
+      </a>
+
+      <a
+        routerLink="/laboratory"
+        routerLinkActive="bg-[#005EB8] text-white"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition">
+
+        <fa-icon [icon]="laboratory"></fa-icon>
+
+        <span>Laboratory</span>
+
+      </a>
+
+      <a
+        routerLink="/patients"
+        routerLinkActive="bg-[#005EB8] text-white"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition">
+
+        <fa-icon [icon]="patient"></fa-icon>
+
+        <span>Patient Records</span>
+
+      </a>
+
+      <a
+        routerLink="/admin"
+        routerLinkActive="bg-[#005EB8] text-white"
+        class="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition">
+
+        <fa-icon [icon]="admin"></fa-icon>
+
+        <span>Admin Console</span>
+
+      </a>
+
+    </nav>
+
+  </div>
+
+  <!-- Bottom -->
+
+  <div class="p-5 border-t border-gray-200">
+
+    <button
+      class="w-full bg-[#005EB8] hover:bg-[#004A91] text-white rounded-xl py-3 font-semibold flex items-center justify-center gap-2 transition">
+
+      <fa-icon [icon]="plus"></fa-icon>
+
+      <span>New Analysis</span>
+
+    </button>
+
+    <div class="mt-6 space-y-2">
+
+      <button
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition">
+
+        <fa-icon [icon]="settings"></fa-icon>
+
+        <span>Settings</span>
+
+      </button>
+
+      <button
+        class="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-100 transition">
+
+        <fa-icon [icon]="support"></fa-icon>
+
+        <span>Support</span>
+
+      </button>
+
+    </div>
+
+  </div>
+
+</aside>

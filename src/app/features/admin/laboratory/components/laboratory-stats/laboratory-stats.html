@@ -1,0 +1,38 @@
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mt-8">
+  @for (card of cards; track card.title) {
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 hover:shadow-md transition-shadow duration-300">
+      <div class="flex items-start justify-between">
+        <div>
+          <p class="text-gray-500 text-sm font-medium">{{ card.title }}</p>
+          <h2 class="text-4xl font-bold text-gray-900 mt-3">{{ card.value }}</h2>
+        </div>
+
+        <div class="w-14 h-14 rounded-xl bg-[#005EB8]/10 flex items-center justify-center">
+          <svg
+            class="w-7 h-7 text-[#005EB8]"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              [attr.d]="card.icon"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <div class="mt-6 flex items-center gap-2">
+        <span
+          class="font-semibold text-sm"
+          [ngClass]="card.changeType === 'up' ? 'text-green-600' : 'text-red-600'"
+        >
+          {{ card.change }}
+        </span>
+        <span class="text-gray-500 text-sm">{{ card.subtitle }}</span>
+      </div>
+    </div>
+  }
+</div>

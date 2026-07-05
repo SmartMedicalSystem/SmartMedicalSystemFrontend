@@ -1,0 +1,106 @@
+<header class="bg-white border-b border-gray-200">
+
+  <div class="h-16 flex items-center justify-between px-4 md:px-8">
+
+    <!-- Left -->
+    <div class="flex items-center gap-4">
+
+      <!-- Mobile Menu -->
+      <button
+        class="md:hidden"
+        (click)="onToggleSidebar()">
+
+        <fa-icon
+          [icon]="menu"
+          class="text-xl text-[#005EB8]">
+        </fa-icon>
+
+      </button>
+
+      <!-- Search -->
+      <div class="relative hidden md:block w-[420px] lg:w-[560px]">
+
+        <fa-icon
+          [icon]="search"
+          class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+        </fa-icon>
+
+        <input
+          type="text"
+          placeholder="Search..."
+          class="w-full h-11 rounded-xl bg-gray-100 pl-12 pr-4 focus:outline-none focus:ring-2 focus:ring-[#005EB8]">
+
+      </div>
+
+    </div>
+
+    <!-- Right -->
+    <div class="flex items-center gap-5">
+
+      <!-- Notification -->
+      <button class="relative">
+
+        <fa-icon
+          [icon]="bell"
+          class="text-gray-600 text-lg">
+        </fa-icon>
+
+        <span
+          class="absolute -top-1 -right-1 h-2 w-2 rounded-full bg-red-500">
+        </span>
+
+      </button>
+
+      <!-- History -->
+      <button>
+
+        <fa-icon
+          [icon]="clock"
+          class="text-gray-600 text-lg">
+        </fa-icon>
+
+      </button>
+
+      <!-- Chat -->
+      <button>
+
+        <fa-icon
+          [icon]="message"
+          class="text-gray-600 text-lg">
+        </fa-icon>
+
+      </button>
+
+      <!-- User -->
+
+      <div class="hidden md:flex items-center gap-3">
+
+        <div class="text-right">
+
+          <div class="font-semibold text-[#163B6D]">
+            {{user.name}}
+          </div>
+
+          <div class="text-sm text-gray-500">
+            {{user.role}}
+          </div>
+
+        </div>
+
+        <img
+          [src]="user.image"
+          class="w-11 h-11 rounded-full border-2 border-[#005EB8] object-cover">
+
+      </div>
+
+      <!-- Mobile Avatar -->
+
+      <img
+        [src]="user.image"
+        class="w-10 h-10 rounded-full md:hidden">
+
+    </div>
+
+  </div>
+
+</header>
