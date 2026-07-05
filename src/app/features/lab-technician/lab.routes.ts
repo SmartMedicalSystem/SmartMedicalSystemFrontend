@@ -36,10 +36,10 @@ export const laboratoryRoutes: Routes = [
               ),
           },
           {
-            path: 'LabTechSettings',
+            path: 'settings',
             loadComponent: () =>
-              import('./components/lab-tech-settings/lab-tech-settings')
-                .then(m => m.LabTechSettings)
+              import('../../shared/components/Settings/Settings')
+                .then(m => m.Settings)
           },
           {
             path: 'diagnostics',
