@@ -44,6 +44,12 @@ export const laboratoryRoutes: Routes = [
             loadComponent: () =>
               import('./components/lab-tech-settings/lab-tech-settings')
                 .then(m => m.LabTechSettings)
+          },
+          {
+            path: 'diagnostics',
+            loadComponent: () =>
+              import('./components/diagnostics/diagnostics')
+                .then(m => m.Diagnostics)
           }
         ]
       },
