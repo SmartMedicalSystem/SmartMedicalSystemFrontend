@@ -12,10 +12,8 @@ export const laboratoryRoutes: Routes = [
         loadComponent: () =>
           import('./lab-technician/pages/dashboard/dashboard')
             .then(m => m.Dashboard)
-      }
-    // canActivate: [authGuard, laboratoryGuard],
-    children: [
-      
+}
     ]
+      
   }
-];
+]
