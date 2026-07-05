@@ -10,13 +10,14 @@ export interface UserProfile {
   department: string;
   avatarUrl: string;
 }
+
 @Component({
-  selector: 'app-lab-tech-settings',
+  selector: 'app-settings',
   imports: [CommonModule, FormsModule],
-  templateUrl: './lab-tech-settings.html',
-  styleUrl: './lab-tech-settings.css',
+  templateUrl: './settings.html',
+  styleUrl: './settings.css',
 })
-export class LabTechSettings {
+export class Settings {
   profile = signal<UserProfile>({
     fullName: 'Julian Vance',
     employeeId: 'RA-890-21-8',
@@ -85,4 +86,3 @@ export class LabTechSettings {
     });
   }
 }
-

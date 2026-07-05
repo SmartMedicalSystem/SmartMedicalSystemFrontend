@@ -34,6 +34,12 @@ export const adminRoutes: Routes = [
             loadComponent: () =>
               import('./components/diagnostics/diagnostics')
                 .then(m => m.Diagnostics)
+          },
+          {
+            path: 'settings',
+            loadComponent: () =>
+              import('../../shared/components/Settings/Settings')
+                .then(m => m.Settings)
           }
         ]
       }
