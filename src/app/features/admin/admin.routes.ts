@@ -29,6 +29,12 @@ export const adminRoutes: Routes = [
               import('./components/home/home')
                 .then(m => m.Home)
           },
+          {
+            path: 'diagnostics',
+            loadComponent: () =>
+              import('./components/diagnostics/diagnostics')
+                .then(m => m.Diagnostics)
+          }
         ]
       }
     ]

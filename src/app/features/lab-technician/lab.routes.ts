@@ -38,14 +38,20 @@ export const laboratoryRoutes: Routes = [
           {
             path: 'LabTechSettings',
             loadComponent: () =>
-              import('./components/lab-tech-settings/lab-tech-settings').then(
-                (m) => m.LabTechSettings,
-              ),
+              import('./components/lab-tech-settings/lab-tech-settings')
+                .then(m => m.LabTechSettings)
+          },
+          {
+            path: 'diagnostics',
+            loadComponent: () =>
+              import('./components/diagnostics/diagnostics')
+                .then(m => m.Diagnostics)
           },
           {
             path: 'admin',
             loadComponent: () =>
-              import('./components/admin-console/admin-console').then((a) => a.AdminConsole),
+              import('./components/admin-console/admin-console')
+                .then((a) => a.AdminConsole),
           },
         ],
       },
