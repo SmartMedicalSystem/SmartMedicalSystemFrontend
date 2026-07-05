@@ -1,11 +1,6 @@
+import { DatePipe, NgClass, NgStyle } from '@angular/common';
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatTableModule } from '@angular/material/table';
-import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { MatChipsModule } from '@angular/material/chips';
-import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 export interface LabTest {
   testId: number;
@@ -35,15 +30,7 @@ export interface Patient {
 @Component({
   selector: 'app-admin-console',
   standalone: true,
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatChipsModule,
-    MatProgressBarModule,
-  ],
+  imports: [NgStyle, DatePipe, NgClass, MatIconModule],
   templateUrl: './admin-console.html',
   styleUrls: ['./admin-console.css'],
 })
