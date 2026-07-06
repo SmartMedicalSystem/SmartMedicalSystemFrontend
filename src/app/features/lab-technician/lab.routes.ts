@@ -24,35 +24,28 @@ export const laboratoryRoutes: Routes = [
             loadComponent: () => import('./components/home/home').then((m) => m.Home),
           },
           {
-            path: 'laboratory',
-            loadComponent: () =>
-              import('./components/laboratory/laboratory').then((m) => m.Laboratory),
+            path: 'profile',
+            loadComponent: () => import('./components/profile/profile').then((m) => m.Profile),
           },
           {
-            path: 'patient-managment',
-            loadComponent: () =>
-              import('../Patient/patient-managment/patient-managment').then(
-                (m) => m.PatientManagment,
-              ),
-          },
-          {
-            path: 'settings',
-            loadComponent: () =>
-              import('../../shared/components/Settings/Settings')
-                .then(m => m.Settings)
-          },
-          {
-            path: 'diagnostics',
-            loadComponent: () =>
-              import('./components/diagnostics/diagnostics')
-                .then(m => m.Diagnostics)
-          },
-          {
-            path: 'admin',
-            loadComponent: () =>
-              import('./components/admin-console/admin-console')
-                .then((a) => a.AdminConsole),
-          },
+            path: 'requests',
+            loadComponent: () => import('./components/requests/requests').then((m) => m.Requests),
+            children: [
+              {
+                path: '',
+                redirectTo: 'all-requests',
+                pathMatch: 'full',
+              },
+              {
+                path: 'all-requests',
+                loadComponent: () => import('./components/requests/all-requests/all-requests').then((m) => m.AllRequests),
+              },
+              {
+                path: 'test-results',
+                loadComponent: () => import('./components/requests/test-results/test-results').then((m) => m.TestResults),
+              }
+            ]
+          }
         ],
       },
     ],

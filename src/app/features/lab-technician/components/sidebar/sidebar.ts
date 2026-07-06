@@ -3,19 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
-import {
-  faFlask,
-  faStethoscope,
-  faFolderOpen,
-  faUserShield,
-  faPlus,
-  faGear,
-  faCircleQuestion,
-  faHospital,
-  faBars,
-  faXmark,
-  faHome
-} from '@fortawesome/free-solid-svg-icons';
+import { faArrowRightFromBracket, faBuilding, faCircleQuestion, faFlask, faFolderOpen, faGaugeHigh, faGear, faHospital, faUserDoctor, faUsersGear } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-sidebar',
@@ -30,15 +18,15 @@ import {
   styleUrl: './sidebar.css'
 })
 export class Sidebar {
-  home = faHome
+  dashboard = faGaugeHigh;
+  patients = faFolderOpen;
+  doctors = faUserDoctor;
+  departments = faBuilding;
+  laboratories = faFlask;
+  labTech = faUsersGear;
   hospital = faHospital;
-  diagnostics = faStethoscope;
-  laboratory = faFlask;
-  patient = faFolderOpen;
-  admin = faUserShield;
-  plus = faPlus;
   settings = faGear;
-  support = faCircleQuestion;
+  logout = faArrowRightFromBracket;
 
 
   @Input() isOpen = false;

@@ -1,31 +1,224 @@
-<div class="flex justify-center px-6 pt-12">
-  <div
-    class="w-full max-w-6xl bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
-  >
-    <div
-      class="gap-4 flex flex-col items-center justify-center lg:flex-row lg:items-center lg:justify-between px-12 py-10"
-    >
-      <!-- Text -->
-      <div class="max-w-2xl">
-        <h1 class="text-5xl font-bold text-gray-800 leading-tight">
-          Welcome,
-          <span class="text-primary">Admin. Sarah Miller</span>
-        </h1>
+<div class="space-y-6">
+  <!-- Welcome -->
+  <div class=" ">
+    <h2 class="text-2xl font-bold text-tertiary">
+      Good Morning, <span class="text-sky-600">Dr. Sarah Miller</span>
+    </h2>
+  </div>
 
-        <p class="mt-5 text-lg text-gray-500 leading-8">
-          Welcome back! We're glad to see you again. Manage your tasks, review analyses, and keep
-          your laboratory running efficiently.
-        </p>
+  <!-- Statistics -->
+  <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+    <!-- Card -->
+    <div class="rounded-xl bg-white p-5 shadow-sm">
+      <div
+        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-neutral"
+      >
+        <fa-icon [icon]="patients"></fa-icon>
       </div>
 
-      <!-- Illustration -->
-      <div class="lg:flex justify-center items-center">
-        <img
-          src="https://cdn-icons-png.magnific.com/256/17774/17774769.png?semt=ais_white_label"
-          alt="Laboratory Illustration"
-          class="w-60 lg:w-80"
-        />
+      <h3 class="text-3xl font-bold">12,482</h3>
+
+      <p class="mt-2 font-semibold text-gray-800">Total Patients</p>
+
+      <p class="mt-1 text-sm text-gray-500">Total registered patients in the system.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="rounded-xl bg-white p-5 shadow-sm">
+      <div
+        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600"
+      >
+        <fa-icon [icon]="doctors"></fa-icon>
       </div>
+
+      <h3 class="text-3xl font-bold">458</h3>
+
+      <p class="mt-2 font-semibold text-gray-800">Active Doctors</p>
+
+      <p class="mt-1 text-sm text-gray-500">Qualified medical professionals working.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="rounded-xl bg-white p-5 shadow-sm">
+      <div
+        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 text-orange-600"
+      >
+        <fa-icon [icon]="departments"></fa-icon>
+      </div>
+
+      <h3 class="text-3xl font-bold">32</h3>
+
+      <p class="mt-2 font-semibold text-gray-800">Departments</p>
+
+      <p class="mt-1 text-sm text-gray-500">Specialized medical departments.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="rounded-xl bg-white p-5 shadow-sm">
+      <div
+        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-gray-600"
+      >
+        <fa-icon [icon]="laboratories"></fa-icon>
+      </div>
+
+      <h3 class="text-3xl font-bold">14</h3>
+
+      <p class="mt-2 font-semibold text-gray-800">Laboratories</p>
+
+      <p class="mt-1 text-sm text-gray-500">Internal & external diagnostic facilities.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="rounded-xl bg-white p-5 shadow-sm">
+      <div
+        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-100 text-cyan-600"
+      >
+        <fa-icon [icon]="labTech"></fa-icon>
+      </div>
+
+      <h3 class="text-3xl font-bold">89</h3>
+
+      <p class="mt-2 font-semibold text-gray-800">Lab Technicians</p>
+
+      <p class="mt-1 text-sm text-gray-500">Laboratory equipment & testing staff.</p>
+    </div>
+
+    <!-- Card -->
+    <div class="rounded-xl bg-white p-5 shadow-sm">
+      <div
+        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-red-100 text-red-600"
+      >
+        <fa-icon [icon]="reports"></fa-icon>
+      </div>
+
+      <h3 class="text-3xl font-bold">27</h3>
+
+      <p class="mt-2 font-semibold text-gray-800">Pending Reports</p>
+
+      <p class="mt-1 text-sm text-gray-500">Awaiting review and verification.</p>
+    </div>
+  </div>
+
+  <!-- Quick Management -->
+  <div>
+    <div class="mb-4 flex items-center justify-between">
+      <h2 class="text-xl font-semibold text-tertiary">Quick Management</h2>
+    </div>
+
+    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <button
+        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
+          >
+            <fa-icon [icon]="plus"></fa-icon>
+          </div>
+
+          <div class="text-left">
+            <h3 class="font-semibold">Add Patient</h3>
+            <p class="text-xs text-gray-500">Register a new patient</p>
+          </div>
+        </div>
+
+        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+      </button>
+
+      <button
+        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
+          >
+            <fa-icon [icon]="plus"></fa-icon>
+          </div>
+
+          <div class="text-left">
+            <h3 class="font-semibold">Add Doctor</h3>
+            <p class="text-xs text-gray-500">Register medical staff</p>
+          </div>
+        </div>
+
+        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+      </button>
+
+      <button
+        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
+          >
+            <fa-icon [icon]="plus"></fa-icon>
+          </div>
+
+          <div class="text-left">
+            <h3 class="font-semibold">Add Department</h3>
+            <p class="text-xs text-gray-500">Expand hospital services</p>
+          </div>
+        </div>
+
+        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+      </button>
+
+      <button
+        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
+          >
+            <fa-icon [icon]="plus"></fa-icon>
+          </div>
+
+          <div class="text-left">
+            <h3 class="font-semibold">Add Laboratory</h3>
+            <p class="text-xs text-gray-500">Connect a new laboratory</p>
+          </div>
+        </div>
+
+        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+      </button>
+
+      <button
+        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
+          >
+            <fa-icon [icon]="plus"></fa-icon>
+          </div>
+
+          <div class="text-left">
+            <h3 class="font-semibold">Add Lab Test</h3>
+            <p class="text-xs text-gray-500">Define testing protocol</p>
+          </div>
+        </div>
+
+        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+      </button>
+
+      <button
+        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
+          >
+            <fa-icon [icon]="plus"></fa-icon>
+          </div>
+
+          <div class="text-left">
+            <h3 class="font-semibold">Add Lab Technician</h3>
+            <p class="text-xs text-gray-500">Assign laboratory staff</p>
+          </div>
+        </div>
+
+        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+      </button>
     </div>
   </div>
 </div>

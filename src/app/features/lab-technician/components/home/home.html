@@ -1,28 +1,243 @@
-<div class="flex justify-center px-6 pt-12">
-  <div
-    class="w-full max-w-6xl bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden"
-  >
-    <div class="gap-4 flex flex-col items-center justify-center lg:flex-row lg:items-center lg:justify-between px-12 py-10">
-      <!-- Text -->
-      <div class="max-w-2xl">
-        <h1 class="text-5xl font-bold text-gray-800 leading-tight">
-          Welcome,
-          <span class="text-primary">Dr. Sarah Miller</span>
-        </h1>
+<div class="space-y-6">
+  <!-- Welcome -->
+  <div class=" ">
+    <h2 class="text-2xl font-bold text-tertiary">
+      Good Morning, <span class="text-sky-600">Dr. Sarah Miller</span>
+    </h2>
+  </div>
 
-        <p class="mt-5 text-lg text-gray-500 leading-8">
-          Welcome back! We're glad to see you again. Manage your tasks, review analyses, and keep
-          your laboratory running efficiently.
-        </p>
+  <div class="min-h-screen bg-gray-50">
+    <!-- Statistics -->
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <!-- Card -->
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
+      >
+        <div>
+          <p class="text-sm text-gray-500">Pending Requests</p>
+
+          <h2 class="text-3xl font-bold mt-2">24</h2>
+
+          <span class="text-xs text-primary font-medium"> Today </span>
+        </div>
+
+        <div
+          class="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center text-primary"
+        >
+          <i class="fa-solid fa-vials text-xl"></i>
+        </div>
       </div>
 
-      <!-- Illustration -->
-      <div class=" lg:flex justify-center items-center">
-        <img
-          src="https://cdn-icons-png.magnific.com/256/17774/17774769.png?semt=ais_white_label"
-          alt="Laboratory Illustration"
-          class="w-60 lg:w-80"
-        />
+      <!-- Card -->
+
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
+      >
+        <div>
+          <p class="text-sm text-gray-500">Results Entered</p>
+
+          <h2 class="text-3xl font-bold mt-2">58</h2>
+
+          <span class="text-xs text-green-600 font-medium"> +12% </span>
+        </div>
+
+        <div
+          class="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center text-green-600"
+        >
+          <i class="fa-solid fa-square-check text-xl"></i>
+        </div>
+      </div>
+
+      <!-- Card -->
+
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
+      >
+        <div>
+          <p class="text-sm text-gray-500">Processing Results</p>
+
+          <h2 class="text-3xl font-bold mt-2">08</h2>
+
+          <span class="text-xs text-orange-500"> Active </span>
+        </div>
+
+        <div
+          class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center text-orange-500"
+        >
+          <i class="fa-solid fa-flask text-xl"></i>
+        </div>
+      </div>
+
+      <!-- Card -->
+
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
+      >
+        <div>
+          <p class="text-sm text-gray-500">Notifications</p>
+
+          <h2 class="text-3xl font-bold mt-2">05</h2>
+
+          <span class="text-xs text-red-500"> Unread </span>
+        </div>
+
+        <div class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center text-red-500">
+          <i class="fa-solid fa-envelope"></i>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-md mt-8 overflow-hidden w-full">
+      <div class="flex items-center justify-between px-6 py-5">
+        <div>
+          <h2 class="text-xl font-bold">Pending Test Requests</h2>
+
+          <p class="text-sm text-gray-500 mt-1">Manage all pending laboratory requests</p>
+        </div>
+
+        <button
+          routerLink="../requests/all-requests"
+          class="bg-primary cursor-pointer text-white px-5 py-2 rounded-xl hover:opacity-90 transition"
+        >
+          View All
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-gray-50">
+            <tr class="text-left text-gray-600 text-sm">
+              <th class="px-6 py-4">Patient</th>
+
+              <th class="px-6 py-4">Doctor</th>
+
+              <th class="px-6 py-4">Laboratory Test</th>
+
+              <th class="px-6 py-4">Priority</th>
+
+              <th class="px-6 py-4">Request Time</th>
+
+              <th class="px-6 py-4 text-center">Action</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr class="hover:bg-gray-50 transition">
+              <td class="px-6 py-5">
+                <p class="font-semibold">Eleanor Vance</p>
+
+                <span class="text-sm text-gray-500"> #PX-8821 </span>
+              </td>
+
+              <td class="px-6 py-5">Dr. Aris Thorne</td>
+
+              <td class="px-6 py-5">Complete Blood Count</td>
+
+              <td class="px-6 py-5">
+                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
+                  HIGH
+                </span>
+              </td>
+
+              <td class="px-6 py-5">08:15 AM</td>
+
+              <td class="px-6 py-5 text-center">
+                <button
+                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
+                >
+                  Start Test
+                </button>
+              </td>
+            </tr>
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-5">
+                <p class="font-semibold">Julian Blackwood</p>
+
+                <span class="text-sm text-gray-500"> #PX-8825 </span>
+              </td>
+
+              <td class="px-6 py-5">Dr. Sarah Jenkins</td>
+
+              <td class="px-6 py-5">Lipid Profile</td>
+
+              <td class="px-6 py-5">
+                <span
+                  class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-semibold"
+                >
+                  NORMAL
+                </span>
+              </td>
+
+              <td class="px-6 py-5">09:30 AM</td>
+
+              <td class="px-6 py-5 text-center">
+                <button
+                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
+                >
+                  Start Test
+                </button>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-5">
+                <p class="font-semibold">Clara Oswald</p>
+
+                <span class="text-sm text-gray-500"> #PX-8820 </span>
+              </td>
+
+              <td class="px-6 py-5">Dr. Aris Thorne</td>
+
+              <td class="px-6 py-5">Thyroid Panel (T3,T4)</td>
+
+              <td class="px-6 py-5">
+                <span
+                  class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-semibold"
+                >
+                  NORMAL
+                </span>
+              </td>
+
+              <td class="px-6 py-5">10:05 AM</td>
+
+              <td class="px-6 py-5 text-center">
+                <button
+                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
+                >
+                  Start Test
+                </button>
+              </td>
+            </tr>
+
+            <tr class="hover:bg-gray-50">
+              <td class="px-6 py-5">
+                <p class="font-semibold">Theodore Logan</p>
+
+                <span class="text-sm text-gray-500"> #PX-8832 </span>
+              </td>
+
+              <td class="px-6 py-5">Dr. Ben Keller</td>
+
+              <td class="px-6 py-5">Metabolic Panel</td>
+
+              <td class="px-6 py-5">
+                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
+                  HIGH
+                </span>
+              </td>
+
+              <td class="px-6 py-5">10:45 AM</td>
+
+              <td class="px-6 py-5 text-center">
+                <button
+                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
+                >
+                  Start Test
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
     </div>
   </div>

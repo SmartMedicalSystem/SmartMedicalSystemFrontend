@@ -1,8 +1,7 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { LoadingService } from './core/services/loadingService';
 import { Loader } from "./shared/components/loader/loader";
-import { AuthenticationService } from './core/services/authenticationService';
 
 @Component({
   selector: 'app-root',
@@ -11,6 +10,6 @@ import { AuthenticationService } from './core/services/authenticationService';
   styleUrl: './app.css'
 })
 export class App {
-  protected readonly title = signal('SmartMedicalSystem');
+  protected readonly title = signal('SMS');
   loadingService = inject(LoadingService);
 }
