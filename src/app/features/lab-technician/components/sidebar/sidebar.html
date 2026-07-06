@@ -5,7 +5,7 @@
 
 <!-- Sidebar -->
 <aside
-  class="fixed inset-y-0 left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col justify-between transform transition-transform duration-300 ease-in-out -translate-x-full lg:static lg:translate-x-0 lg:h-auto lg:flex-shrink-0"
+  class="fixed inset-y-0 min-h-full left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col justify-between transform transition-transform duration-300 ease-in-out -translate-x-full lg:static lg:translate-x-0 lg:h-auto lg:flex-shrink-0"
   [class.translate-x-0]="isOpen"
 >
   <!-- Top -->
@@ -26,81 +26,51 @@
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
+
     <!-- Menu -->
     <nav class="space-y-2 px-4">
       <a
-        routerLink="diagnostics"
-        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
+        routerLink="home"
+        routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
         (click)="closeSidebar()"
         class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
       >
-        <fa-icon [icon]="diagnostics"></fa-icon>
-
-        Diagnostics
+        <fa-icon [icon]="dashboard"></fa-icon>
+        Dashboard
       </a>
-
       <a
-        routerLink="laboratory"
-        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
-        (click)="closeSidebar()"
-        class="flex items-center gap-4 px-5 py-4 rounded-xl transition"
-      >
-        <fa-icon [icon]="laboratory"></fa-icon>
-
-        Laboratory
-      </a>
-
-      <a
-        routerLink="patient-managment"
-        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition cursor-pointer hover:bg-primary/90 transition"
+        routerLink="requests"
+        routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
         (click)="closeSidebar()"
         class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
       >
-        <fa-icon [icon]="patient"></fa-icon>
-
-        Patient Records
+        <fa-icon [icon]="patients"></fa-icon>
+        Requests
       </a>
 
       <a
-        routerLink="admin"
-        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
+        routerLink="profile"
+        routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
         (click)="closeSidebar()"
         class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
       >
-        <fa-icon [icon]="admin"></fa-icon>
-
-        Admin Console
+        <fa-icon [icon]="labTech"></fa-icon>
+        Profile
       </a>
     </nav>
   </div>
 
   <!-- Bottom -->
   <div class="p-4">
-    <button
-      class="w-full bg-primary hover:bg-primary/90 cursor-pointer text-white py-4 rounded-xl font-semibold flex items-center justify-center gap-3 transition"
-    >
-      <fa-icon [icon]="plus"></fa-icon>
-
-      New Analysis
-    </button>
-
     <div class="mt-4 lg:mt-8 space-y-2">
-      <a
-        routerLink="settings"
-        routerLinkActive="bg-primary text-white cursor-pointer hover:bg-primary/90 transition"
-        class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition"
-      >
-        <fa-icon [icon]="settings"></fa-icon>
-        Settings
-      </a>
-
-      <a
-        class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition"
-      >
-        <fa-icon [icon]="support"></fa-icon>
-
-        Support
-      </a>
+      <button>
+        <a
+          class="cursor-pointer hover:bg-gray-100 text-red-500 flex items-center gap-4 px-4 py-3 rounded-xl transition"
+        >
+          <fa-icon [icon]="logout"></fa-icon>
+          Logout
+        </a>
+      </button>
     </div>
   </div>
 </aside>

@@ -1,7 +1,5 @@
 <header class="bg-white border-b border-gray-200">
-  <div
-    class="px-4 md:px-6 flex-col-reverse lg:flex-row lg:px-8 py-4 flex lg:items-center lg:justify-between gap-4"
-  >
+  <div class="px-4 md:px-6 flex-row lg:px-8 py-4 flex lg:items-center lg:justify-between gap-4">
     <!-- Left -->
     <div class="flex flex-1 items-center gap-3">
       <!-- Hamburger -->
@@ -27,27 +25,18 @@
       <!-- Icons -->
       <div class="flex items-center gap-4">
         <!-- Notification -->
-        <button class="relative hover:text-primary transition">
+        <button class="cursor-pointer relative hover:text-primary transition">
           <fa-icon [icon]="bell" class="text-lg md:text-xl text-gray-700"> </fa-icon>
           <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"> </span>
-        </button>
-        <!-- History -->
-        <button class="hover:text-primary transition">
-          <fa-icon [icon]="clock" class="text-lg md:text-xl text-gray-700"> </fa-icon>
-        </button>
-        <!-- Chat -->
-        <button class="hover:text-primary transition">
-          <fa-icon [icon]="message" class="text-lg md:text-xl text-gray-700"> </fa-icon>
         </button>
       </div>
       <!-- User -->
       <div class="flex items-center gap-3">
         <div class="md:block text-right">
-          <h3 class="font-semibold text-primary text-base text-lg">
+          <h3 class="font-semibold text-primary text-sm sm:text-lg">
             {{ user.name }}
           </h3>
-
-          <p class="text-md text-gray-500">
+          <p class="hidden sm:block sm:text-md text-gray-500">
             {{ user.role }}
           </p>
         </div>
