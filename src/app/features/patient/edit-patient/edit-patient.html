@@ -1,1 +1,286 @@
-<p>edit-patient works!</p>
+<div class="p-4 md:p-6 bg-neutral min-h-screen">
+<h1 class="text-2xl font-semibold text-primary mb-4">Edit Patient Record</h1>
+  <p class="text-gray-500 mb-4">Update patient information accurately to maintain record integrity.</p>
+
+  <!-- Patient Summary Card -->
+  <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4">
+    <div class="flex flex-col sm:flex-row sm:items-center gap-5">
+
+      <div class="relative shrink-0 mx-auto sm:mx-0">
+        <img [src]="patient().avatar" [alt]="patient().name" class="w-16 h-16 rounded-full object-cover" />
+        <span class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-primary border-2 border-white"></span>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 flex-1 text-center sm:text-left">
+        <div>
+          <p class="text-xs text-gray-400 uppercase tracking-wide">Name</p>
+          <p class="font-semibold text-gray-800">{{ patient().name }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 uppercase tracking-wide">Patient ID</p>
+          <p class="font-semibold text-gray-800">{{ patient().patientId }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 uppercase tracking-wide">National ID</p>
+          <p class="font-semibold text-gray-800">{{ patient().nationalId }}</p>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 uppercase tracking-wide">Status</p>
+          <span class="inline-block px-3 py-1 rounded-full text-xs font-medium mt-0.5" [ngClass]="statusClasses(patient().status)">
+            {{ patient().status }}
+          </span>
+        </div>
+        <div>
+          <p class="text-xs text-gray-400 uppercase tracking-wide">Registered</p>
+          <p class="font-semibold text-gray-800">{{ patient().registeredDate }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info banner -->
+  <div class="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 mb-4">
+    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="9" />
+      <path stroke-linecap="round" d="M12 8h.01M11 12h1v4h1" />
+    </svg>
+    <p class="text-sm text-gray-700">
+      You are currently editing an existing patient record. Changes will immediately affect hospital records.
+    </p>
+  </div>
+
+  <!-- Form -->
+  <form [formGroup]="form" class="bg-white border border-gray-200 rounded-xl p-5 md:p-8">
+
+    <!-- ===================== Basic Information ===================== -->
+    <div class="flex items-center gap-2 mb-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="8" r="4" />
+        <path stroke-linecap="round" d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
+      </svg>
+      <h2 class="font-semibold text-gray-800">Basic Information</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">First Name</label>
+        <input type="text" formControlName="firstName" (input)="onFieldChange('firstName')"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        @if (isModified('firstName')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Last Name</label>
+        <input type="text" formControlName="lastName" (input)="onFieldChange('lastName')"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        @if (isModified('lastName')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Date of Birth</label>
+        <input type="date" formControlName="dateOfBirth" (input)="onFieldChange('dateOfBirth')"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        @if (isModified('dateOfBirth')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Gender</label>
+        <select formControlName="gender" (change)="onFieldChange('gender')"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+        @if (isModified('gender')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Occupation</label>
+        <div class="relative">
+          <input type="text" formControlName="occupation" (input)="onFieldChange('occupation')"
+            class="w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isModified('occupation')"
+            [class.focus:ring-primary/40]="!isModified('occupation')"
+            [class.border-primary]="isModified('occupation')"
+            [class.ring-2]="isModified('occupation')"
+            [class.ring-primary/20]="isModified('occupation')" />
+          @if (isModified('occupation')) {
+            <span class="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary"></span>
+          }
+        </div>
+        @if (isModified('occupation')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Patient Number (Read-only)</label>
+        <input type="text" formControlName="patientNumber"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-100 text-gray-600 cursor-not-allowed" />
+      </div>
+    </div>
+
+    <hr class="border-gray-100 my-7" />
+
+    <!-- ===================== Contact Information ===================== -->
+    <div class="flex items-center gap-2 mb-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <circle cx="9" cy="12" r="2" />
+        <path stroke-linecap="round" d="M15 10h3M15 14h3" />
+      </svg>
+      <h2 class="font-semibold text-gray-800">Contact Information</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Phone Number</label>
+        <div class="flex">
+          <span class="flex items-center px-3 border border-r-0 border-gray-200 rounded-l-lg bg-gray-50 text-sm text-gray-500">
+            {{ form.get('countryCode')?.value }}
+          </span>
+          <input type="text" formControlName="phoneNumber" (input)="onFieldChange('phoneNumber')"
+            class="w-full border border-gray-200 rounded-r-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+        @if (isModified('phoneNumber')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Email Address</label>
+        <input type="email" formControlName="email" (input)="onFieldChange('email')"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        @if (isModified('email')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-1 mt-4">
+      <label class="text-xs font-medium text-gray-500">Residential Address</label>
+      <textarea rows="2" formControlName="address" (input)="onFieldChange('address')"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/40"></textarea>
+      @if (isModified('address')) {
+        <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+      }
+    </div>
+
+    <hr class="border-gray-100 my-7" />
+
+    <!-- ===================== Hospital Information ===================== -->
+    <div class="flex items-center gap-2 mb-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+        <path stroke-linecap="round" d="M8 8h8M8 12h8M8 16h5" />
+      </svg>
+      <h2 class="font-semibold text-gray-800">Hospital Information</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Assigned Department</label>
+        <select formControlName="assignedDepartment" (change)="onFieldChange('assignedDepartment')"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option>Neurology</option>
+          <option>Cardiology</option>
+          <option>Internal Medicine</option>
+          <option>Pediatrics</option>
+        </select>
+        @if (isModified('assignedDepartment')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Primary Physician</label>
+        <select formControlName="primaryPhysician" (change)="onFieldChange('primaryPhysician')"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option>Dr. Julian Vance</option>
+          <option>Dr. Sarah Chen</option>
+          <option>Dr. Amanda Lee</option>
+        </select>
+        @if (isModified('primaryPhysician')) {
+          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div class="flex flex-col gap-2">
+        <label class="text-xs font-medium text-gray-500">Patient Status</label>
+        <div class="flex flex-wrap gap-5 mt-1">
+          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input type="radio" formControlName="patientStatus" value="Active" (change)="onFieldChange('patientStatus')"
+              class="w-4 h-4 accent-primary" />
+            Active
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input type="radio" formControlName="patientStatus" value="Inpatient" (change)="onFieldChange('patientStatus')"
+              class="w-4 h-4 accent-primary" />
+            Inpatient
+          </label>
+          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input type="radio" formControlName="patientStatus" value="Discharged" (change)="onFieldChange('patientStatus')"
+              class="w-4 h-4 accent-primary" />
+            Discharged
+          </label>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Registration Date (Read-only)</label>
+        <input type="text" formControlName="registrationDate"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-100 text-gray-600 cursor-not-allowed" />
+      </div>
+    </div>
+  </form>
+
+  <!-- ===================== Footer actions ===================== -->
+  <div class="bg-neutral border border-gray-200 border-t-0 rounded-b-xl -mt-4 md:-mt-4 relative z-0">
+  </div>
+
+  <div class="bg-white border border-gray-200 border-t-0 rounded-b-xl px-5 md:px-8 py-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+
+    <button type="button" (click)="onArchivePatient()"
+      class="flex items-center gap-2 text-tertiary font-medium hover:underline text-sm">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m2 0v12a2 2 0 01-2 2H7a2 2 0 01-2-2V7h14z" />
+      </svg>
+      Archive Patient Record
+    </button>
+
+    <div class="flex flex-wrap gap-3 justify-end">
+      <button type="button" (click)="onCancel()"
+        class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
+        Cancel
+      </button>
+
+      <button type="button" (click)="onResetChanges()"
+        class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
+        Reset Changes
+      </button>
+
+      <button type="button" (click)="onSaveAndContinue()"
+        class="px-6 py-2.5 rounded-lg border border-primary text-primary font-medium hover:bg-primary/5 transition">
+        Save &amp; Continue Editing
+      </button>
+
+      <button type="button" (click)="onSaveChanges()"
+        class="px-6 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
+        Save Changes
+      </button>
+    </div>
+  </div>
+</div>
