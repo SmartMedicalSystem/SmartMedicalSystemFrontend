@@ -1,4 +1,4 @@
-import { Component, computed, signal } from '@angular/core';
+import { Component, computed, Signal, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -23,7 +23,12 @@ interface Patient {
   styleUrl: './all-patients.css',
 })
 export class AllPatients {
-  constructor(private router: Router) {}
+  urlContainsDoctor: boolean = false;
+  constructor(private router: Router) {
+    this.urlContainsDoctor = this.router.url.includes('doctor');
+  }
+
+
 
   totalPatients = 1248;
 
@@ -124,6 +129,11 @@ export class AllPatients {
     this.router.navigate(['/doctor/dashboard/patients/patient-details']);
   }
 
+  editPatient(patient: Patient): void {
+    console.log('Opening patient', patient.id);
+    this.router.navigate(['/admin/dashboard/patients/edit-patients']);
+  }
+
   onRowsPerPageChange(value: string): void {
     this.rowsPerPage.set(Number(value));
     this.currentPage.set(1);
@@ -144,4 +154,4 @@ export class AllPatients {
   goToLastPage(): void {
     this.currentPage.set(Math.ceil(this.totalPatients / this.rowsPerPage()));
   }
- }
+}
