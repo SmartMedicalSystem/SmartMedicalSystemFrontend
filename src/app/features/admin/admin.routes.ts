@@ -58,12 +58,7 @@ export const adminRoutes: Routes = [
                   import('../patient/add-patients/add-patients')
                     .then(m => m.AddPatients)
               },
-              {
-                path: 'edit-patient', // :id
-                loadComponent: () =>
-                  import('../patient/edit-patient/edit-patient')
-                    .then(m => m.EditPatient)
-              }
+              
             ]
           },
           {
