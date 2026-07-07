@@ -3,48 +3,71 @@ import { Routes } from '@angular/router';
 export const laboratoryRoutes: Routes = [
   {
     path: 'labtechnician',
-    //canActivate: [authGuard, laboratoryGuard],
     children: [
       {
         path: '',
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
+
       {
         path: 'dashboard',
-        loadComponent: () => import('./dashboard/dashboard').then((m) => m.Dashboard),
+        loadComponent: () =>
+          import('./dashboard/dashboard')
+          .then((m) => m.Dashboard),
+
         children: [
+
           {
             path: '',
             redirectTo: 'home',
             pathMatch: 'full',
           },
+
           {
             path: 'home',
-            loadComponent: () => import('./components/home/home').then((m) => m.Home),
+            loadComponent: () =>
+              import('./components/home/home')
+              .then((m) => m.Home),
           },
+
           {
             path: 'profile',
-            loadComponent: () => import('./components/profile/profile').then((m) => m.Profile),
+            loadComponent: () =>
+              import('./components/profile/profile')
+              .then((m) => m.Profile),
           },
+
+
           {
             path: 'requests',
-            loadComponent: () => import('./components/requests/requests').then((m) => m.Requests),
+            loadComponent: () =>
+              import('./components/requests/requests')
+              .then((m) => m.Requests),
+
             children: [
+
               {
                 path: '',
                 redirectTo: 'all-requests',
                 pathMatch: 'full',
               },
+
               {
                 path: 'all-requests',
-                loadComponent: () => import('./components/requests/all-requests/all-requests').then((m) => m.AllRequests),
+                loadComponent: () =>
+                  import('./components/requests/all-requests/all-requests')
+                  .then((m) => m.AllRequests),
               },
+
               {
                 path: 'test-results',
-                loadComponent: () => import('./components/requests/test-results/test-results').then((m) => m.TestResults),
-              }
-            ]
+                loadComponent: () =>
+                  import('./components/requests/test-results/test-results')
+                  .then((m) => m.TestResults),
+              },
+
+            ],
           }
         ],
       },

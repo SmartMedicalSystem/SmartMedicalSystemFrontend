@@ -1,0 +1,15 @@
+img{
+    transition:.3s;
+}
+
+img:hover{
+
+    transform:scale(1.03);
+
+}
+
+button{
+
+    transition:.3s;
+
+}
