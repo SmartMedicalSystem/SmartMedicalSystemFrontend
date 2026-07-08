@@ -47,7 +47,15 @@
         <fa-icon [icon]="patients"></fa-icon>
         Requests
       </a>
-
+      <a
+  routerLink="technicians"
+  routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+  (click)="closeSidebar()"
+  class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+>
+  <fa-icon [icon]="labTech"></fa-icon>
+  Lab Technicians
+</a>
       <a
         routerLink="profile"
         routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"

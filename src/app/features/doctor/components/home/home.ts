@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { faArrowRight, faBuilding, faFileCircleExclamation, faFlask, faFolderOpen, faHouse, faPlus, faUserDoctor, faUsersGear } from '@fortawesome/free-solid-svg-icons';
 import { FaIconComponent, FontAwesomeModule } from "@fortawesome/angular-fontawesome";
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-home',
-  imports: [FontAwesomeModule],
+  imports: [FontAwesomeModule, RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

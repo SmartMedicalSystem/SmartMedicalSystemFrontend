@@ -1,0 +1,41 @@
+.page-btn {
+
+  padding: 8px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 14px;
+  color: #6b7280;
+  background: white;
+
+}
+
+
+.page-btn:disabled {
+
+  opacity: .5;
+  cursor: not-allowed;
+
+}
+
+
+
+.number-btn {
+
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background:white;
+  color:#6b7280;
+
+}
+
+
+
+.number-btn.active {
+
+  background:#2563eb;
+  color:white;
+  border-color:#2563eb;
+
+}
