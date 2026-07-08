@@ -1,0 +1,218 @@
+<div class="w-full p-4 sm:p-6 font-sans max-w-225 mx-auto">
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-6 flex-wrap">
+    <h1 class="mb-5 sm:mb-0 text-xl sm:text-3xl font-bold text-primary tracking-tight">
+      Laboratory Details
+    </h1>
+    <div class="flex gap-3">
+      <button
+        class="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium shadow-sm hover:bg-gray-50 transition-all duration-200"
+        routerLink="/admin/dashboard/laboratories/all-laboratories"
+      >
+        <mat-icon class="w-5 h-5 text-gray-500">arrow_back</mat-icon>
+        Back
+      </button>
+      <button
+        class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium shadow-sm hover:opacity-90 transition-all duration-200"
+        [routerLink]="['/admin/dashboard/laboratories/edit-laboratories', laboratory.labId]"
+      >
+        <mat-icon class="w-5 h-5 text-white">edit</mat-icon>
+        Edit Laboratory
+      </button>
+    </div>
+  </div>
+
+  <!-- Info Banner -->
+  <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-6">
+    <div class="hidden sm:block"><mat-icon class="text-xl text-blue-600">info</mat-icon></div>
+    <p class="text-sm text-blue-800">Viewing laboratory details. This information is read-only.</p>
+  </div>
+
+  <!-- Summary Card -->
+  <div
+    class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6"
+  >
+    <div class="flex items-center gap-3">
+      <div
+        class="hidden w-12 h-12 rounded-xl bg-primary/10 sm:flex items-center justify-center text-primary"
+      >
+        <mat-icon class="text-[28px] w-6 h-6">science</mat-icon>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold text-gray-800">{{ laboratory.name }}</h2>
+        <div class="flex items-center gap-3 text-xs text-gray-500">
+          <span>ID: LAB-{{ laboratory.labId | number: '3.0-0' }}</span>
+          <span>•</span>
+          <span>{{ laboratory.totalTests }} Tests</span>
+          <span>•</span>
+          <span>{{ laboratory.staffCount }} Staff</span>
+          <span>•</span>
+          <span>Created: {{ laboratory.createdAt | date: 'MMM d, y' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="ml-auto">
+      <span
+        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+        [ngClass]="getStatusClass(laboratory.status)"
+      >
+        <span
+          class="w-1.5 h-1.5 rounded-full"
+          [ngClass]="getStatusDotClass(laboratory.status)"
+        ></span>
+        {{ laboratory.status }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Details Grid -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+    <div class="p-6 space-y-6">
+      <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+        <mat-icon [style.color]="'var(--color-primary)'">info</mat-icon>
+        General Information
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Laboratory Name -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Laboratory Name</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">{{ laboratory.name }}</p>
+        </div>
+
+        <!-- Laboratory ID -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Laboratory ID</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1 font-mono">
+            LAB-{{ laboratory.labId | number: '3.0-0' }}
+          </p>
+        </div>
+
+        <!-- Location -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Location</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ laboratory.location || 'Not Assigned' }}
+          </p>
+        </div>
+
+        <!-- Phone -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Phone</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ laboratory.phone || 'Not Assigned' }}
+          </p>
+        </div>
+
+        <!-- Department -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Department</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ laboratory.departmentName || 'Not Assigned' }}
+          </p>
+        </div>
+
+        <!-- Head Technician -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Head Technician</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ laboratory.headTechnicianName || 'Not Assigned' }}
+          </p>
+        </div>
+
+        <!-- Status -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Status</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="getStatusClass(laboratory.status)"
+            >
+              <span
+                class="w-1.5 h-1.5 rounded-full"
+                [ngClass]="getStatusDotClass(laboratory.status)"
+              ></span>
+              {{ laboratory.status }}
+            </span>
+          </p>
+        </div>
+
+        <!-- Created At -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Created Date</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ laboratory.createdAt | date: 'MMM d, y' }}
+          </p>
+        </div>
+
+        <!-- Total Tests -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Tests</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">{{ laboratory.totalTests }} Tests</p>
+        </div>
+
+        <!-- Staff Count -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Staff Count</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ laboratory.staffCount }} Technicians
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tests List -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+      <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+        <mat-icon [style.color]="'var(--color-primary)'">biotech</mat-icon>
+        Recent Tests in this Laboratory
+      </h3>
+      <span class="text-sm text-gray-500">{{ laboratory.tests.length }} Tests</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+            <th class="text-left font-semibold px-4 py-3">#</th>
+            <th class="text-left font-semibold px-4 py-3">Test Type</th>
+            <th class="text-left font-semibold px-4 py-3">Patient</th>
+            <th class="text-left font-semibold px-4 py-3">Status</th>
+            <th class="text-left font-semibold px-4 py-3">Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (test of laboratory.tests; track test.testId) {
+            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+              <td class="px-4 py-3 text-gray-400">#{{ test.testId }}</td>
+              <td class="px-4 py-3 font-medium text-gray-800">{{ test.testType }}</td>
+              <td class="px-4 py-3 text-gray-600">{{ test.patientName }}</td>
+              <td class="px-4 py-3">
+                <span
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                  [ngClass]="getTestStatusClass(test.status)"
+                >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full"
+                    [ngClass]="test.status === 'done' ? 'bg-green-600' : 'bg-amber-600'"
+                  ></span>
+                  {{ test.status === 'done' ? 'Completed' : 'Pending' }}
+                </span>
+              </td>
+              <td class="px-4 py-3 text-gray-500">{{ test.testDate | date: 'MMM d, y' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (laboratory.tests.length === 0) {
+      <div class="p-8 text-center">
+        <mat-icon class="text-4xl text-gray-300 w-full h-auto">biotech</mat-icon>
+        <p class="text-gray-500 mt-2">No tests found in this laboratory yet.</p>
+      </div>
+    }
+  </div>
+</div>

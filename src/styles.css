@@ -8,3 +8,7 @@
   --color-tertiary: #a14400;
   --color-neutral: #f8f9fa;
 }
+
+button {
+  cursor: pointer;
+}
