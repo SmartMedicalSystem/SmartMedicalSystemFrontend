@@ -132,9 +132,10 @@
   </div>
 
   <!-- Table -->
+ <!-- Table -->
   <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
     <div class="overflow-x-auto">
-      <table class="w-full text-sm min-w-[800px]">
+      <table class="w-full text-sm min-w-[900px]">
         <thead>
           <tr class="text-left text-gray-500 text-xs uppercase tracking-wide border-b border-gray-100 bg-white">
             <th class="px-6 py-4 font-medium">Doctor</th>
@@ -142,6 +143,7 @@
             <th class="px-6 py-4 font-medium">Specialization</th>
             <th class="px-6 py-4 font-medium">Department</th>
             <th class="px-6 py-4 font-medium">Contact</th>
+            <th class="px-6 py-4 font-medium text-right">Actions</th>
           </tr>
         </thead>
 
@@ -162,10 +164,23 @@
               <td class="px-6 py-5 align-top text-gray-600">{{ doctor.specialization }}</td>
               <td class="px-6 py-5 align-top text-gray-600">{{ doctor.department }}</td>
               <td class="px-6 py-5 align-top text-gray-600 whitespace-nowrap">{{ doctor.contact }}</td>
+
+              <td class="px-6 py-5 align-top text-right relative">
+                <button (click)="toggleMenu(doctor.id)"
+                  class="w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-500">⋮</button>
+
+                @if (activeMenuId() === doctor.id) {
+                  <div class="absolute right-4 top-12 z-10 w-36 bg-white border border-gray-200 rounded-lg shadow-lg text-left">
+                    <button class="w-full px-3 py-2 text-sm text-left hover:bg-gray-50">View</button>
+                    <button routerLink="/admin/dashboard/doctors/edit-doctors" class="w-full px-3 py-2 text-sm text-left hover:bg-gray-50">Edit</button>
+                    <button class="w-full px-3 py-2 text-sm text-left text-tertiary hover:bg-gray-50">Delete</button>
+                  </div>
+                }
+              </td>
             </tr>
           } @empty {
             <tr>
-              <td colspan="5" class="px-6 py-10 text-center text-gray-400">No doctors found.</td>
+              <td colspan="6" class="px-6 py-10 text-center text-gray-400">No doctors found.</td>
             </tr>
           }
         </tbody>
@@ -183,4 +198,4 @@
       </select>
     </div>
   </div>
-</div>
+  </div>

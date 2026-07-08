@@ -80,6 +80,11 @@ export class AllDoctors {
 
   rangeStart = () => (this.currentPage() - 1) * this.rowsPerPage() + 1;
   rangeEnd = () => Math.min(this.currentPage() * this.rowsPerPage(), this.totalDoctors());
+  activeMenuId = signal<string | null>(null);
+
+  toggleMenu(id: string) {
+    this.activeMenuId.set(this.activeMenuId() === id ? null : id);
+  }
 
   applyFilters() {
     console.log({
