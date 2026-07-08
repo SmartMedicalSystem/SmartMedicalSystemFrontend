@@ -1,0 +1,8 @@
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+input,
+select {
+  transition: all 0.2s ease;
+}

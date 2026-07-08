@@ -1,0 +1,185 @@
+<div class="w-full p-4 sm:p-6 font-sans max-w-225 mx-auto">
+  <!-- Header -->
+  <div class="flex items-center justify-between flex-wrap mb-6">
+    <h1 class="mb-5 sm:mb-0 text-3xl font-bold text-primary tracking-tight">Department Details</h1>
+    <div class="flex gap-3">
+      <button
+        class="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium shadow-sm hover:bg-gray-50 transition-all duration-200"
+        routerLink="/admin/dashboard/departments/all-departments"
+      >
+        <mat-icon class="w-5 h-5 text-gray-500">arrow_back</mat-icon>
+        Back
+      </button>
+      <button
+        class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium shadow-sm hover:opacity-90 transition-all duration-200"
+        [routerLink]="['/admin/dashboard/departments/edit-departments', department.departmentId]"
+      >
+        <mat-icon class="w-5 h-5 text-white">edit</mat-icon>
+        Edit Department
+      </button>
+    </div>
+  </div>
+
+  <!-- Info Banner -->
+  <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-6">
+    <div class="hidden sm:block"><mat-icon class="text-xl text-blue-600">info</mat-icon></div>
+    <p class="text-sm text-blue-800">Viewing department details. This information is read-only.</p>
+  </div>
+
+  <!-- Summary Card -->
+  <div
+    class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6"
+  >
+    <div class="flex items-center gap-3 flex-wrap">
+      <div
+        class="hidden sm:flex w-12 h-12 rounded-xl bg-primary/10 items-center justify-center text-primary"
+      >
+        <mat-icon class="text-[28px] w-6 h-6">domain</mat-icon>
+      </div>
+      <div>
+        <h2 class="text-lg font-bold text-gray-800">{{ department.name }}</h2>
+        <div class="flex items-center gap-3 text-xs text-gray-500">
+          <span>ID: DEPT-{{ department.departmentId | number: '3.0-0' }}</span>
+          <span>•</span>
+          <span>{{ department.doctorCount }} Doctors</span>
+          <span>•</span>
+          <span>Created: {{ department.createdAt | date: 'MMM d, y' }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="ml-auto">
+      <span
+        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+        [ngClass]="getStatusClass(department.status)"
+      >
+        <span
+          class="w-1.5 h-1.5 rounded-full"
+          [ngClass]="getStatusDotClass(department.status)"
+        ></span>
+        {{ department.status }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Details Grid -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+    <div class="p-6 space-y-6">
+      <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+        <mat-icon [style.color]="'var(--color-primary)'">info</mat-icon>
+        General Information
+      </h3>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Department Name -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Department Name</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">{{ department.name }}</p>
+        </div>
+
+        <!-- Department ID -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Department ID</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1 font-mono">
+            DEPT-{{ department.departmentId | number: '3.0-0' }}
+          </p>
+        </div>
+
+        <!-- Floor Number -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Floor Number</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ department.floorNumber ?? 'Not Assigned' }}
+          </p>
+        </div>
+
+        <!-- Phone Extension -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Phone Extension</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ department.phoneExt || 'Not Assigned' }}
+          </p>
+        </div>
+
+        <!-- Head Doctor -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Head Doctor</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">{{ department.headDoctorName }}</p>
+        </div>
+
+        <!-- Status -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Status</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            <span
+              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+              [ngClass]="getStatusClass(department.status)"
+            >
+              <span
+                class="w-1.5 h-1.5 rounded-full"
+                [ngClass]="getStatusDotClass(department.status)"
+              ></span>
+              {{ department.status }}
+            </span>
+          </p>
+        </div>
+
+        <!-- Created At -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Created Date</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ department.createdAt | date: 'MMM d, y' }}
+          </p>
+        </div>
+
+        <!-- Doctors Count -->
+        <div>
+          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Doctors</p>
+          <p class="text-sm font-semibold text-gray-800 mt-1">
+            {{ department.doctorCount }} Practitioners
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Doctors List -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+      <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+        <mat-icon [style.color]="'var(--color-primary)'">medical_services</mat-icon>
+        Doctors in this Department
+      </h3>
+      <span class="text-sm text-gray-500">{{ department.doctors.length }} Doctors</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+            <th class="text-left font-semibold px-4 py-3">#</th>
+            <th class="text-left font-semibold px-4 py-3">Doctor Name</th>
+            <th class="text-left font-semibold px-4 py-3">Specialization</th>
+            <th class="text-left font-semibold px-4 py-3">License Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (doctor of department.doctors; track doctor.doctorId) {
+            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+              <td class="px-4 py-3 text-gray-400">#{{ doctor.doctorId }}</td>
+              <td class="px-4 py-3 font-medium text-gray-800">{{ doctor.name }}</td>
+              <td class="px-4 py-3 text-gray-600">{{ doctor.specialization }}</td>
+              <td class="px-4 py-3 text-gray-500 font-mono">{{ doctor.licenseNumber }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (department.doctors.length === 0) {
+      <div class="p-8 text-center">
+        <mat-icon class="text-4xl text-gray-300 w-full h-auto">medical_services</mat-icon>
+        <p class="text-gray-500 mt-2">No doctors assigned to this department yet.</p>
+      </div>
+    }
+  </div>
+</div>
