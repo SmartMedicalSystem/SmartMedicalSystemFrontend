@@ -1,1 +1,290 @@
-<p>add-patients works!</p>
+<div class="p-4 md:p-6 bg-neutral min-h-screen">
+<h1 class="text-2xl font-semibold text-primary mb-4">Add New Patient</h1>
+  <p class="text-gray-500 mb-4">Register a new patient into the hospital system.</p>
+
+  <form [formGroup]="form" class="bg-white border border-gray-200 rounded-xl p-5 md:p-8">
+
+    <!-- ===================== Basic Information ===================== -->
+    <div class="flex items-center gap-2 mb-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="8" r="4" />
+        <path stroke-linecap="round" d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
+      </svg>
+      <h2 class="font-semibold text-gray-800">Basic Information</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-1">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">
+          First Name <span class="text-tertiary">*</span>
+        </label>
+        <input
+          type="text"
+          formControlName="firstName"
+          placeholder="First Name *"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('firstName')"
+          [class.focus:ring-primary/40]="!isInvalid('firstName')"
+          [class.border-tertiary]="isInvalid('firstName')"
+          [class.focus:ring-tertiary/30]="isInvalid('firstName')" />
+        @if (isInvalid('firstName')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('firstName', 'First Name') }}
+          </p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">
+          Last Name <span class="text-tertiary">*</span>
+        </label>
+        <input
+          type="text"
+          formControlName="lastName"
+          placeholder="Last Name *"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('lastName')"
+          [class.focus:ring-primary/40]="!isInvalid('lastName')"
+          [class.border-tertiary]="isInvalid('lastName')"
+          [class.focus:ring-tertiary/30]="isInvalid('lastName')" />
+        @if (isInvalid('lastName')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('lastName', 'Last Name') }}
+          </p>
+        }
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">
+          National ID (SSN) <span class="text-tertiary">*</span>
+        </label>
+        <input
+          type="text"
+          formControlName="nationalId"
+          placeholder="National ID (SSN) *"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('nationalId')"
+          [class.focus:ring-primary/40]="!isInvalid('nationalId')"
+          [class.border-tertiary]="isInvalid('nationalId')"
+          [class.focus:ring-tertiary/30]="isInvalid('nationalId')" />
+        @if (isInvalid('nationalId')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('nationalId', 'National ID') }}
+          </p>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-primary">Date of Birth <span class="text-tertiary">*</span></label>
+        <input
+          type="date"
+          formControlName="dateOfBirth"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-primary">Gender <span class="text-tertiary">*</span></label>
+        <select formControlName="gender"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option value="" disabled selected>Select gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-primary">Blood Group</label>
+        <select formControlName="bloodGroup"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option value="" disabled selected>Select blood group</option>
+          <option>O+</option>
+          <option>O-</option>
+          <option>A+</option>
+          <option>A-</option>
+          <option>B+</option>
+          <option>B-</option>
+          <option>AB+</option>
+          <option>AB-</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Nationality</label>
+        <input type="text" formControlName="nationality" placeholder="Nationality"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-primary">Marital Status</label>
+        <select formControlName="maritalStatus"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option value="" disabled selected>Select status</option>
+          <option>Single</option>
+          <option>Married</option>
+          <option>Divorced</option>
+          <option>Widowed</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Occupation</label>
+        <input type="text" formControlName="occupation" placeholder="Occupation"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+      </div>
+    </div>
+
+    <hr class="border-gray-100 my-7" />
+
+    <!-- ===================== Contact Information ===================== -->
+    <div class="flex items-center gap-2 mb-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="3" y="5" width="18" height="14" rx="2" />
+        <circle cx="9" cy="12" r="2" />
+        <path stroke-linecap="round" d="M15 10h3M15 14h3" />
+      </svg>
+      <h2 class="font-semibold text-gray-800">Contact Information</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="flex flex-col gap-1">
+        <input type="text" formControlName="mobileNumber" placeholder="Mobile Number *"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('mobileNumber')"
+          [class.focus:ring-primary/40]="!isInvalid('mobileNumber')"
+          [class.border-tertiary]="isInvalid('mobileNumber')"
+          [class.focus:ring-tertiary/30]="isInvalid('mobileNumber')" />
+        @if (isInvalid('mobileNumber')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('mobileNumber', 'Mobile Number') }}
+          </p>
+        }
+      </div>
+
+      <input type="text" formControlName="altPhone" placeholder="Alt Phone"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+
+      <div class="flex flex-col gap-1">
+        <input type="email" formControlName="email" placeholder="Email Address"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('email')"
+          [class.focus:ring-primary/40]="!isInvalid('email')"
+          [class.border-tertiary]="isInvalid('email')"
+          [class.focus:ring-tertiary/30]="isInvalid('email')" />
+        @if (isInvalid('email')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('email', 'Email') }}
+          </p>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <input type="text" formControlName="address" placeholder="Address"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+      <input type="text" formControlName="city" placeholder="City"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <input type="text" formControlName="postalCode" placeholder="Postal Code"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+      <input type="text" formControlName="country" placeholder="Country"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+      <input type="text" formControlName="emergencyContactName" placeholder="Emergency Contact Name"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+      <input type="text" formControlName="emergencyContactPhone" placeholder="Emergency Contact Phone"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+      <input type="text" formControlName="relationship" placeholder="Relationship"
+        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+    </div>
+
+    <hr class="border-gray-100 my-7" />
+
+    <!-- ===================== Hospital Information ===================== -->
+    <div class="flex items-center gap-2 mb-5">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="4" y="4" width="16" height="16" rx="2" />
+        <path stroke-linecap="round" d="M12 8v8M8 12h8" />
+      </svg>
+      <h2 class="font-semibold text-gray-800">Hospital Information</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Patient Number (Auto-generated)</label>
+        <input type="text" [value]="patientNumber()" disabled
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-100 text-gray-600 font-medium cursor-not-allowed" />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Registration Date (Read-only)</label>
+        <input type="text" [value]="registrationDate()" disabled
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-100 text-gray-600 cursor-not-allowed" />
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-gray-500">Patient Status</label>
+        <select formControlName="patientStatus"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option>Active</option>
+          <option>Critical</option>
+          <option>Discharged</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-primary">Assigned Department</label>
+        <select formControlName="assignedDepartment"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option value="" disabled selected>Select department</option>
+          <option>Cardiology</option>
+          <option>Internal Medicine</option>
+          <option>Pediatrics</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-1">
+        <label class="text-xs font-medium text-primary">Assigned Doctor</label>
+        <select formControlName="assignedDoctor"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+          <option value="" disabled selected>Select doctor</option>
+          <option>Dr. Sarah Chen</option>
+          <option>Dr. Julian Vance</option>
+          <option>Dr. Amanda Lee</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- ===================== Actions ===================== -->
+    <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 mt-8">
+      <button type="button" (click)="onCancel()"
+        class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
+        Cancel
+      </button>
+
+      <button type="button" (click)="onSaveAndAddAnother()"
+        class="px-6 py-2.5 rounded-lg border border-secondary text-secondary font-medium hover:bg-secondary/5 transition">
+        Save &amp; Add Another
+      </button>
+
+      <button type="button" (click)="onSavePatient()"
+        class="flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M5 5v14a2 2 0 002 2h10a2 2 0 002-2V8l-4-4H5a2 2 0 00-2 2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 3v4h6V3" />
+        </svg>
+        Save Patient
+      </button>
+    </div>
+
+  </form>
+</div>

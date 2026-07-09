@@ -1,1 +1,457 @@
-<p>add-doctors works!</p>
+<div class="p-4 md:p-6 bg-neutral min-h-screen">
+<h1 class="text-2xl font-semibold text-primary mb-2"> Add New Doctor</h1>
+  <p class="text-gray-500 mb-5">Register a new medical professional and create a hospital system account.</p>
+
+  <form [formGroup]="form" class="bg-white border border-gray-200 rounded-xl overflow-hidden">
+
+    <!-- ===================== Profile Identity ===================== -->
+    <div class="flex flex-col sm:flex-row gap-5 p-6 border-b border-gray-100">
+      <label class="shrink-0 mx-auto sm:mx-0 w-28 h-28 rounded-xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center gap-1 text-gray-400 cursor-pointer hover:border-primary/50 transition overflow-hidden">
+        @if (photoPreview()) {
+          <img [src]="photoPreview()" alt="Preview" class="w-full h-full object-cover" />
+        } @else {
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h3l2-2h6l2 2h3a1 1 0 011 1v11a1 1 0 01-1 1H4a1 1 0 01-1-1V8a1 1 0 011-1z" />
+            <circle cx="12" cy="13" r="3" />
+          </svg>
+          <span class="text-xs">Upload Photo</span>
+        }
+        <input type="file" accept="image/jpeg,image/png" class="hidden" (change)="onPhotoSelected($event)" />
+      </label>
+
+      <div class="flex-1">
+        <p class="font-semibold text-gray-800">Profile Identity</p>
+        <p class="text-sm text-gray-500 mt-0.5">Upload a professional portrait for clinical records and the patient portal.</p>
+
+        <div class="flex items-center gap-4 mt-3">
+          <label class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 cursor-pointer hover:bg-gray-50 transition">
+            Browse Files
+            <input type="file" accept="image/jpeg,image/png" class="hidden" (change)="onPhotoSelected($event)" />
+          </label>
+          <button type="button" (click)="removePhoto()" class="text-sm font-medium text-tertiary hover:underline">
+            Remove
+          </button>
+        </div>
+
+        <p class="text-xs text-gray-400 mt-2">REQUIRED: JPG, PNG</p>
+      </div>
+    </div>
+
+    <div class="p-6">
+
+      <!-- ===================== Personal Information ===================== -->
+      <div class="flex items-center gap-2 mb-5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="4" />
+          <path stroke-linecap="round" d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
+        </svg>
+        <h2 class="font-semibold text-gray-800">Personal Information</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">First Name</label>
+          <input type="text" formControlName="firstName" placeholder="e.g. John"
+            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isInvalid('firstName')"
+            [class.focus:ring-primary/40]="!isInvalid('firstName')"
+            [class.border-tertiary]="isInvalid('firstName')"
+            [class.focus:ring-tertiary/30]="isInvalid('firstName')" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Last Name</label>
+          <input type="text" formControlName="lastName" placeholder="e.g. Doe"
+            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isInvalid('lastName')"
+            [class.focus:ring-primary/40]="!isInvalid('lastName')"
+            [class.border-tertiary]="isInvalid('lastName')"
+            [class.focus:ring-tertiary/30]="isInvalid('lastName')" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Gender</label>
+          <select formControlName="gender"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+            <option value="" disabled selected>Select Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Date of Birth</label>
+          <input type="date" formControlName="dateOfBirth"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Nationality</label>
+          <input type="text" formControlName="nationality" placeholder="e.g. American"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">National ID / SSN</label>
+          <input type="text" formControlName="nationalId" placeholder="000-00-0000"
+            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isInvalid('nationalId')"
+            [class.focus:ring-primary/40]="!isInvalid('nationalId')"
+            [class.border-tertiary]="isInvalid('nationalId')"
+            [class.focus:ring-tertiary/30]="isInvalid('nationalId')" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Marital Status</label>
+          <select formControlName="maritalStatus"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+            <option>Single</option>
+            <option>Married</option>
+            <option>Divorced</option>
+            <option>Widowed</option>
+          </select>
+        </div>
+      </div>
+
+      <hr class="border-gray-100 my-7" />
+
+      <!-- ===================== Professional Information ===================== -->
+      <div class="flex items-center gap-2 mb-5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="4" y="7" width="16" height="12" rx="2" />
+          <path stroke-linecap="round" d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2" />
+        </svg>
+        <h2 class="font-semibold text-gray-800">Professional Information</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Medical License Number</label>
+          <input type="text" formControlName="licenseNumber" placeholder="ML-12345678"
+            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isInvalid('licenseNumber')"
+            [class.focus:ring-primary/40]="!isInvalid('licenseNumber')"
+            [class.border-tertiary]="isInvalid('licenseNumber')"
+            [class.focus:ring-tertiary/30]="isInvalid('licenseNumber')" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Department</label>
+          <div class="relative">
+            <input type="text" formControlName="department" placeholder="Search Dept..."
+              class="w-full border rounded-lg px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2"
+              [class.border-gray-200]="!isInvalid('department')"
+              [class.focus:ring-primary/40]="!isInvalid('department')"
+              [class.border-tertiary]="isInvalid('department')"
+              [class.focus:ring-tertiary/30]="isInvalid('department')" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7" />
+              <path stroke-linecap="round" d="M21 21l-4.3-4.3" />
+            </svg>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Specialization</label>
+          <div class="relative">
+            <input type="text" formControlName="specialization" placeholder="Search Specialization..."
+              class="w-full border rounded-lg px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2"
+              [class.border-gray-200]="!isInvalid('specialization')"
+              [class.focus:ring-primary/40]="!isInvalid('specialization')"
+              [class.border-tertiary]="isInvalid('specialization')"
+              [class.focus:ring-tertiary/30]="isInvalid('specialization')" />
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="7" />
+              <path stroke-linecap="round" d="M21 21l-4.3-4.3" />
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Years of Experience</label>
+          <input type="number" min="0" formControlName="yearsOfExperience" placeholder="e.g. 10"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Employment Type</label>
+          <select formControlName="employmentType"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+            <option>Full-Time</option>
+            <option>Part-Time</option>
+            <option>Contract</option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Joining Date</label>
+          <input type="date" formControlName="joiningDate"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Highest Qualification</label>
+          <input type="text" formControlName="highestQualification" placeholder="e.g. MD, PhD, FACS"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1 md:col-span-2">
+          <label class="text-xs font-medium text-gray-500">Professional Notes</label>
+          <input type="text" formControlName="professionalNotes" placeholder="Short career summary or clinical focus"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+      </div>
+
+      <hr class="border-gray-100 my-7" />
+
+      <!-- ===================== Contact Information ===================== -->
+      <div class="flex items-center gap-2 mb-5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" />
+        </svg>
+        <h2 class="font-semibold text-gray-800">Contact Information</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Mobile Number</label>
+          <input type="text" formControlName="mobileNumber" placeholder="+1 (555) 000-0000"
+            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isInvalid('mobileNumber')"
+            [class.focus:ring-primary/40]="!isInvalid('mobileNumber')"
+            [class.border-tertiary]="isInvalid('mobileNumber')"
+            [class.focus:ring-tertiary/30]="isInvalid('mobileNumber')" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Personal Email</label>
+          <input type="email" formControlName="personalEmail" placeholder="personal@email.com"
+            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isInvalid('personalEmail')"
+            [class.focus:ring-primary/40]="!isInvalid('personalEmail')"
+            [class.border-tertiary]="isInvalid('personalEmail')"
+            [class.focus:ring-tertiary/30]="isInvalid('personalEmail')" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Office Number</label>
+          <input type="text" formControlName="officeNumber" placeholder="+1 (555) 000-0000"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Extension</label>
+          <input type="text" formControlName="extension" placeholder="Ext. 123"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4">
+        <div class="flex flex-col gap-1 md:col-span-2">
+          <label class="text-xs font-medium text-gray-500">Residential Address</label>
+          <input type="text" formControlName="residentialAddress" placeholder="123 Clinical Way"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">City</label>
+          <input type="text" formControlName="city" placeholder="Boston"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Postal Code</label>
+          <input type="text" formControlName="postalCode" placeholder="02108"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== Account & System Identity (shaded) ===================== -->
+    <div class="bg-neutral border-y border-gray-100 p-6">
+      <div class="flex items-center gap-2 mb-5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="9" />
+          <path stroke-linecap="round" d="M12 8v4l2.5 2.5" />
+        </svg>
+        <h2 class="font-semibold text-gray-800">Account &amp; System Identity</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Employee ID</label>
+          <input type="text" [value]="employeeId()" disabled
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-100 text-gray-600 font-medium cursor-not-allowed" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Username</label>
+          <input type="text" formControlName="username"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Hospital Email</label>
+          <input type="text" formControlName="hospitalEmail"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-100 text-gray-600 cursor-not-allowed" />
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">User Role</label>
+          <input type="text" formControlName="userRole"
+            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        </div>
+
+        <div class="flex flex-col gap-1 md:col-span-2">
+          <label class="text-xs font-medium text-gray-500">Temporary Password</label>
+          <div class="flex gap-2">
+            <input type="text" [value]="temporaryPassword()" readonly
+              class="flex-1 border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-white font-mono" />
+            <button type="button" (click)="regeneratePassword()"
+              class="w-11 shrink-0 flex items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 hover:bg-gray-50">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M20 9a8 8 0 00-14.6-4.4M4 15a8 8 0 0014.6 4.4" />
+              </svg>
+            </button>
+            <button type="button" (click)="copyPassword()"
+              class="flex items-center gap-2 px-4 shrink-0 rounded-lg border border-gray-200 bg-white text-sm text-gray-600 hover:bg-gray-50">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="11" height="11" rx="2" />
+                <path stroke-linecap="round" d="M5 15H4a1 1 0 01-1-1V4a1 1 0 011-1h10a1 1 0 011 1v1" />
+              </svg>
+              Copy
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toggles -->
+      <div class="flex flex-wrap gap-x-8 gap-y-4 mt-6">
+        <label class="flex items-center gap-2 cursor-pointer">
+          <button type="button" (click)="toggleField('accountActive')"
+            class="relative w-10 h-5.5 h-6 rounded-full transition"
+            [class.bg-primary]="form.get('accountActive')?.value"
+            [class.bg-gray-300]="!form.get('accountActive')?.value">
+            <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+              [class.translate-x-4]="form.get('accountActive')?.value"></span>
+          </button>
+          <span class="text-sm text-gray-700">Account Active</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer">
+          <button type="button" (click)="toggleField('allowLogin')"
+            class="relative w-10 h-6 rounded-full transition"
+            [class.bg-primary]="form.get('allowLogin')?.value"
+            [class.bg-gray-300]="!form.get('allowLogin')?.value">
+            <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+              [class.translate-x-4]="form.get('allowLogin')?.value"></span>
+          </button>
+          <span class="text-sm text-gray-700">Allow Login</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer">
+          <button type="button" (click)="toggleField('notifications')"
+            class="relative w-10 h-6 rounded-full transition"
+            [class.bg-secondary]="form.get('notifications')?.value"
+            [class.bg-gray-300]="!form.get('notifications')?.value">
+            <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+              [class.translate-x-4]="form.get('notifications')?.value"></span>
+          </button>
+          <span class="text-sm text-gray-700">Notifications</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer">
+          <button type="button" (click)="toggleField('reviewAI')"
+            class="relative w-10 h-6 rounded-full transition"
+            [class.bg-secondary]="form.get('reviewAI')?.value"
+            [class.bg-gray-300]="!form.get('reviewAI')?.value">
+            <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+              [class.translate-x-4]="form.get('reviewAI')?.value"></span>
+          </button>
+          <span class="text-sm text-gray-700">Review AI</span>
+        </label>
+
+        <label class="flex items-center gap-2 cursor-pointer">
+          <button type="button" (click)="toggleField('approveReports')"
+            class="relative w-10 h-6 rounded-full transition"
+            [class.bg-primary]="form.get('approveReports')?.value"
+            [class.bg-gray-300]="!form.get('approveReports')?.value">
+            <span class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+              [class.translate-x-4]="form.get('approveReports')?.value"></span>
+          </button>
+          <span class="text-sm text-gray-700">Approve Reports</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ===================== Account Delivery ===================== -->
+    <div class="p-6">
+      <div class="flex items-center gap-2 mb-5">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+        </svg>
+        <h2 class="font-semibold text-gray-800">Account Delivery</h2>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" formControlName="sendWelcomeEmail" class="w-4 h-4 mt-1 accent-primary" />
+          <div>
+            <p class="text-sm font-medium text-gray-800">Send Welcome Email</p>
+            <p class="text-xs text-gray-500">Automated onboarding email with hospital guide and policy documents.</p>
+          </div>
+        </label>
+
+        <label class="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" formControlName="sendAccountCredentials" class="w-4 h-4 mt-1 accent-primary" />
+          <div>
+            <p class="text-sm font-medium text-gray-800">Send Account Credentials</p>
+            <p class="text-xs text-gray-500">Secure delivery of username and temporary password via personal email.</p>
+          </div>
+        </label>
+      </div>
+    </div>
+
+    <!-- ===================== Footer actions ===================== -->
+    <div class="bg-neutral border-t border-gray-100 px-6 py-5 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <button type="button" (click)="onClearForm()"
+        class="flex items-center gap-2 text-gray-500 hover:text-gray-700 text-sm font-medium">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10 5H6a2 2 0 00-2 2v10a2 2 0 002 2h9a2 2 0 002-2v-4" />
+        </svg>
+        Clear Form
+      </button>
+
+      <div class="flex flex-wrap justify-end gap-3">
+        <button type="button" (click)="onCancel()"
+          class="px-6 py-2.5 rounded-lg text-gray-700 font-medium hover:bg-gray-100 transition">
+          Cancel
+        </button>
+
+        <button type="button" (click)="onCreateAndAddAnother()"
+          class="px-6 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition">
+          Create &amp; Add Another
+        </button>
+
+        <button type="button" (click)="onCreateDoctor()"
+          class="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
+          Create Doctor
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

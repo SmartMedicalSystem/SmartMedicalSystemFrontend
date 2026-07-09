@@ -23,6 +23,9 @@ interface Patient {
   styleUrl: './all-patients.css',
 })
 export class AllPatients {
+isDoctorView() {
+throw new Error('Method not implemented.');
+}
   urlContainsDoctor: boolean = false;
   constructor(private router: Router) {
     this.urlContainsDoctor = this.router.url.includes('doctor');
@@ -154,4 +157,6 @@ export class AllPatients {
   goToLastPage(): void {
     this.currentPage.set(Math.ceil(this.totalPatients / this.rowsPerPage()));
   }
+
+
 }
