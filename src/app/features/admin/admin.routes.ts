@@ -51,7 +51,7 @@ export const adminRoutes: Routes = [
               },
             ],
               
-            ]
+            
           },
           {
             path: 'doctors',
@@ -203,3 +203,5 @@ export const adminRoutes: Routes = [
     ],
   },
 ];
+    
+  
