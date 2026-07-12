@@ -38,15 +38,15 @@
       <div class="flex items-center gap-3">
         <div class="md:block text-right">
           <h3 class="font-semibold text-primary text-sm sm:text-lg">
-            {{ user.name }}
+            {{ this.userName }}
           </h3>
           <p class="hidden sm:block sm:text-md text-gray-500">
-            {{ user.role }}
+            {{ this.role }}
           </p>
         </div>
 
         <img
-          [src]="user.image"
+          src="https://i.pravatar.cc/150?img=47"
           alt="User"
           class="w-14 h-14 rounded-full border-2 border-primary object-cover"
         />

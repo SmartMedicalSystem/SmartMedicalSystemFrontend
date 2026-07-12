@@ -4,7 +4,7 @@ import { doctorGuard } from '../../core/guards/doctor-guard';
 export const doctorRoutes: Routes = [
   {
     path: 'doctor',
-    // canActivate: [authGuard, doctorGuard],
+    canActivate: [authGuard, doctorGuard],
     children: [
       {
         path: '',
