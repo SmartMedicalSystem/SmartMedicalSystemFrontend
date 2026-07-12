@@ -2,9 +2,9 @@ import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet } from '@angular/router';
 
-import { Navbar } from "../components/navbar/navbar";
-import { Sidebar } from "../components/sidebar/sidebar";
+import { Sidebar } from "../../../shared/components/sidebar/sidebar";
 import { Footer } from "../../../shared/components/footer/footer";
+import { Navbar } from '../../../shared/components/navbar/navbar';
 
 @Component({
   selector: 'app-dashboard',

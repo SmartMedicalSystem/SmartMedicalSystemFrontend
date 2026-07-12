@@ -41,11 +41,11 @@ interface Technician {
 export class TechniciansTable {
 
   faPhone = faPhone;
-faEnvelope = faEnvelope;
+  faEnvelope = faEnvelope;
 
-faPlus = faPlus;
-faPenToSquare = faPenToSquare;
-faTrash = faTrash;
+  faPlus = faPlus;
+  faPenToSquare = faPenToSquare;
+  faTrash = faTrash;
 
   technicians: Technician[] = [
 

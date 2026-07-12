@@ -11,6 +11,8 @@ import {
   faChartColumn,
   faBars
 } from '@fortawesome/free-solid-svg-icons';
+import { AuthenticationService } from '../../../core/services/authenticationService';
+import { jwtDecode } from 'jwt-decode';
 
 @Component({
   selector: 'app-navbar',
@@ -36,11 +38,15 @@ export class Navbar {
   export = faFileExport;
   aiScan = faChartColumn;
 
-  user = {
-    name: 'Sarah Miller',
-    role: 'Doctor',
-    image: 'https://i.pravatar.cc/150?img=47'
-  };
+  role: string = '';
+  userName: string = '';
+  constructor(private authServ: AuthenticationService) {
+    const decoded = jwtDecode(this.authServ.getAccessToken() || '') as any;
+    this.role = this.authServ.getUserRole() || '';
+    this.userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+  }
+
+
 
   bars = faBars;
   @Output() toggleSidebar = new EventEmitter();

@@ -1,8 +1,11 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '../../core/guards/auth-guard';
+import { laboratoryGuard } from '../../core/guards/laboratory-guard';
 
 export const laboratoryRoutes: Routes = [
   {
     path: 'labtechnician',
+    canActivate: [authGuard, laboratoryGuard],
     children: [
       {
         path: '',
@@ -14,7 +17,7 @@ export const laboratoryRoutes: Routes = [
         path: 'dashboard',
         loadComponent: () =>
           import('./dashboard/dashboard')
-          .then((m) => m.Dashboard),
+            .then((m) => m.Dashboard),
 
         children: [
 
@@ -28,14 +31,14 @@ export const laboratoryRoutes: Routes = [
             path: 'home',
             loadComponent: () =>
               import('./components/home/home')
-              .then((m) => m.Home),
+                .then((m) => m.Home),
           },
 
           {
             path: 'profile',
             loadComponent: () =>
               import('./components/profile/profile')
-              .then((m) => m.Profile),
+                .then((m) => m.Profile),
           },
 
 
@@ -43,7 +46,7 @@ export const laboratoryRoutes: Routes = [
             path: 'requests',
             loadComponent: () =>
               import('./components/requests/requests')
-              .then((m) => m.Requests),
+                .then((m) => m.Requests),
 
             children: [
 
@@ -57,14 +60,14 @@ export const laboratoryRoutes: Routes = [
                 path: 'all-requests',
                 loadComponent: () =>
                   import('./components/requests/all-requests/all-requests')
-                  .then((m) => m.AllRequests),
+                    .then((m) => m.AllRequests),
               },
 
               {
                 path: 'test-results',
                 loadComponent: () =>
                   import('./components/requests/test-results/test-results')
-                  .then((m) => m.TestResults),
+                    .then((m) => m.TestResults),
               },
 
             ],

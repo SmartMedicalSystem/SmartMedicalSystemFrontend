@@ -10,5 +10,5 @@ export const laboratoryGuard: CanActivateFn = (route, state) => {
     return false;
   }
   const decoded = jwtDecode(token) as any;
-  return decoded.role === 'LabTechnician';
+  return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === 'LabTechnician';
 };

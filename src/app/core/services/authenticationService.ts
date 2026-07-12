@@ -2,12 +2,16 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { ILogin } from '../../shared/interfaces/Authentication/ilogin';
+import { ILoginResponse } from '../../shared/interfaces/Authentication/ILoginResponse';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private readonly REFRESH_KEY = 'refresh_token';
+  private readonly baseUrl = 'https://smartmedicalsystem.runasp.net/api/';
+  private readonly REFRESH_KEY = 'refreshToken';
   private readonly accessToken = signal<string | null>(null);
 
   constructor(
@@ -16,8 +20,8 @@ export class AuthenticationService {
   ) { }
 
   // APIs
-  login(loginObj: Object): Observable<any> {
-    return this.http.post<any>('YOUR_LOGIN_API', loginObj);
+  login(loginObj: ILogin): Observable<ILoginResponse> {
+    return this.http.post<ILoginResponse>(`${this.baseUrl}Auth/login`, loginObj);
   }
 
   refreshToken(): Observable<any> {
@@ -74,6 +78,16 @@ export class AuthenticationService {
   isAuthenticated(): boolean {
     return this.accessToken() !== null;
   }
+
+  getUserRole(): string | null {
+    const token = this.getAccessToken();
+    if (!token) {
+      return null;
+    }
+    const decoded = jwtDecode<any>(token);
+    return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? null;
+  }
+
 
   // Logout
   clearToken(): void {

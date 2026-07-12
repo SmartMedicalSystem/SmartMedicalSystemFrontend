@@ -5,7 +5,7 @@ import { adminGuard } from '../../core/guards/admin-guard';
 export const adminRoutes: Routes = [
   {
     path: 'admin',
-    // canActivate: [authGuard, adminGuard],
+    canActivate: [authGuard, adminGuard],
     children: [
       {
         path: '',
@@ -50,8 +50,8 @@ export const adminRoutes: Routes = [
                   import('../patient/add-patients/add-patients').then((m) => m.AddPatients),
               },
             ],
-              
-            ]
+
+
           },
           {
             path: 'doctors',
