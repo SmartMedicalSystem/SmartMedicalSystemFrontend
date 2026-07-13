@@ -111,31 +111,7 @@
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Nationality</label>
-        <input type="text" formControlName="nationality" placeholder="Nationality"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-primary">Marital Status</label>
-        <select formControlName="maritalStatus"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
-          <option value="" disabled selected>Select status</option>
-          <option>Single</option>
-          <option>Married</option>
-          <option>Divorced</option>
-          <option>Widowed</option>
-        </select>
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Occupation</label>
-        <input type="text" formControlName="occupation" placeholder="Occupation"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-      </div>
-    </div>
+   
 
     <hr class="border-gray-100 my-7" />
 
@@ -164,44 +140,13 @@
         }
       </div>
 
-      <input type="text" formControlName="altPhone" placeholder="Alt Phone"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-
-      <div class="flex flex-col gap-1">
-        <input type="email" formControlName="email" placeholder="Email Address"
-          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-          [class.border-gray-200]="!isInvalid('email')"
-          [class.focus:ring-primary/40]="!isInvalid('email')"
-          [class.border-tertiary]="isInvalid('email')"
-          [class.focus:ring-tertiary/30]="isInvalid('email')" />
-        @if (isInvalid('email')) {
-          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-            <span>⚠️</span> {{ errorMessage('email', 'Email') }}
-          </p>
-        }
-      </div>
+    
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       <input type="text" formControlName="address" placeholder="Address"
         class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
       <input type="text" formControlName="city" placeholder="City"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-      <input type="text" formControlName="postalCode" placeholder="Postal Code"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-      <input type="text" formControlName="country" placeholder="Country"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-      <input type="text" formControlName="emergencyContactName" placeholder="Emergency Contact Name"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-      <input type="text" formControlName="emergencyContactPhone" placeholder="Emergency Contact Phone"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-      <input type="text" formControlName="relationship" placeholder="Relationship"
         class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
     </div>
 
@@ -269,11 +214,6 @@
       <button type="button" (click)="onCancel()"
         class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
         Cancel
-      </button>
-
-      <button type="button" (click)="onSaveAndAddAnother()"
-        class="px-6 py-2.5 rounded-lg border border-secondary text-secondary font-medium hover:bg-secondary/5 transition">
-        Save &amp; Add Another
       </button>
 
       <button type="button" (click)="onSavePatient()"

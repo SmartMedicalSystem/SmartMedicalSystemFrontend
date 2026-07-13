@@ -1,44 +1,41 @@
 <div class="p-4 md:p-4 bg-neutral min-h-screen">
-<h1 class="text-3xl font-semibold text-primary mb-2"> Doctors</h1>
-  <p class="text-gray-500 mb-5">Manage all doctors working in the hospital and monitor their status.</p>
+  <h1 class="text-3xl font-semibold text-primary mb-2">Doctors</h1>
+  <p class="text-gray-500 mb-5">
+    Manage all doctors working in the hospital and monitor their status.
+  </p>
 
   <!-- Actions bar -->
   <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6">
-
     <div class="flex flex-col gap-3">
       <div class="flex flex-wrap gap-3">
         <button
-        routerLink="/admin/dashboard/doctors/add-doctors"
-          class="flex items-center gap-2 bg-primary text-white px-5 py-3 rounded-lg font-medium hover:bg-primary/90 transition text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          routerLink="/admin/dashboard/doctors/add-doctors"
+          class="flex items-center gap-2 bg-primary text-white px-5 py-3 rounded-lg font-medium hover:bg-primary/90 transition text-sm"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v14M5 12h14" />
           </svg>
           Add New Doctor
         </button>
-
-        <button
-          class="flex items-center gap-2 bg-white border border-gray-300 text-gray-800 px-5 py-3 rounded-lg font-medium hover:bg-gray-50 transition text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0l-4-4m4 4l4-4" />
-            <path stroke-linecap="round" stroke-linejoin="round" d="M5 17v2a2 2 0 002 2h10a2 2 0 002-2v-2" />
-          </svg>
-          Export Doctors
-        </button>
-        <button
-        class="flex items-center gap-2 bg-white border border-gray-300 text-gray-800 px-5 py-3 rounded-lg font-medium hover:bg-gray-50 transition text-sm w-fit">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M12 21V9m0 0l-4 4m4-4l4 4" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M5 5v2a2 2 0 002 2h10a2 2 0 002-2V5" />
-        </svg>
-        Import Doctors
-      </button>
       </div>
-
-      
     </div>
 
     <div class="relative w-full lg:w-[340px] lg:mt-0 mt-1">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 absolute inset-y-0 left-4 my-auto text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="w-4 h-4 absolute inset-y-0 left-4 my-auto text-gray-400"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
         <circle cx="11" cy="11" r="7" />
         <path stroke-linecap="round" d="M21 21l-4.3-4.3" />
       </svg>
@@ -47,18 +44,21 @@
         [ngModel]="searchTerm()"
         (ngModelChange)="searchTerm.set($event)"
         placeholder="Search by doctor name or license..."
-        class="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+        class="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+      />
     </div>
   </div>
 
   <!-- Filters -->
   <div class="bg-white border border-gray-200 rounded-xl p-6 mb-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-5">
-
       <div class="flex flex-col gap-2">
         <label class="text-sm text-gray-600">Department</label>
-        <select [ngModel]="departmentFilter()" (ngModelChange)="departmentFilter.set($event)"
-          class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/40">
+        <select
+          [ngModel]="departmentFilter()"
+          (ngModelChange)="departmentFilter.set($event)"
+          class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
           <option>All Departments</option>
           <option>Neurology</option>
           <option>Cardiology</option>
@@ -69,8 +69,11 @@
 
       <div class="flex flex-col gap-2">
         <label class="text-sm text-gray-600">Specialization</label>
-        <select [ngModel]="specializationFilter()" (ngModelChange)="specializationFilter.set($event)"
-          class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/40">
+        <select
+          [ngModel]="specializationFilter()"
+          (ngModelChange)="specializationFilter.set($event)"
+          class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/40"
+        >
           <option>All Specializations</option>
           <option>Neurosurgeon</option>
           <option>Cardiologist</option>
@@ -79,67 +82,64 @@
         </select>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <label class="text-sm text-gray-600">Employment Status</label>
-        <select [ngModel]="employmentStatusFilter()" (ngModelChange)="employmentStatusFilter.set($event)"
-          class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/40">
-          <option>All Statuses</option>
-          <option>Full-time</option>
-          <option>Part-time</option>
-          <option>On Leave</option>
-        </select>
-      </div>
-
-      <div class="flex flex-col gap-2">
-        <label class="text-sm text-gray-600">Experience (Years)</label>
-        <input type="number" min="0" [ngModel]="minExperience()" (ngModelChange)="minExperience.set($event)"
-          placeholder="Min years..."
-          class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-      </div>
+      
 
       <div class="flex flex-col gap-2">
         <label class="text-sm text-gray-600">Joining Date</label>
         <div class="relative">
-          <input type="date" [ngModel]="joiningDateFilter()" (ngModelChange)="joiningDateFilter.set($event)"
-            class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+          <input
+            type="date"
+            [ngModel]="joiningDateFilter()"
+            (ngModelChange)="joiningDateFilter.set($event)"
+            class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+          />
         </div>
       </div>
 
-      <div class="flex flex-col gap-2">
-        <label class="text-sm text-gray-600">Gender</label>
-        <select [ngModel]="genderFilter()" (ngModelChange)="genderFilter.set($event)"
-          class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/40">
-          <option>All Genders</option>
-          <option>Male</option>
-          <option>Female</option>
-        </select>
-      </div>
+     
     </div>
 
     <div class="flex justify-end gap-3 mt-6">
-      <button (click)="resetFilters()"
-        class="w-11 h-11 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <button
+        (click)="resetFilters()"
+        class="w-11 h-11 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="w-4 h-4"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h5M20 20v-5h-5" />
-          <path stroke-linecap="round" stroke-linejoin="round" d="M20 9a8 8 0 00-14.6-4.4M4 15a8 8 0 0014.6 4.4" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M20 9a8 8 0 00-14.6-4.4M4 15a8 8 0 0014.6 4.4"
+          />
         </svg>
       </button>
-      <button (click)="applyFilters()"
-        class="bg-primary text-white px-8 py-2.5 rounded-lg font-medium hover:bg-primary/90 transition text-sm">
+      <button
+        (click)="applyFilters()"
+        class="bg-primary text-white px-8 py-2.5 rounded-lg font-medium hover:bg-primary/90 transition text-sm"
+      >
         Apply
       </button>
     </div>
   </div>
 
+
   <!-- Table -->
- <!-- Table -->
   <div class="bg-white border border-gray-200 rounded-xl overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-sm min-w-[900px]">
         <thead>
-          <tr class="text-left text-gray-500 text-xs uppercase tracking-wide border-b border-gray-100 bg-white">
+          <tr
+            class="text-left text-gray-500 text-xs uppercase tracking-wide border-b border-gray-100 bg-white"
+          >
             <th class="px-6 py-4 font-medium">Doctor</th>
-            <th class="px-6 py-4 font-medium">License ID</th>
+
             <th class="px-6 py-4 font-medium">Specialization</th>
             <th class="px-6 py-4 font-medium">Department</th>
             <th class="px-6 py-4 font-medium">Contact</th>
@@ -152,7 +152,6 @@
             <tr class="border-b border-gray-100 last:border-0 hover:bg-gray-50/60 transition">
               <td class="px-6 py-5 align-top">
                 <div class="flex items-center gap-3 min-w-[210px]">
-                  <img [src]="doctor.avatar" [alt]="doctor.name" class="w-11 h-11 rounded-full object-cover" />
                   <div>
                     <p class="font-semibold text-gray-800 leading-tight">{{ doctor.name }}</p>
                     <p class="text-gray-400 text-xs leading-tight">{{ doctor.email }}</p>
@@ -160,20 +159,35 @@
                 </div>
               </td>
 
-              <td class="px-6 py-5 align-top text-gray-600 whitespace-nowrap">{{ doctor.licenseId }}</td>
               <td class="px-6 py-5 align-top text-gray-600">{{ doctor.specialization }}</td>
               <td class="px-6 py-5 align-top text-gray-600">{{ doctor.department }}</td>
-              <td class="px-6 py-5 align-top text-gray-600 whitespace-nowrap">{{ doctor.contact }}</td>
+              <td class="px-6 py-5 align-top text-gray-600 whitespace-nowrap">
+                {{ doctor.contact }}
+              </td>
 
               <td class="px-6 py-5 align-top text-right relative">
-                <button (click)="toggleMenu(doctor.id)"
-                  class="w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-500">⋮</button>
+                <button
+                  (click)="toggleMenu(doctor.id)"
+                  class="w-8 h-8 rounded-lg hover:bg-gray-100 text-gray-500"
+                >
+                  ⋮
+                </button>
 
                 @if (activeMenuId() === doctor.id) {
-                  <div class="absolute right-4 top-12 z-10 w-36 bg-white border border-gray-200 rounded-lg shadow-lg text-left">
-                    <button class="w-full px-3 py-2 text-sm text-left hover:bg-gray-50">View</button>
-                    <button routerLink="/admin/dashboard/doctors/edit-doctors" class="w-full px-3 py-2 text-sm text-left hover:bg-gray-50">Edit</button>
-                    <button class="w-full px-3 py-2 text-sm text-left text-tertiary hover:bg-gray-50">Delete</button>
+                  <div
+                    class="absolute right-4 top-12 z-10 w-36 bg-white border border-gray-200 rounded-lg shadow-lg text-left"
+                  >
+                    <button
+                      routerLink="/admin/dashboard/doctors/edit-doctors"
+                      class="w-full px-3 py-2 text-sm text-left hover:bg-gray-50"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      class="w-full px-3 py-2 text-sm text-left text-tertiary hover:bg-gray-50"
+                    >
+                      Delete
+                    </button>
                   </div>
                 }
               </td>
@@ -190,12 +204,15 @@
     <!-- Footer -->
     <div class="flex items-center gap-3 px-6 py-4 border-t border-gray-100 bg-neutral">
       <span class="text-sm text-gray-500">Rows per page:</span>
-      <select [ngModel]="rowsPerPage()" (ngModelChange)="rowsPerPage.set(+$event)"
-        class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none">
+      <select
+        [ngModel]="rowsPerPage()"
+        (ngModelChange)="rowsPerPage.set(+$event)"
+        class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none"
+      >
         <option [value]="10">10</option>
         <option [value]="25">25</option>
         <option [value]="50">50</option>
       </select>
     </div>
   </div>
-  </div>
+</div>

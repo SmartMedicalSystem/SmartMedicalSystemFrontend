@@ -5,9 +5,7 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 
 interface DoctorSummary {
   name: string;
-  avatar: string;
   status: 'Active' | 'Inactive';
-  licenseId: string;
   department: string;
 }
 @Component({
@@ -20,9 +18,7 @@ export class EditDoctors {private fb = inject(FormBuilder);
 
   doctor = signal<DoctorSummary>({
     name: 'Dr. Sarah Jenkins',
-    avatar: 'https://i.pravatar.cc/80?img=47',
     status: 'Active',
-    licenseId: 'LIC-99283-X',
     department: 'Neurosurgery'
   });
 
@@ -41,23 +37,14 @@ export class EditDoctors {private fb = inject(FormBuilder);
     nationalId: ['US-928374-12'],
 
     // Professional Details
-    licenseNumber: [{ value: 'LIC-99283-X', disabled: true }],
     specialization: ['Neurosurgery', Validators.required],
     department: ['Neurology Dept B', Validators.required],
-    yearsOfExperience: [12],
     joiningDate: ['2016-08-20'],
 
     // Contact Information
     mobilePhone: ['+1 (555) 029-3847', Validators.required],
-    officeExt: ['4421'],
     officialEmail: ['sarah.j@medai.sys', Validators.email],
-    officeAddress: ['72 West Medical Plaza, Suite 400, Chicago, IL'],
 
-    // System Permissions
-    allowSystemLogin: [true],
-    canReviewAIReports: [true],
-    adminPanelAccess: [false],
-    directPrescriptionAuth: [true]
   });
 
   originalValue = this.form.getRawValue();
@@ -78,19 +65,6 @@ export class EditDoctors {private fb = inject(FormBuilder);
 
   onCancel() {
     this.form.reset(this.originalValue);
-  }
-
-  onResetChanges() {
-    this.form.reset(this.originalValue);
-  }
-
-  onSaveAndContinue() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    console.log('Save & continue editing:', this.form.getRawValue());
-    this.originalValue = this.form.getRawValue();
   }
 
   onSaveChanges() {

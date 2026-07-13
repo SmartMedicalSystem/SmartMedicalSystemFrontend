@@ -23,57 +23,18 @@ export class AddDoctors {
     lastName: ['', Validators.required],
     gender: ['', Validators.required],
     dateOfBirth: ['', Validators.required],
-    nationality: [''],
     nationalId: ['', Validators.required],
-    maritalStatus: ['Single'],
 
     // Professional Information
-    licenseNumber: ['', Validators.required],
     department: ['', Validators.required],
     specialization: ['', Validators.required],
-    yearsOfExperience: [''],
-    employmentType: ['Full-Time'],
     joiningDate: [''],
-    highestQualification: [''],
-    professionalNotes: [''],
 
     // Contact Information
     mobileNumber: ['', Validators.required],
     personalEmail: ['', Validators.email],
-    officeNumber: [''],
-    extension: [''],
     residentialAddress: [''],
-    city: [''],
-    postalCode: [''],
-
-    // Account & System Identity
-    username: ['j.doe.cis', Validators.required],
-    hospitalEmail: [{ value: 'j.doe@medai-hospital.com', disabled: true }],
-    userRole: ['Doctor'],
-    accountActive: [true],
-    allowLogin: [true],
-    notifications: [true],
-    reviewAI: [true],
-    approveReports: [false],
-
-    // Account Delivery
-    sendWelcomeEmail: [true],
-    sendAccountCredentials: [true]
   });
-
-  onPhotoSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => this.photoPreview.set(reader.result as string);
-    reader.readAsDataURL(file);
-  }
-
-  removePhoto() {
-    this.photoPreview.set(null);
-  }
 
   regeneratePassword() {
     const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@_';
@@ -99,19 +60,7 @@ export class AddDoctors {
   }
 
   onClearForm() {
-    this.form.reset({
-      maritalStatus: 'Single',
-      employmentType: 'Full-Time',
-      username: 'j.doe.cis',
-      userRole: 'Doctor',
-      accountActive: true,
-      allowLogin: true,
-      notifications: true,
-      reviewAI: true,
-      approveReports: false,
-      sendWelcomeEmail: true,
-      sendAccountCredentials: true
-    });
+    this.form.reset({});
     this.photoPreview.set(null);
     this.submitted.set(false);
   }

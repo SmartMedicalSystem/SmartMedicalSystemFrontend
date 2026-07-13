@@ -6,11 +6,7 @@
   <div class="bg-white border border-gray-200 rounded-xl p-5 mb-4">
     <div class="flex flex-col sm:flex-row sm:items-center gap-5">
 
-      <div class="relative shrink-0 mx-auto sm:mx-0">
-        <img [src]="patient().avatar" [alt]="patient().name" class="w-16 h-16 rounded-full object-cover" />
-        <span class="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-primary border-2 border-white"></span>
-      </div>
-
+      
       <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 flex-1 text-center sm:text-left">
         <div>
           <p class="text-xs text-gray-400 uppercase tracking-wide">Name</p>
@@ -105,24 +101,8 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Occupation</label>
-        <div class="relative">
-          <input type="text" formControlName="occupation" (input)="onFieldChange('occupation')"
-            class="w-full border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-            [class.border-gray-200]="!isModified('occupation')"
-            [class.focus:ring-primary/40]="!isModified('occupation')"
-            [class.border-primary]="isModified('occupation')"
-            [class.ring-2]="isModified('occupation')"
-            [class.ring-primary/20]="isModified('occupation')" />
-          @if (isModified('occupation')) {
-            <span class="absolute right-3 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary"></span>
-          }
-        </div>
-        @if (isModified('occupation')) {
-          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-        }
-      </div>
+     
+      
 
       <div class="flex flex-col gap-1">
         <label class="text-xs font-medium text-gray-500">Patient Number (Read-only)</label>
@@ -158,14 +138,7 @@
         }
       </div>
 
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Email Address</label>
-        <input type="email" formControlName="email" (input)="onFieldChange('email')"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-        @if (isModified('email')) {
-          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-        }
-      </div>
+     
     </div>
 
     <div class="flex flex-col gap-1 mt-4">
@@ -218,26 +191,7 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-      <div class="flex flex-col gap-2">
-        <label class="text-xs font-medium text-gray-500">Patient Status</label>
-        <div class="flex flex-wrap gap-5 mt-1">
-          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input type="radio" formControlName="patientStatus" value="Active" (change)="onFieldChange('patientStatus')"
-              class="w-4 h-4 accent-primary" />
-            Active
-          </label>
-          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input type="radio" formControlName="patientStatus" value="Inpatient" (change)="onFieldChange('patientStatus')"
-              class="w-4 h-4 accent-primary" />
-            Inpatient
-          </label>
-          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
-            <input type="radio" formControlName="patientStatus" value="Discharged" (change)="onFieldChange('patientStatus')"
-              class="w-4 h-4 accent-primary" />
-            Discharged
-          </label>
-        </div>
-      </div>
+      
 
       <div class="flex flex-col gap-1">
         <label class="text-xs font-medium text-gray-500">Registration Date (Read-only)</label>
@@ -249,38 +203,25 @@
 
   <!-- ===================== Footer actions ===================== -->
   <div class="bg-neutral border border-gray-200 border-t-0 rounded-b-xl -mt-4 md:-mt-4 relative z-0">
-  </div>
+  
 
-  <div class="bg-white border border-gray-200 border-t-0 rounded-b-xl px-5 md:px-8 py-5 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+  <div class="bg-white border border-gray-200 border-t-0 rounded-b-xl px-5 md:px-8 py-5 flex flex-col lg:flex-row lg:items-right lg:justify-between gap-4">
 
-    <button type="button" (click)="onArchivePatient()"
-      class="flex items-center gap-2 text-tertiary font-medium hover:underline text-sm">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2m2 0v12a2 2 0 01-2 2H7a2 2 0 01-2-2V7h14z" />
-      </svg>
-      Archive Patient Record
-    </button>
+    
+    <div class="flex w-full flex-wrap justify-end gap-3">
+  <button
+    type="button"
+    (click)="onCancel()"
+    class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
+    Cancel
+  </button>
 
-    <div class="flex flex-wrap gap-3 justify-end">
-      <button type="button" (click)="onCancel()"
-        class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
-        Cancel
-      </button>
-
-      <button type="button" (click)="onResetChanges()"
-        class="px-6 py-2.5 rounded-lg border border-gray-200 text-gray-700 font-medium hover:bg-gray-50 transition">
-        Reset Changes
-      </button>
-
-      <button type="button" (click)="onSaveAndContinue()"
-        class="px-6 py-2.5 rounded-lg border border-primary text-primary font-medium hover:bg-primary/5 transition">
-        Save &amp; Continue Editing
-      </button>
-
-      <button type="button" (click)="onSaveChanges()"
-        class="px-6 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
-        Save Changes
-      </button>
-    </div>
+  <button
+    type="button"
+    (click)="onSaveChanges()"
+    class="px-6 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
+    Save Changes
+  </button>
+</div>
   </div>
 </div>

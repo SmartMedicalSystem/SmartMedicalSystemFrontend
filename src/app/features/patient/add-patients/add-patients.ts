@@ -24,21 +24,13 @@ export class AddPatients {
     dateOfBirth: ['', Validators.required],
     gender: ['', Validators.required],
     bloodGroup: [''],
-    nationality: [''],
-    maritalStatus: [''],
-    occupation: [''],
+   
 
     // Contact Information
     mobileNumber: ['', Validators.required],
-    altPhone: [''],
-    email: ['', Validators.email],
     address: [''],
     city: [''],
-    postalCode: [''],
-    country: [''],
-    emergencyContactName: [''],
-    emergencyContactPhone: [''],
-    relationship: [''],
+   
 
     // Hospital Information
     patientStatus: ['Active'],
@@ -59,17 +51,6 @@ export class AddPatients {
   }
 
   onCancel() {
-    this.form.reset({ patientStatus: 'Active' });
-    this.submitted.set(false);
-  }
-
-  onSaveAndAddAnother() {
-    this.submitted.set(true);
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    console.log('Save & add another:', this.form.value);
     this.form.reset({ patientStatus: 'Active' });
     this.submitted.set(false);
   }
