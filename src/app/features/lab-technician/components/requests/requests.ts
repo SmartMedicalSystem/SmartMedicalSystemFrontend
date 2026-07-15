@@ -3,8 +3,9 @@ import { RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-requests',
+  standalone: true,
   imports: [RouterOutlet],
   templateUrl: './requests.html',
-  styleUrl: './requests.css',
+  styleUrls: ['./requests.css']
 })
-export class Requests { }
+export class Requests {}

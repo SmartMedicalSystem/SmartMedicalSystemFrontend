@@ -1,1 +1,588 @@
-<p>edit-lab-technicians works!</p>
+<div class="min-h-screen bg-[#f8f9fa] p-4 md:p-8">
+
+    <!-- Page Title -->
+
+    <div class="mb-6">
+
+        <p class="text-sm text-gray-500">
+            Dashboard / Lab Technicians / Edit Technician
+        </p>
+
+        <h1 class="text-3xl font-bold text-primary mt-1">
+            Edit Laboratory Technician
+        </h1>
+
+    </div>
+
+    <!-- Technician Header Card -->
+
+    <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+
+        <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
+
+            <!-- Left Side -->
+
+            <div class="flex items-center gap-5">
+
+                <!-- Image -->
+
+                <div class="relative">
+
+                    <img src="https://i.pravatar.cc/150?img=32"
+                        class="w-24 h-24 rounded-full border-4 border-secondary object-cover">
+
+                    <button
+                        class="absolute bottom-0 right-0 bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center shadow">
+
+                        ✎
+
+                    </button>
+
+                </div>
+
+                <!-- Info -->
+
+                <div>
+
+                    <div class="flex items-center gap-3 flex-wrap">
+
+                        <h2 class="text-2xl font-bold">
+                            Sarah Jenkins
+                        </h2>
+
+                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
+
+                            ACTIVE
+
+                        </span>
+
+                    </div>
+
+                    <div class="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-sm text-gray-600">
+
+                        <p>
+                            🆔 ID:
+                            <span class="font-medium">
+                                EMP-2024-0891
+                            </span>
+                        </p>
+
+                        <p>
+                            🧪 Lab:
+                            <span class="font-medium">
+                                Molecular Pathology
+                            </span>
+                        </p>
+
+                        <p>
+                            📅 Joined:
+                            <span class="font-medium">
+                                2024-03-15
+                            </span>
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Rating -->
+
+            <div class="text-center">
+
+                <p class="text-xs uppercase tracking-wider text-gray-500 mb-2">
+
+                    Technician Rating
+
+                </p>
+
+                <div class="text-2xl text-yellow-400">
+
+                    ★★★★★
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- Alert -->
+
+        <div class="mt-6 rounded-xl bg-blue-50 border border-blue-100 p-4 flex gap-3">
+
+            <div class="text-primary text-xl">
+
+                ℹ️
+
+            </div>
+
+            <p class="text-sm text-gray-700">
+
+                You are editing an existing laboratory technician.
+                <span class="font-semibold">
+                    Changes will affect system access immediately after saving.
+                </span>
+
+            </p>
+
+        </div>
+
+    </div>
+    <!-- Personal Information -->
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm mt-6">
+
+        <div class="border-b border-gray-200 px-6 py-5">
+
+            <h2 class="text-2xl font-semibold flex items-center gap-2 text-primary">
+
+                👤 Personal Information
+
+            </h2>
+
+        </div>
+
+        <div class="p-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- First Name -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        First Name
+
+                    </label>
+
+                    <input type="text" value="Sarah"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
+
+                </div>
+
+                <!-- Last Name -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Last Name
+
+                    </label>
+
+                    <input type="text" value="Jenkins"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
+
+                </div>
+
+                <!-- Gender -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Gender
+
+                    </label>
+
+                    <select
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
+
+                        <option>Female</option>
+                        <option>Male</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Date -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Date of Birth
+
+                    </label>
+
+                    <input type="date" value="1992-05-24"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
+
+                </div>
+
+                <!-- Nationality -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Nationality
+
+                    </label>
+
+                    <input type="text" value="American"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
+
+                </div>
+
+                <!-- National ID -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        National ID / SSN
+
+                    </label>
+
+                    <input type="text" value="***-**-6789"
+                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- Employment Information -->
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm mt-6">
+
+        <!-- Header -->
+
+        <div class="border-b border-gray-200 px-6 py-5">
+
+            <h2 class="text-xl font-semibold flex items-center gap-2 text-primary">
+
+                💼 Employment Information
+
+            </h2>
+
+        </div>
+
+        <!-- Body -->
+
+        <div class="p-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Employee ID -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Employee ID (Read-only)
+                    </label>
+
+                    <input type="text" value="EMP-2024-0891" readonly
+                        class="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-3">
+
+                </div>
+
+                <!-- Assigned Laboratory -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Assigned Laboratory
+                    </label>
+
+                    <select
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
+
+                        <option>Molecular Pathology</option>
+                        <option>Clinical Chemistry</option>
+                        <option>Microbiology</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Job Title -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Job Title
+                    </label>
+
+                    <input type="text" value="Senior Lab Technician"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
+
+                </div>
+
+                <!-- Employment Status -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Employment Status
+                    </label>
+
+                    <select
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
+
+                        <option>Full-Time</option>
+                        <option>Part-Time</option>
+                        <option>On Leave</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Work Shift -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Work Shift
+                    </label>
+
+                    <select
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
+
+                        <option>Day Shift (08:00 - 16:00)</option>
+                        <option>Evening Shift</option>
+                        <option>Night Shift</option>
+
+                    </select>
+
+                </div>
+
+                <!-- Joining Date -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Joining Date
+                    </label>
+
+                    <input type="date" value="2024-03-15"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
+
+                </div>
+
+                <!-- Professional Experience -->
+
+                <div class="md:col-span-2">
+
+                    <label class="block text-sm font-medium mb-2">
+                        Professional Experience Summary
+                    </label>
+
+                    <textarea rows="4"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none resize-none">Specialized in DNA sequencing and genomic analysis. Over 8 years of experience in clinical pathology laboratories.</textarea>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- Contact Information -->
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm mt-6">
+
+        <div class="border-b border-gray-200 px-6 py-5">
+
+            <h2 class="text-2xl font-semibold text-primary">
+                Contact Information
+            </h2>
+
+        </div>
+
+        <div class="p-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- Phone -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Phone Number
+                    </label>
+
+                    <input type="text" value="+1 (555) 123-4567"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3">
+
+                    <p class="text-xs text-gray-500 mt-2">
+                        Verified phone number.
+                    </p>
+
+                </div>
+
+                <!-- Alternative -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Alternative Phone
+                    </label>
+
+                    <input type="text" value="+1 (555) 000-0000"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3">
+
+                </div>
+
+                <!-- Email -->
+
+                <div class="md:col-span-2">
+
+                    <label class="block text-sm font-medium mb-2">
+                        Email Address
+                    </label>
+
+                    <input type="email" value="s.jenkins@clinicalintel.sys"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3">
+
+                    <p class="text-xs text-gray-500 mt-2">
+                        Primary corporate email.
+                    </p>
+
+                </div>
+
+                <!-- Address -->
+
+                <div class="md:col-span-2">
+
+                    <label class="block text-sm font-medium mb-2">
+                        Home Address
+                    </label>
+
+                    <input type="text" value="4522 Medical Center Blvd, Suite 201"
+                        class="w-full rounded-lg border border-gray-300 px-4 py-3">
+
+                </div>
+
+                <!-- City -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        City
+                    </label>
+
+                    <input type="text" value="Rochester" class="w-full rounded-lg border border-gray-300 px-4 py-3">
+
+                </div>
+
+                <!-- Postal -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+                        Postal Code
+                    </label>
+
+                    <input type="text" value="55901" class="w-full rounded-lg border border-gray-300 px-4 py-3">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+    <!-- system settings -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm mt-6">
+
+        <div class="border-b border-gray-200 px-6 py-5">
+
+            <h2 class="text-2xl font-semibold text-primary">
+                Account Settings
+            </h2>
+
+        </div>
+
+        <div class="p-6">
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+
+                <!-- Left -->
+
+                <div class="space-y-5">
+
+                    <div>
+
+                        <label class="block text-sm font-medium mb-2">
+                            Username
+                        </label>
+
+                        <input value="sjenkins_lab" class="w-full rounded-lg border border-gray-300 px-4 py-3">
+
+                    </div>
+
+                    <div>
+
+                        <label class="block text-sm font-medium mb-2">
+                            Last Login (Read-only)
+                        </label>
+
+                        <input readonly value="2024-05-15 08:34 AM from 192.168.1.45"
+                            class="w-full rounded-lg bg-gray-100 border px-4 py-3">
+
+                    </div>
+
+                </div>
+
+                <!-- Right -->
+
+                <div>
+
+                    <div class="mb-6">
+
+                        <label class="block text-sm font-medium mb-2">
+                            Role (Read-only)
+                        </label>
+
+                        <input readonly value="Lab Technician Tier II"
+                            class="w-full rounded-lg bg-gray-100 border px-4 py-3">
+
+                    </div>
+
+                    <div class="space-y-5">
+
+                        <div class="flex justify-between items-center">
+
+                            <span class="font-medium">
+                                Allow System Login
+                            </span>
+
+                            <input type="checkbox" checked class="accent-secondary w-5 h-5">
+
+                        </div>
+
+                        <div class="flex justify-between items-center">
+
+                            <span class="font-medium">
+                                Receive Critical Notifications
+                            </span>
+
+                            <input type="checkbox" checked class="accent-secondary w-5 h-5">
+
+                        </div>
+
+                        <div class="flex justify-between items-center">
+
+                            <span class="font-medium">
+                                Account Active
+                            </span>
+
+                            <input type="checkbox" checked class="accent-secondary w-5 h-5">
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>

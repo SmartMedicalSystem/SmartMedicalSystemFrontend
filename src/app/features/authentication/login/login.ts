@@ -4,9 +4,10 @@ import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { jwtDecode } from 'jwt-decode';
+import { Loader } from "../../../shared/components/loader/loader";
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, CommonModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink, Loader],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
@@ -39,7 +40,7 @@ export class Login {
 
   login() {
     const loginObj = {
-      email: this.loginForm.get('email')?.value || '',
+      userNameOrEmail: this.loginForm.get('email')?.value || '',
       password: this.loginForm.get('password')?.value || ''
     }
     this.isLoading.set(true);
@@ -49,8 +50,7 @@ export class Login {
           res.accessToken,
           res.refreshToken
         );
-        const decoded = jwtDecode(res.accessToken) as any;
-        const role = decoded.role;
+        const role = this.authService.getUserRole();
         switch (role) {
           case 'Doctor':
             this.router.navigate(['doctor']);
@@ -59,7 +59,7 @@ export class Login {
             this.router.navigate(['admin']);
             break;
           case 'LabTechnician':
-            this.router.navigate(['laboratory']);
+            this.router.navigate(['labtechnician']);
             break;
           default:
             this.router.navigate(['403']);

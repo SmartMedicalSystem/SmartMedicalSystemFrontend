@@ -4,6 +4,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { faArrowRightFromBracket, faBuilding, faCircleQuestion, faFlask, faFolderOpen, faGaugeHigh, faGear, faHospital, faUserDoctor, faUsersGear } from '@fortawesome/free-solid-svg-icons';
+import { AuthenticationService } from '../../../core/services/authenticationService';
 
 @Component({
   selector: 'app-sidebar',
@@ -28,6 +29,12 @@ export class Sidebar {
   settings = faGear;
   logout = faArrowRightFromBracket;
 
+  role: string = '';
+
+  constructor(private authServ: AuthenticationService) {
+    this.role = this.authServ.getUserRole() || '';
+  }
+
 
   @Input() isOpen = false;
   @Output() close = new EventEmitter();
@@ -35,5 +42,9 @@ export class Sidebar {
     this.close.emit();
   }
 
+
+  logoutFN(): void {
+    this.authServ.logout();
+  }
 
 }

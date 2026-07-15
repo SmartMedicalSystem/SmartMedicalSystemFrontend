@@ -1,197 +1,217 @@
 <div class="p-4 md:p-6 bg-neutral min-h-screen">
-<h1 class="text-2xl font-semibold text-primary mb-2"> Edit Doctor Profile</h1>  
-  <p class="text-gray-500 mb-4">Update and manage clinical staff credentials and system access permissions.</p>
 
-  <!-- Info banner -->
-  <div class="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 mb-4">
-    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary shrink-0 mt-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-      <circle cx="12" cy="12" r="9" />
-      <path stroke-linecap="round" d="M12 8h.01M11 12h1v4h1" />
+  <h1 class="text-2xl font-semibold text-primary mb-2">
+    Edit Doctor Profile
+  </h1>
+
+  <p class="text-gray-500 mb-4">
+    Update and manage clinical staff credentials and system access permissions.
+  </p>
+
+  <!-- Info -->
+  <div class="flex items-start gap-3 bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 mb-5">
+    <svg xmlns="http://www.w3.org/2000/svg"
+         class="w-5 h-5 text-primary mt-0.5"
+         viewBox="0 0 24 24"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2">
+      <circle cx="12" cy="12" r="9"/>
+      <path d="M12 8h.01M11 12h1v4h1"/>
     </svg>
+
     <p class="text-sm text-gray-700">
-      You are editing an existing doctor's profile. Changes will be reflected across the clinical dashboard immediately.
+      You are editing an existing doctor's profile.
     </p>
   </div>
 
-  <!-- Doctor summary card -->
-  <div class="bg-neutral border border-gray-200 rounded-xl p-5 mb-6">
-    <div class="flex items-center gap-5">
-      
-      <div>
-        <div class="flex items-center gap-3 flex-wrap">
-          <h3 class="font-semibold text-gray-800 text-lg">{{ doctor().name }}</h3>
-          <span class="px-3 py-1 rounded-full text-xs font-medium uppercase" [ngClass]="statusClasses(doctor().status)">
-            {{ doctor().status }}
-          </span>
-        </div>
+  <!-- Doctor -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5 mb-6">
 
-      </div>
-    </div>
-  </div>
+    <h3 class="text-xl font-semibold text-gray-800">
 
-  <form [formGroup]="form">
+      {{ doctor().name }}
 
-  <!-- ===================== Personal Information ===================== -->
-  <div>
-    <div class="flex items-center gap-2 mb-4">
-      <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none"
-        stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="8" r="4" />
-        <path stroke-linecap="round" d="M4 20c0-4 3.6-6 8-6s8 2 8 6" />
-      </svg>
-
-      <h2 class="font-semibold text-gray-800">
-        Personal Information
-      </h2>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-
-      <!-- Name -->
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-primary">
-          Doctor Name
-        </label>
-
-        <input
-          type="text"
-          formControlName="name"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
-      </div>
-
-      <!-- Gender -->
-      <div class="flex flex-col gap-1">
-
-        <label class="text-xs font-medium text-primary">
-          Gender
-        </label>
-
-        <select
-          formControlName="gender"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm">
-
-          <option [value]="0">Female</option>
-          <option [value]="1">Male</option>
-
-        </select>
-
-      </div>
-
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-
-      <!-- DOB -->
-      <div class="flex flex-col gap-1">
-
-        <label class="text-xs font-medium text-primary">
-          Date Of Birth
-        </label>
-
-        <input
-          type="date"
-          formControlName="dateOfBirth"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm">
-
-      </div>
-
-      <!-- National ID -->
-      <div class="flex flex-col gap-1">
-
-        <label class="text-xs font-medium text-primary">
-          National ID
-        </label>
-
-        <input
-          type="number"
-          formControlName="nationalId"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm">
-
-      </div>
-
-    </div>
+    </h3>
 
   </div>
 
-  <hr class="border-gray-100 my-7">
+<form [formGroup]="form">
 
-  <!-- ===================== Professional Information ===================== -->
+<!-- ================= Personal ================= -->
 
-  <div>
+<div class="bg-white rounded-xl border border-gray-200 p-6">
 
-    <div class="flex items-center gap-2 mb-4">
+<div class="flex items-center gap-2 mb-5">
 
-      <svg xmlns="http://www.w3.org/2000/svg"
-        class="w-5 h-5 text-primary"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2">
+<svg xmlns="http://www.w3.org/2000/svg"
+class="w-5 h-5 text-primary"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="2">
 
-        <rect x="4" y="7" width="16" height="12" rx="2"/>
-        <path stroke-linecap="round"
-              d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2"/>
+<circle cx="12" cy="8" r="4"/>
 
-      </svg>
+<path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>
 
-      <h2 class="font-semibold text-gray-800">
-        Professional Information
-      </h2>
+</svg>
 
-    </div>
+<h2 class="font-semibold">
+Personal Information
+</h2>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+</div>
 
-      <!-- Specialization -->
-      <div class="flex flex-col gap-1">
-
-        <label class="text-xs font-medium text-primary">
-          Specialization
-        </label>
-
-        <input
-          type="text"
-          formControlName="specialization"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm">
-
-      </div>
-
-      <!-- Department -->
-
-      <div class="flex flex-col gap-1">
-
-        <label class="text-xs font-medium text-primary">
-          Department
-        </label>
-
-        <select
-          formControlName="departmentId"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm">
-
-          @for (department of departments(); track department.id) {
-
-            <option [value]="department.id">
-
-              {{ department.name }}
-
-            </option>
-
-          }
-
-        </select>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <hr class="border-gray-100 my-7">
-  <!-- ===================== Contact Information ===================== -->
+<div class="grid md:grid-cols-2 gap-4">
 
 <div>
 
-  <div class="flex items-center gap-2 mb-4">
+<label class="text-xs text-gray-500">
+Doctor Name
+</label>
+
+<input
+type="text"
+formControlName="name"
+class="w-full border rounded-lg px-3 py-2.5">
+
+</div>
+
+<div>
+
+<label class="text-xs text-gray-500">
+Gender
+</label>
+
+<select
+formControlName="gender"
+class="w-full border rounded-lg px-3 py-2.5">
+
+<option [value]="0">Female</option>
+
+<option [value]="1">Male</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="grid md:grid-cols-2 gap-4 mt-4">
+
+<div>
+
+<label class="text-xs text-gray-500">
+
+Date Of Birth
+
+</label>
+
+<input
+type="date"
+formControlName="dateOfBirth"
+class="w-full border rounded-lg px-3 py-2.5">
+
+</div>
+
+<div>
+
+<label class="text-xs text-gray-500">
+
+National ID
+
+</label>
+
+<input
+type="number"
+formControlName="nationalId"
+class="w-full border rounded-lg px-3 py-2.5">
+
+</div>
+
+</div>
+
+</div>
+
+<!-- ================= Professional ================= -->
+
+<div class="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+
+<div class="flex items-center gap-2 mb-5">
+
+<svg xmlns="http://www.w3.org/2000/svg"
+class="w-5 h-5 text-primary"
+viewBox="0 0 24 24"
+fill="none"
+stroke="currentColor"
+stroke-width="2">
+
+<rect x="4" y="7" width="16" height="12" rx="2"/>
+
+<path d="M9 7V5a2 2 0 012-2h2a2 2 0 012 2v2"/>
+
+</svg>
+
+<h2 class="font-semibold">
+
+Professional Information
+
+</h2>
+
+</div>
+
+<div class="grid md:grid-cols-2 gap-4">
+
+<div>
+
+<label class="text-xs text-gray-500">
+
+Specialization
+
+</label>
+
+<input
+type="text"
+formControlName="specialization"
+class="w-full border rounded-lg px-3 py-2.5">
+
+</div>
+
+<div>
+
+<label class="text-xs text-gray-500">
+
+Department
+
+</label>
+
+<select
+formControlName="departmentId"
+class="w-full border rounded-lg px-3 py-2.5">
+
+@for(department of departments(); track department.id){
+
+<option [value]="department.id">
+
+{{department.name}}
+
+</option>
+
+}
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+<!-- ================= Contact Information ================= -->
+
+<div class="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+
+  <div class="flex items-center gap-2 mb-5">
 
     <svg xmlns="http://www.w3.org/2000/svg"
       class="w-5 h-5 text-primary"
@@ -200,47 +220,50 @@
       stroke="currentColor"
       stroke-width="2">
 
-      <path stroke-linecap="round"
+      <path
+        stroke-linecap="round"
         stroke-linejoin="round"
         d="M22 16.92v3a2 2 0 01-2.18 2A19.79 19.79 0 0111.19 18.85a19.5 19.5 0 01-6-6A19.79 19.79 0 012.11 4.18 2 2 0 014.11 2h3a2 2 0 012 1.72c.127.96.362 1.903.7 2.81a2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0122 16.92z" />
 
     </svg>
 
     <h2 class="font-semibold text-gray-800">
+
       Contact Information
+
     </h2>
 
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-    <!-- Contact -->
+    <div>
 
-    <div class="flex flex-col gap-1">
+      <label class="text-xs text-gray-500">
 
-      <label class="text-xs font-medium text-primary">
         Contact
+
       </label>
 
       <input
         type="text"
         formControlName="contact"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-primary/40">
 
     </div>
 
-    <!-- Mobile Number -->
+    <div>
 
-    <div class="flex flex-col gap-1">
+      <label class="text-xs text-gray-500">
 
-      <label class="text-xs font-medium text-primary">
         Mobile Number
+
       </label>
 
       <input
         type="number"
         formControlName="mobileNumber"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-primary/40">
 
     </div>
 
@@ -248,33 +271,33 @@
 
   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
 
-    <!-- Email -->
+    <div>
 
-    <div class="flex flex-col gap-1">
+      <label class="text-xs text-gray-500">
 
-      <label class="text-xs font-medium text-primary">
         Email
+
       </label>
 
       <input
         type="email"
         formControlName="email"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-primary/40">
 
     </div>
 
-    <!-- Address -->
+    <div>
 
-    <div class="flex flex-col gap-1">
+      <label class="text-xs text-gray-500">
 
-      <label class="text-xs font-medium text-primary">
         Address
+
       </label>
 
       <input
         type="text"
         formControlName="address"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+        class="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-primary/40">
 
     </div>
 
@@ -284,10 +307,10 @@
 
 </form>
 
-<!-- ===================== Footer ===================== -->
+<!-- ================= Footer ================= -->
 
 <div
-  class="bg-neutral border border-gray-200 rounded-xl px-5 md:px-8 py-5 mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+  class="bg-white border border-gray-200 rounded-xl px-6 py-5 mt-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 
   <p class="flex items-center gap-2 text-sm text-gray-500">
 
@@ -298,10 +321,9 @@
       stroke="currentColor"
       stroke-width="2">
 
-      <circle cx="12" cy="12" r="9" />
+      <circle cx="12" cy="12" r="9"/>
 
-      <path stroke-linecap="round"
-        d="M12 7v5l3 3" />
+      <path d="M12 7v5l3 3"/>
 
     </svg>
 
@@ -310,16 +332,17 @@
     by
     {{ lastModified().by }}
     (Admin-ID:
-    {{ lastModified().adminId }})
+    {{ lastModified().adminId }}
+    )
 
   </p>
 
-  <div class="flex flex-wrap gap-3 justify-end">
+  <div class="flex gap-3 justify-end">
 
     <button
       type="button"
       (click)="onCancel()"
-      class="px-6 py-2.5 rounded-lg text-primary font-medium hover:bg-primary/5 transition">
+      class="px-6 py-2.5 rounded-lg border border-gray-300 hover:bg-gray-100 transition">
 
       Cancel
 
@@ -328,24 +351,7 @@
     <button
       type="button"
       (click)="onSaveChanges()"
-      class="flex items-center gap-2 px-6 py-2.5 rounded-lg bg-primary text-white font-medium hover:bg-primary/90 transition">
-
-      <svg xmlns="http://www.w3.org/2000/svg"
-        class="w-4 h-4"
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2">
-
-        <path stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M5 5v14a2 2 0 002 2h10a2 2 0 002-2V8l-4-4H5a2 2 0 00-2 2z"/>
-
-        <path stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M9 3v4h6V3"/>
-
-      </svg>
+      class="px-6 py-2.5 rounded-lg bg-primary text-white hover:bg-primary/90 transition">
 
       Save Changes
 

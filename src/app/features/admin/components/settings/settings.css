@@ -1,0 +1,21 @@
+input,
+textarea{
+
+    transition:.3s;
+
+}
+
+input:focus,
+textarea:focus{
+
+    border-color:var(--color-primary);
+
+    box-shadow:0 0 0 3px rgba(13,94,187,.15);
+
+}
+
+button{
+
+    transition:.3s;
+
+}

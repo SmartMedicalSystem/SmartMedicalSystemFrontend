@@ -55,14 +55,14 @@
 
         <div class="flex flex-col gap-1">
           <label class="text-xs font-medium text-gray-500">Gender</label>
-          <select
-            formControlName="gender"
-            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-          >
-            <option value="" disabled selected>Select Gender</option>
-            <option>Male</option>
-            <option>Female</option>
-          </select>
+         <select
+  formControlName="gender"
+  class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+>
+  <option [ngValue]="null" disabled>Select Gender</option>
+  <option [ngValue]="1">Male</option>
+  <option [ngValue]="0">Female</option>
+</select>
         </div>
       </div>
 
@@ -89,6 +89,18 @@
             [class.focus:ring-tertiary/30]="isInvalid('nationalId')"
           />
         </div>
+        <div class="flex flex-col gap-1">
+  <label class="text-xs font-medium text-gray-500">
+    Address
+  </label>
+
+  <input
+    type="text"
+    formControlName="residentialAddress"
+    placeholder="Cairo"
+    class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+  />
+</div>
       </div>
 
       <hr class="border-gray-100 my-7" />
@@ -113,16 +125,17 @@
         <div class="flex flex-col gap-1">
           <label class="text-xs font-medium text-gray-500">Department</label>
           <div class="relative">
-            <input
-              type="text"
-              formControlName="department"
-              placeholder="Search Dept..."
-              class="w-full border rounded-lg px-3 py-2.5 pr-9 text-sm focus:outline-none focus:ring-2"
-              [class.border-gray-200]="!isInvalid('department')"
-              [class.focus:ring-primary/40]="!isInvalid('department')"
-              [class.border-tertiary]="isInvalid('department')"
-              [class.focus:ring-tertiary/30]="isInvalid('department')"
-            />
+           <select
+  formControlName="department"
+  class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+>
+  <option [ngValue]="null">Select Department</option>
+
+  <option [value]="1">Cardiology</option>
+  <option [value]="2">Neurology</option>
+  <option [value]="3">Pediatrics</option>
+  <option [value]="4">Oncology</option>
+</select>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -165,7 +178,20 @@
         </div>
       </div>
 
+      
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="flex flex-col gap-1">
+  <label class="text-xs font-medium text-gray-500">
+    Contact
+  </label>
+
+  <input
+    type="text"
+    formControlName="contact"
+    placeholder="Clinic 101"
+    class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+  />
+</div>
         <div class="flex flex-col gap-1">
           <label class="text-xs font-medium text-gray-500">Joining Date</label>
           <input

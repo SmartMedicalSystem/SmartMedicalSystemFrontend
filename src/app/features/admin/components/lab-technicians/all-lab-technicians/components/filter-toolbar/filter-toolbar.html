@@ -1,0 +1,190 @@
+<div class="space-y-6">
+
+    <!-- Top Toolbar -->
+
+    <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4">
+
+        <!-- Buttons -->
+
+        <div class="flex flex-wrap gap-3">
+
+            <button routerLink="../add-lab-technicians" (click)="addTechnician()" class="primary-btn">
+
+                <fa-icon [icon]="faPlus"></fa-icon>
+
+                Add Technician
+
+            </button>
+
+            <button (click)="importTechnicians()" class="outline-btn">
+
+                <fa-icon [icon]="faUpload"></fa-icon>
+
+                Import
+
+            </button>
+
+            <button (click)="exportTechnicians()" class="outline-btn">
+
+                <fa-icon [icon]="faDownload"></fa-icon>
+
+                Export
+
+            </button>
+
+        </div>
+
+        <!-- Search -->
+
+        <div class="relative w-full xl:w-96">
+
+            <fa-icon [icon]="faMagnifyingGlass" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
+            </fa-icon>
+
+            <input [(ngModel)]="searchText" placeholder="Search by technician name , employeeId , email"
+                class="input pl-12">
+
+        </div>
+
+    </div>
+
+    <!-- Filter Card -->
+
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
+
+        <!-- Header -->
+
+        <div class="flex items-center gap-2 border-b border-gray-100 px-6 py-4">
+
+            <fa-icon [icon]="faFilter" class="text-primary">
+            </fa-icon>
+
+            <h3 class="font-semibold text-lg">
+
+                Filters
+
+            </h3>
+
+        </div>
+
+        <!-- Body -->
+
+        <div class="p-6">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+
+                <!-- Laboratory -->
+
+                <div>
+
+                    <label class="label">
+
+                        Laboratory
+
+                    </label>
+
+                    <select [(ngModel)]="selectedLaboratory" class="input">
+
+                        <option *ngFor="let lab of laboratories">
+
+                            {{lab}}
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- Status -->
+
+                <div>
+
+                    <label class="label">
+
+                        Status
+
+                    </label>
+
+                    <select [(ngModel)]="selectedStatus" class="input">
+
+                        <option *ngFor="let item of statuses">
+
+                            {{item}}
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- Shift -->
+
+                <div>
+
+                    <label class="label">
+
+                        Shift
+
+                    </label>
+
+                    <select [(ngModel)]="selectedShift" class="input">
+
+                        <option *ngFor="let item of shifts">
+
+                            {{item}}
+
+                        </option>
+
+                    </select>
+
+                </div>
+
+                <!-- Date -->
+
+                <div>
+
+                    <label class="label">
+
+                        Joining Date
+
+                    </label>
+
+                    <div class="relative">
+
+                        <input [(ngModel)]="joiningDate" type="date" class="input pr-10">
+
+                        <fa-icon [icon]="faCalendarDays"
+                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                        </fa-icon>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Buttons -->
+
+            <div class="flex justify-end gap-3 mt-6">
+
+                <button (click)="clearFilters()" class="outline-btn">
+
+                    <fa-icon [icon]="faRotateRight"></fa-icon>
+
+                    Clear
+
+                </button>
+
+                <button (click)="applyFilters()" class="primary-btn">
+
+                    Apply Filters
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

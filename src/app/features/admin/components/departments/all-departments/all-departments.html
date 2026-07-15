@@ -1,1 +1,269 @@
-<p>all-departments works!</p>
+<div class="w-full p-4 sm:p-6 font-sans">
+  <!-- Header -->
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-primary">Departments</h1>
+      <p class="text-sm text-gray-500 mt-1">
+        Manage all hospital departments and staff allocation.
+      </p>
+    </div>
+
+    <div class="flex gap-3 shrink-0">
+      <button
+        class="flex items-center gap-2 px-1 sm:px-4 py-1.5 sm:py-2.5 rounded-xl bg-primary text-white text-sm font-normal sm:font-semibold hover:opacity-90 transition"
+        routerLink="/admin/dashboard/departments/add-departments"
+      >
+        <mat-icon class="pr-2 sm:pr-0 w-4 h-4 text-white">add</mat-icon>
+        Add New Department
+      </button>
+
+      <button
+        class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition"
+        (click)="applyFilter()"
+      >
+        <mat-icon class="w-4 h-4 text-gray-500">refresh</mat-icon>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Filters Card -->
+  <div
+    class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4 flex flex-col sm:flex-row flex-wrap items-center gap-4"
+  >
+    <div class="flex items-center gap-2 text-gray-500">
+      <mat-icon class="w-4 h-4">filter_list</mat-icon>
+      <span class="text-sm font-semibold">Filters:</span>
+    </div>
+
+    <!-- Status Filter -->
+    <div class="flex flex-col gap-1">
+      <label class="text-[10px] font-bold uppercase text-gray-400">Status</label>
+      <select
+        class="px-3 py-1.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white"
+        [(ngModel)]="statusFilter"
+        (change)="applyFilter()"
+      >
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ status === 'all' ? 'All Statuses' : status }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Creation Date Filter -->
+    <div class="flex flex-col gap-1">
+      <label class="text-[10px] font-bold uppercase text-gray-400">Creation Date</label>
+      <select
+        class="px-3 py-1.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white"
+        [(ngModel)]="creationDateFilter"
+        (change)="applyFilter()"
+      >
+        @for (date of dateFilters; track date) {
+          <option [value]="date">{{ date === 'all' ? 'All Time' : date }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Manager Filter -->
+    <div class="flex flex-col gap-1">
+      <label class="text-[10px] font-bold uppercase text-gray-400">Department Manager</label>
+      <select
+        class="px-3 py-1.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white"
+        [(ngModel)]="managerFilter"
+        (change)="applyFilter()"
+      >
+        @for (manager of managers; track manager) {
+          <option [value]="manager">{{ manager === 'all' ? 'All Managers' : manager }}</option>
+        }
+      </select>
+    </div>
+
+    <!-- Clear All -->
+    @if (
+      searchQuery ||
+      statusFilter !== 'all' ||
+      creationDateFilter !== 'all' ||
+      managerFilter !== 'all'
+    ) {
+      <button
+        class="text-sm text-primary font-medium hover:underline ml-auto"
+        (click)="clearFilters()"
+      >
+        Clear All
+      </button>
+    }
+  </div>
+
+  <!-- Departments Table -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="flex items-center justify-between p-4 border-b border-gray-100">
+      <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+        <mat-icon [style.color]="'var(--color-primary)'">business</mat-icon>
+        All Departments
+      </h2>
+      <span class="text-sm text-gray-500">{{ totalItems }} Departments</span>
+    </div>
+
+    <!-- Table -->
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+            <th class="text-left font-semibold px-4 py-3">Department Name</th>
+            <th class="text-left font-semibold px-4 py-3">Floor</th>
+            <th class="text-left font-semibold px-4 py-3">Head Doctor</th>
+            <th class="text-left font-semibold px-4 py-3">Doctors</th>
+            <th class="text-left font-semibold px-4 py-3">Status</th>
+            <th class="text-left font-semibold px-4 py-3">Created</th>
+            <th class="text-left font-semibold px-4 py-3">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (dept of paginatedDepartments; track dept.departmentId) {
+            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-3">
+                  <div
+                    class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
+                  >
+                    <mat-icon>domain</mat-icon>
+                  </div>
+                  <span class="font-semibold text-gray-800">{{ dept.name }}</span>
+                </div>
+              </td>
+              <td class="px-4 py-4 text-gray-600">Floor {{ dept.floorNumber }}</td>
+              <td class="px-4 py-4 text-gray-800 font-medium">{{ dept.headDoctor }}</td>
+              <td class="px-4 py-4">
+                <span
+                  class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600"
+                >
+                  {{ dept.doctorCount }} Doctors
+                </span>
+              </td>
+              <td class="px-4 py-4">
+                <span
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                  [ngClass]="
+                    dept.status === 'Active'
+                      ? 'bg-green-100 text-green-700'
+                      : dept.status === 'Inactive'
+                        ? 'bg-gray-100 text-gray-600'
+                        : 'bg-amber-100 text-amber-700'
+                  "
+                >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full"
+                    [ngClass]="
+                      dept.status === 'Active'
+                        ? 'bg-green-600'
+                        : dept.status === 'Inactive'
+                          ? 'bg-gray-400'
+                          : 'bg-amber-600'
+                    "
+                  ></span>
+                  {{ dept.status }}
+                </span>
+              </td>
+              <td class="px-4 py-4 text-gray-500">{{ dept.createdAt | date: 'MMM d, y' }}</td>
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-1">
+                  <button
+                    class="text-gray-400 hover:text-primary p-1 transition-colors"
+                    title="View"
+                    [routerLink]="[
+                      '/admin/dashboard/departments/department-details',
+                      dept.departmentId,
+                    ]"
+                  >
+                    <mat-icon class="text-[18px]">visibility</mat-icon>
+                  </button>
+                  <button
+                    class="text-gray-400 hover:text-primary p-1 transition-colors"
+                    title="Edit"
+                    [routerLink]="[
+                      '/admin/dashboard/departments/edit-departments',
+                      dept.departmentId,
+                    ]"
+                  >
+                    <mat-icon class="text-[18px]">edit</mat-icon>
+                  </button>
+                  <button
+                    class="text-gray-400 hover:text-red-500 p-1 transition-colors"
+                    title="Delete"
+                  >
+                    <mat-icon class="text-[18px]">delete</mat-icon>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Empty State -->
+    @if (totalItems === 0) {
+      <div class="p-8 text-center">
+        <mat-icon class="text-5xl text-gray-300 w-full h-auto">search_off</mat-icon>
+        <p class="text-gray-500 mt-2">No departments found matching your criteria.</p>
+      </div>
+    }
+
+    <!-- Pagination -->
+    @if (totalItems > 0) {
+      <div
+        class="px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3"
+      >
+        <span class="text-sm text-gray-500">
+          Showing {{ startIndex }} to {{ endIndex }} of {{ totalItems }} departments
+        </span>
+
+        <div class="flex items-center gap-1">
+          <button
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="goToPage(1)"
+            [disabled]="currentPage === 1"
+          >
+            <mat-icon class="text-[18px]">first_page</mat-icon>
+          </button>
+
+          <button
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="previousPage()"
+            [disabled]="currentPage === 1"
+          >
+            <mat-icon class="text-[18px]">chevron_left</mat-icon>
+          </button>
+
+          @for (page of getPageNumbers(); track page) {
+            <button
+              class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-colors"
+              [class]="
+                page === currentPage ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'
+              "
+              (click)="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+          }
+
+          <button
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="nextPage()"
+            [disabled]="currentPage === totalPages"
+          >
+            <mat-icon class="text-[18px]">chevron_right</mat-icon>
+          </button>
+
+          <button
+            class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            (click)="goToPage(totalPages)"
+            [disabled]="currentPage === totalPages"
+          >
+            <mat-icon class="text-[18px]">last_page</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </div>
+</div>

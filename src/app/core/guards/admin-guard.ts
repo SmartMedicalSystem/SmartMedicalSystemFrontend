@@ -10,5 +10,5 @@ export const adminGuard: CanActivateFn = (route, state) => {
     return false;
   }
   const decoded = jwtDecode(token) as any;
-  return decoded.role === 'Admin';
+  return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === 'Admin';
 };

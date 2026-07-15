@@ -1,1 +1,451 @@
-<p>test-result works!</p>
+<div class="min-h-screen bg-[var(--color-neutral)] p-6">
+
+  <!-- Breadcrumb -->
+
+  <div class="flex items-center text-sm text-gray-500 mb-2">
+
+    <span>Dashboard</span>
+
+    <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
+
+    <span>Requests</span>
+
+    <i class="fa-solid fa-chevron-right text-xs mx-2"></i>
+
+    <span class="text-[var(--color-primary)] font-semibold">
+      Enter Test Results
+    </span>
+
+  </div>
+
+  <!-- Header -->
+
+  <div
+    class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
+
+    <div>
+
+      <h1 class="text-3xl font-bold text-slate-800">
+
+        Enter Test Results
+
+      </h1>
+
+      <p class="text-gray-500 mt-1">
+
+        Enter laboratory result values for the selected laboratory request.
+
+      </p>
+
+    </div>
+
+    <div
+      class="flex items-center gap-3 border border-red-200 bg-red-50 rounded-lg px-5 py-3">
+
+      <i
+        class="fa-solid fa-triangle-exclamation text-red-600 text-xl"></i>
+
+      <span class="font-bold text-red-700">
+
+        EMERGENCY PRIORITY
+
+      </span>
+
+    </div>
+
+  </div>
+
+  <!-- Patient Card -->
+
+  <div
+    class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-6">
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+
+      <!-- Patient -->
+
+      <div class="flex items-center gap-4">
+
+        <img
+          src="https://i.pravatar.cc/120?img=12"
+          class="w-24 h-24 rounded-lg object-cover">
+
+        <div>
+
+          <h2 class="text-2xl font-bold text-slate-800">
+
+            Robert Chen
+
+          </h2>
+
+          <p class="text-gray-600 mt-2">
+
+            Age:
+            <span class="font-semibold">68</span>
+
+          </p>
+
+          <p class="text-gray-600">
+
+            Gender:
+            <span class="font-semibold">Male</span>
+
+          </p>
+
+          <p class="mt-2">
+
+            Status
+
+            <span
+              class="ml-2 bg-blue-100 text-[var(--color-primary)] px-3 py-1 rounded-full text-xs font-semibold">
+
+              In Progress
+
+            </span>
+
+          </p>
+
+        </div>
+
+      </div>
+
+      <!-- Requested By -->
+
+      <div>
+
+        <p class="text-gray-400 text-xs uppercase">
+
+          Requested By
+
+        </p>
+
+        <h3 class="font-bold mt-2">
+
+          Dr. Sarah Miller
+
+        </h3>
+
+        <p class="text-gray-500">
+
+          Oncology Department
+
+        </p>
+
+      </div>
+
+      <!-- Lab -->
+
+      <div>
+
+        <p class="text-gray-400 text-xs uppercase">
+
+          Laboratory & Test
+
+        </p>
+
+        <h3 class="font-bold mt-2">
+
+          Central Hematology Lab
+
+        </h3>
+
+        <p class="text-[var(--color-primary)]">
+
+          Complete Blood Count (CBC)
+
+        </p>
+
+      </div>
+
+      <!-- Request -->
+
+      <div>
+
+        <p class="text-gray-400 text-xs uppercase">
+
+          Request Details
+
+        </p>
+
+        <h3 class="font-bold mt-2">
+
+          Oct 24, 2023
+
+        </h3>
+
+        <p class="text-gray-500">
+
+          Ref No: #REQ-9921-X
+
+        </p>
+
+      </div>
+
+      <!-- Empty -->
+
+      <div class="hidden lg:block"></div>
+
+    </div>
+
+  </div>
+
+  <!-- Measurements Card -->
+
+  <div
+    class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+    <!-- Header -->
+
+    <div
+      class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-6 py-5 border-b">
+
+      <h2 class="text-2xl font-bold">
+
+        Analyte Measurements
+
+      </h2>
+
+      <div class="flex gap-3">
+
+        <button
+          class="border rounded-lg px-4 py-2 hover:bg-gray-50">
+
+          <i class="fa-solid fa-chart-line mr-2"></i>
+
+          View Trends
+
+        </button>
+
+        <button
+          class="bg-[var(--color-tertiary)] text-white rounded-lg px-4 py-2">
+
+          <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>
+
+          AI Verify
+
+        </button>
+
+      </div>
+
+    </div>
+
+    <!-- Table -->
+
+    <div class="overflow-x-auto">
+
+      <table class="min-w-full">
+
+        <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+
+          <tr>
+
+            <th class="text-left px-5 py-4">
+
+              Element Name
+
+            </th>
+
+            <th class="text-left px-5 py-4">
+
+              Result Value
+
+            </th>
+
+            <th class="text-left px-5 py-4">
+
+              Unit
+
+            </th>
+
+            <th class="text-left px-5 py-4">
+
+              Reference Range
+
+            </th>
+
+            <th class="text-left px-5 py-4">
+
+              Status
+
+            </th>
+
+          </tr>
+
+        </thead>
+
+        <tbody>
+          <tr
+            *ngFor="let item of analytes"
+            class="border-b hover:bg-gray-50 transition">
+
+            <!-- Element -->
+
+            <td class="px-5 py-4 font-semibold text-slate-800">
+
+              {{item.name}}
+
+            </td>
+
+            <!-- Result -->
+
+            <td class="px-5 py-4">
+
+              <input
+                [(ngModel)]="item.value"
+                class="w-28 border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                [ngClass]="{
+                  'border-red-400 text-red-600': item.status=='Low' || item.status=='Critical Low'
+                }">
+
+            </td>
+
+            <!-- Unit -->
+
+            <td class="px-5 py-4">
+
+              {{item.unit}}
+
+            </td>
+
+            <!-- Reference -->
+
+            <td class="px-5 py-4 text-gray-500">
+
+              {{item.reference}}
+
+            </td>
+
+            <!-- Status -->
+
+            <td class="px-5 py-4">
+
+              <span
+                class="px-3 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="{
+
+                  'bg-green-100 text-green-700':
+                    item.status=='Normal',
+
+                  'bg-red-100 text-red-700':
+                    item.status=='Low',
+
+                  'bg-red-600 text-white':
+                    item.status=='Critical Low'
+
+                }">
+
+                <i
+                  class="fa-solid"
+                  [ngClass]="{
+
+                    'fa-circle-check':
+                      item.status=='Normal',
+
+                    'fa-arrow-down':
+                      item.status=='Low',
+
+                    'fa-triangle-exclamation':
+                      item.status=='Critical Low'
+
+                  }"></i>
+
+                {{item.status}}
+
+              </span>
+
+            </td>
+
+          </tr>
+
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+  <!-- Bottom Section -->
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
+
+    <!-- Notes -->
+
+    <div class="lg:col-span-2">
+
+      <label
+        class="block text-sm font-semibold uppercase text-gray-500 mb-2">
+
+        Laboratory Notes
+
+      </label>
+
+      <textarea
+
+        rows="5"
+
+        placeholder="Enter clinical observations or anomalies noticed during analysis..."
+
+        class="w-full border rounded-xl p-4 resize-none outline-none focus:ring-2 focus:ring-[var(--color-primary)]"></textarea>
+
+    </div>
+
+    <!-- Alert -->
+
+    <div
+      class="bg-blue-50 rounded-xl p-5 border border-blue-100">
+
+      <div class="flex gap-3">
+
+        <i
+          class="fa-solid fa-circle-info text-[var(--color-primary)] text-xl mt-1"></i>
+
+        <p class="text-sm text-gray-600 leading-6">
+
+          Ensure all critical values are flagged.
+
+          High-risk results will trigger an automatic notification to the attending physician after submission.
+
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Buttons -->
+
+  <div
+    class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
+
+    <button
+
+      class="border rounded-lg px-6 py-3 hover:bg-gray-100">
+
+      Cancel
+
+    </button>
+
+    <button
+
+      class="border rounded-lg px-6 py-3 bg-white hover:bg-gray-100">
+
+      Save Draft
+
+    </button>
+
+    <button
+
+      class="bg-[var(--color-primary)] text-white rounded-full px-8 py-3 hover:opacity-90">
+
+      <i class="fa-solid fa-paper-plane mr-2"></i>
+
+      Submit Results
+
+    </button>
+
+  </div>
+
+</div>
+

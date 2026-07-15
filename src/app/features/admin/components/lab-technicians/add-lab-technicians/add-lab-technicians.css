@@ -1,0 +1,9 @@
+input,
+select{
+    transition: .3s;
+}
+
+input:focus,
+select:focus{
+    border-color: var(--color-primary);
+}
