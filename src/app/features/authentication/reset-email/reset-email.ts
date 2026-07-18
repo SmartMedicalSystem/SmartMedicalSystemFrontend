@@ -4,14 +4,13 @@ import { Router, RouterLink } from "@angular/router";
 import { AuthenticationService } from '../../../core/services/authenticationService';
 
 @Component({
-  selector: 'app-reset-password',
+  selector: 'app-reset-email',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './reset-password.html',
-  styleUrl: './reset-password.css',
+  templateUrl: './reset-email.html',
+  styleUrl: './reset-email.css',
 })
-export class ResetPassword {
+export class ResetEmail {
   isLoading = signal(false);
-
   authService = inject(AuthenticationService);
   router = inject(Router);
   resetForm = new FormGroup({
@@ -30,7 +29,7 @@ export class ResetPassword {
   reset() {
     this.isLoading.set(true);
     const email = this.resetForm.get('email')?.value || '';
-    this.authService.resetPassword(email).subscribe({
+    this.authService.resetEmail(email).subscribe({
       next: (res) => {
         this.router.navigate(['/auth/reset-success'], {
           state: { email }
@@ -42,5 +41,4 @@ export class ResetPassword {
       }
     })
   }
-
 }

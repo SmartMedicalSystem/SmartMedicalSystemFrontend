@@ -3,16 +3,23 @@ import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { passwordValidator } from '../../../shared/Validators/password.validator';
 import { AuthenticationService } from '../../../core/services/authenticationService';
+import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-new-password',
-  imports: [ReactiveFormsModule, NgClass],
+  imports: [ReactiveFormsModule, NgClass,],
   templateUrl: './new-password.html',
   styleUrl: './new-password.css',
 })
 export class NewPassword {
+  email = signal<string>('');
   authService = inject(AuthenticationService);
   isLoading = signal(false)
+
+  constructor(private router: Router) {
+    this.email.set(localStorage.getItem('email') || '');
+  }
   newPasswordForm = new FormGroup({
     password: new FormControl('', [
       Validators.required,
@@ -27,7 +34,6 @@ export class NewPassword {
     return this.newPasswordForm.get('password');
   }
 
-  // أول ما المستخدم يبدأ يكتب
   get passwordInteracted() {
     return this.password?.dirty ?? false;
   }
@@ -72,12 +78,27 @@ export class NewPassword {
 
   update() {
     this.isLoading.set(true);
-    this.authService.updatePassword({ password: this.password?.value, confirmPassword: this.confirmPassword?.value }).subscribe({
+    this.authService.resetPassword({ email: this.email() || '', newPassword: this.password?.value || '' }).subscribe({
       next: (res) => {
         this.isLoading.set(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Password updated successfully',
+          text: res.message,
+          showConfirmButton: false,
+          timer: 1500
+        }).then(() => {
+          this.router.navigate(['/auth/login']);
+        })
       },
       error: (err) => {
         this.isLoading.set(false);
+        Swal.fire({
+          icon: 'error',
+          title: err.message,
+          showConfirmButton: false,
+          timer: 1500
+        })
       }
     })
 
