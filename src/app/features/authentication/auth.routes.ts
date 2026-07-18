@@ -1,8 +1,10 @@
 import { Routes } from '@angular/router';
+import { guestGuard } from '../../core/guards/guest-guard';
 
 export const authRoutes: Routes = [
   {
     path: 'auth',
+    canActivate: [guestGuard],
     children: [
       {
         path: '',
@@ -18,7 +20,7 @@ export const authRoutes: Routes = [
       {
         path: 'reset',
         loadComponent: () =>
-          import('./reset-password/reset-password').then(m => m.ResetPassword)
+          import('./reset-email/reset-email').then(m => m.ResetEmail)
       },
       {
         path: 'reset-success',

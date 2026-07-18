@@ -1,11 +1,10 @@
 import { Routes } from '@angular/router';
-import { authGuard } from '../../core/guards/auth-guard';
 import { laboratoryGuard } from '../../core/guards/laboratory-guard';
 
 export const laboratoryRoutes: Routes = [
   {
     path: 'labtechnician',
-    canActivate: [authGuard, laboratoryGuard],
+    canActivate: [laboratoryGuard],
     children: [
       {
         path: '',

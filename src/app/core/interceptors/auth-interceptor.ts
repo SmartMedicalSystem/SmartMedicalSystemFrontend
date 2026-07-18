@@ -16,7 +16,6 @@ import { AuthenticationService } from '../services/authenticationService';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthenticationService);
   const token = authService.getAccessToken();
-
   const authReq = token
     ? req.clone({
       setHeaders: {
@@ -24,24 +23,18 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       }
     })
     : req;
-
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      // Access Token Expired
       if (
         error.status === 401 &&
         authService.getRefreshToken() &&
-        !authReq.url.endsWith('/refresh')
+        !req.url.includes('Refresh-Token')
       ) {
         return authService.refreshToken().pipe(
-          switchMap((refreshResponse) => {
-            authService.setToken(
-              refreshResponse.accessToken,
-              refreshResponse.refreshToken
-            );
+          switchMap((response) => {
             const newRequest = authReq.clone({
               setHeaders: {
-                Authorization: `Bearer ${refreshResponse.accessToken}`
+                Authorization: `Bearer ${response.accessToken}`
               }
             });
             return next(newRequest);
