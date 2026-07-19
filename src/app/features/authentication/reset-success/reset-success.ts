@@ -10,7 +10,6 @@ import { RouterLink } from "@angular/router";
 export class ResetSuccess {
   email = signal<string>('')
   constructor() {
-    // this.email.set(history.state.email)
-    this.email.set(localStorage.getItem('email') || '')
+    this.email.set(history.state.email)
   }
 }
