@@ -59,7 +59,7 @@
       <input
         type="text"
         [ngModel]="searchTerm()"
-        (ngModelChange)="searchTerm.set($event)"
+       (ngModelChange)="searchTerm.set($event); applyFilters()"
         placeholder="Search by doctor name or license..."
         class="w-full pl-11 pr-4 py-3 rounded-lg border border-gray-300 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
       />
@@ -73,7 +73,7 @@
         <label class="text-sm text-gray-600">Department</label>
         <select
           [ngModel]="departmentFilter()"
-          (ngModelChange)="departmentFilter.set($event)"
+        (ngModelChange)="departmentFilter.set($event); applyFilters()"
           class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/40"
         >
           <option>All Departments</option>
@@ -88,7 +88,7 @@
         <label class="text-sm text-gray-600">Specialization</label>
         <select
           [ngModel]="specializationFilter()"
-          (ngModelChange)="specializationFilter.set($event)"
+     (ngModelChange)="specializationFilter.set($event); applyFilters()"
           class="border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/40"
         >
           <option>All Specializations</option>

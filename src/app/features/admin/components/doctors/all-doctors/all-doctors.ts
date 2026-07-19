@@ -3,7 +3,10 @@ import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 
-import { Doctor, DoctorService } from '../../../../../core/services/doctor-service';
+import {
+  Doctor,
+  DoctorService,
+} from '../../../../../core/services/doctor-service';
 
 @Component({
   selector: 'app-all-doctors',
@@ -13,7 +16,6 @@ import { Doctor, DoctorService } from '../../../../../core/services/doctor-servi
   styleUrl: './all-doctors.css',
 })
 export class AllDoctors implements OnInit {
-
   private doctorService = inject(DoctorService);
 
   // ================= Filters =================
@@ -31,6 +33,7 @@ export class AllDoctors implements OnInit {
 
   // ================= Data =================
 
+  allDoctors = signal<Doctor[]>([]);
   doctors = signal<Doctor[]>([]);
 
   // ================= Menu =================
@@ -46,8 +49,9 @@ export class AllDoctors implements OnInit {
       .getAllDoctors(this.currentPage(), this.rowsPerPage())
       .subscribe({
         next: (response) => {
+          this.allDoctors.set(response.items);
           this.doctors.set(response.items);
-          this.totalDoctors.set(response.totalCount);
+          this.totalDoctors.set(response.items.length);
         },
         error: (err) => {
           console.error('Error loading doctors', err);
@@ -55,7 +59,7 @@ export class AllDoctors implements OnInit {
       });
   }
 
-  // ================= Pagination Helpers =================
+  // ================= Pagination =================
 
   rangeStart = () =>
     this.totalDoctors() === 0
@@ -71,21 +75,46 @@ export class AllDoctors implements OnInit {
     this.activeMenuId.set(this.activeMenuId() === id ? null : id);
   }
 
-  applyFilters() {
-    console.log({
-      department: this.departmentFilter(),
-      specialization: this.specializationFilter(),
-      joiningDate: this.joiningDateFilter(),
-      search: this.searchTerm(),
-    });
+  applyFilters(): void {
+    let filtered = [...this.allDoctors()];
 
-    // هنربط الفلاتر بعدين
+    // Search
+    if (this.searchTerm().trim()) {
+      const search = this.searchTerm().trim().toLowerCase();
+
+      filtered = filtered.filter(
+        (doctor) =>
+          doctor.name.toLowerCase().includes(search) ||
+          doctor.email.toLowerCase().includes(search)
+      );
+    }
+
+    // Department
+    if (this.departmentFilter() !== 'All Departments') {
+      filtered = filtered.filter(
+        (doctor) => doctor.departmentName === this.departmentFilter()
+      );
+    }
+
+    // Specialization
+    if (this.specializationFilter() !== 'All Specializations') {
+      filtered = filtered.filter(
+        (doctor) =>
+          doctor.specialization === this.specializationFilter()
+      );
+    }
+
+    this.doctors.set(filtered);
+    this.totalDoctors.set(filtered.length);
   }
 
-  resetFilters() {
+  resetFilters(): void {
     this.departmentFilter.set('All Departments');
     this.specializationFilter.set('All Specializations');
     this.joiningDateFilter.set('');
     this.searchTerm.set('');
+
+    this.doctors.set(this.allDoctors());
+    this.totalDoctors.set(this.allDoctors().length);
   }
 }
