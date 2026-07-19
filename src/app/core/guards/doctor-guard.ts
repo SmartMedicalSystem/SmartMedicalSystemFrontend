@@ -1,14 +1,32 @@
 import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthenticationService } from '../services/authenticationService';
-import { jwtDecode } from 'jwt-decode';
+import { catchError, map, of } from 'rxjs';
 
-export const doctorGuard: CanActivateFn = (route, state) => {
+export const doctorGuard: CanActivateFn = () => {
+
   const authService = inject(AuthenticationService);
-  const token = authService.getAccessToken();
-  if (!token) {
-    return false;
+  const router = inject(Router);
+
+  const checkRole = () => {
+    return authService.getUserRole() === 'Doctor'
+      ? true
+      : router.createUrlTree(['/403']);
+  };
+
+  if (authService.isAuthenticated()) {
+    return checkRole();
   }
-  const decoded = jwtDecode(token) as any;
-  return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] === 'Doctor';
+
+  if (authService.getRefreshToken()) {
+    return authService.restoreSession().pipe(
+      map(() => checkRole()),
+      catchError(() => {
+        authService.clearToken();
+        return of(router.createUrlTree(['/auth']));
+      })
+    );
+  }
+
+  return router.createUrlTree(['/auth']);
 };
