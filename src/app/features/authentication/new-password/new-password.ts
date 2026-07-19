@@ -18,7 +18,7 @@ export class NewPassword {
   isLoading = signal(false)
 
   constructor(private router: Router) {
-    this.email.set(localStorage.getItem('email') || '');
+    this.email.set(router.url.split('=')[1]);
   }
   newPasswordForm = new FormGroup({
     password: new FormControl('', [
@@ -84,9 +84,8 @@ export class NewPassword {
         Swal.fire({
           icon: 'success',
           title: 'Password updated successfully',
-          text: res.message,
-          showConfirmButton: false,
-          timer: 1500
+          text: res.message + '\nPlease login again',
+          showConfirmButton: true,
         }).then(() => {
           this.router.navigate(['/auth/login']);
         })
@@ -95,9 +94,8 @@ export class NewPassword {
         this.isLoading.set(false);
         Swal.fire({
           icon: 'error',
-          title: err.message,
-          showConfirmButton: false,
-          timer: 1500
+          text: err.message,
+          showConfirmButton: true,
         })
       }
     })

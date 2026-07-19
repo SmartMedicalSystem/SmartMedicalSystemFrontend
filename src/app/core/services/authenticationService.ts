@@ -71,7 +71,7 @@ export class AuthenticationService {
   }
 
   resetEmail(email: string): Observable<any> {
-    return this.http.post('', email);
+    return this.http.post(`${this.baseUrl}Auth/forget-password`, { email });
   }
 
   resetPassword(passwordObj: IResetPassword): Observable<any> {

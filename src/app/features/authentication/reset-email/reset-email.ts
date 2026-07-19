@@ -2,6 +2,7 @@ import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from "@angular/router";
 import { AuthenticationService } from '../../../core/services/authenticationService';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-reset-email',
@@ -31,13 +32,24 @@ export class ResetEmail {
     const email = this.resetForm.get('email')?.value || '';
     this.authService.resetEmail(email).subscribe({
       next: (res) => {
-        this.router.navigate(['/auth/reset-success'], {
-          state: { email }
-        });
-        this.isLoading.set(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Email sent successfully',
+          text: res.message,
+          showConfirmButton: true,
+        }).then(() => {
+          this.router.navigate(['/auth/reset-success'], { state: { email } });
+          this.isLoading.set(false);
+        })
       },
       error: (err) => {
-        this.isLoading.set(false);
+        Swal.fire({
+          icon: 'error',
+          text: err.message,
+          showConfirmButton: true,
+        }).then(() => {
+          this.isLoading.set(false);
+        })
       }
     })
   }
