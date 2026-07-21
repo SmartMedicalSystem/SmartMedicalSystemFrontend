@@ -4,6 +4,7 @@ import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Loader } from "../../../shared/components/loader/loader";
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login',
@@ -64,35 +65,37 @@ export class Login {
     this.isLoading.set(true);
 
     this.authService.login(loginObj).subscribe({
-      next: () => {
-
+      next: (res) => {
+        Swal.fire({
+          icon: 'success',
+          text: res.message,
+          showConfirmButton: true
+        }).then(() => {
+          this.isLoading.set(false);
+        })
         const role = this.authService.getUserRole();
-
         switch (role) {
-
           case 'Doctor':
             void this.router.navigate(['doctor']);
             break;
-
           case 'Admin':
             void this.router.navigate(['admin']);
             break;
-
           case 'LabTechnician':
             void this.router.navigate(['labtechnician']);
             break;
-
           default:
             void this.router.navigate(['403']);
             break;
         }
-
-        this.isLoading.set(false);
       },
-
       error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          text: err.error.Message,
+          showConfirmButton: true
+        })
         this.isLoading.set(false);
-        console.log(err);
       }
     });
   }
