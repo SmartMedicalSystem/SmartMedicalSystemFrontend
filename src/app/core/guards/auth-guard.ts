@@ -9,14 +9,14 @@ export const authGuard: CanActivateFn = () => {
   if (authService.isAuthenticated()) {
     return true;
   }
-  if (authService.getRefreshToken()) {
-    return authService.restoreSession().pipe(
-      map(() => true),
-      catchError(() => {
-        authService.clearToken();
-        return of(router.createUrlTree(['/auth']));
-      })
-    );
-  }
+  // if (authService.getRefreshToken()) {
+  //   return authService.restoreSession().pipe(
+  //     map(() => true),
+  //     catchError(() => {
+  //       authService.clearToken();
+  //       return of(router.createUrlTree(['/auth']));
+  //     })
+  //   );
+  // }
   return router.createUrlTree(['/auth']);
 };

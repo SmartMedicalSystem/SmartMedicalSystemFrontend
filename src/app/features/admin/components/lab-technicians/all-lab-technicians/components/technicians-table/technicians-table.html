@@ -1,11 +1,11 @@
 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
 
-  <!-- Table -->
   <div class="overflow-x-auto">
 
     <table class="w-full text-left">
 
       <thead class="bg-gray-50 border-b border-gray-200">
+
         <tr>
 
           <th class="px-6 py-4 text-sm font-semibold text-gray-600">
@@ -17,7 +17,7 @@
           </th>
 
           <th class="px-6 py-4 text-sm font-semibold text-gray-600">
-            Location
+            City
           </th>
 
           <th class="px-6 py-4 text-sm font-semibold text-gray-600">
@@ -31,34 +31,34 @@
           <th class="px-6 py-4 text-sm font-semibold text-gray-600">
             Status
           </th>
+
           <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">
             Actions
           </th>
-      </thead>
 
+        </tr>
+
+      </thead>
 
       <tbody>
 
-        @for (tech of technicians; track tech.id) {
+        @for (tech of technicians; track tech.nationalId) {
 
         <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
 
-
           <!-- Technician -->
+
           <td class="px-6 py-4">
 
             <div class="flex items-center gap-3">
 
-              <img [src]="tech.image" class="w-11 h-11 rounded-full object-cover" />
+              <img [src]="getImageUrl(tech.photoUrl)" alt="Technician"
+                class="w-11 h-11 rounded-full object-cover border border-gray-200">
 
               <div>
 
                 <p class="font-semibold text-gray-800">
-                  {{tech.fullName}}
-                </p>
-
-                <p class="text-sm text-gray-500">
-                  {{tech.employeeId}}
+                  {{ getFullName(tech) }}
                 </p>
 
               </div>
@@ -67,26 +67,26 @@
 
           </td>
 
-
           <!-- Laboratory -->
+
           <td class="px-6 py-4">
 
-            <p class="text-gray-800 font-medium">
-              {{tech.laboratory}}
-            </p>
+            <span class="font-medium text-gray-800">
+              {{ tech.laboratoryId }}
+            </span>
 
           </td>
 
+          <!-- City -->
 
-          <!-- Location -->
           <td class="px-6 py-4 text-gray-600">
 
-            {{tech.location}}
+            {{ tech.city }}
 
           </td>
 
-
           <!-- Contact -->
+
           <td class="px-6 py-4">
 
             <div class="flex flex-col gap-1 text-sm">
@@ -96,17 +96,16 @@
                 <fa-icon [icon]="faPhone" class="text-blue-500">
                 </fa-icon>
 
-                {{tech.phone}}
+                {{ tech.phoneNumber }}
 
               </span>
-
 
               <span class="flex items-center gap-2 text-gray-600">
 
                 <fa-icon [icon]="faEnvelope" class="text-blue-500">
                 </fa-icon>
 
-                {{tech.email}}
+                {{ tech.email }}
 
               </span>
 
@@ -114,33 +113,36 @@
 
           </td>
 
-
           <!-- Shift -->
+
           <td class="px-6 py-4 text-gray-700">
 
-            {{tech.shift}}
+            {{ getShiftName(tech.workShift) }}
 
           </td>
 
-
           <!-- Status -->
+
           <td class="px-6 py-4">
 
-            <span class="status" [ngClass]="getStatusClass(tech.status)">
+            <span class="status" [ngClass]="getStatusClass(tech.employmentStatus)">
 
-              {{tech.status}}
+              {{ getStatusName(tech.employmentStatus) }}
 
             </span>
 
           </td>
+
           <!-- Actions -->
+
           <td class="px-6 py-4">
 
             <div class="flex items-center justify-center gap-2">
 
               <!-- Add -->
+
               <button routerLink="../add-lab-technicians"
-                class="w-9 h-9 rounded-lg bg-green-50 hover:bg-green-100 transition duration-200">
+                class="w-9 h-9 rounded-lg bg-green-50 hover:bg-green-100 transition">
 
                 <fa-icon [icon]="faPlus" class="text-green-600">
                 </fa-icon>
@@ -148,8 +150,11 @@
               </button>
 
               <!-- Edit -->
-              <button routerLink="../edit-lab-technicians"
-                class="w-9 h-9 rounded-lg bg-blue-50 hover:bg-blue-100 transition duration-200">
+
+              <button type="button" [routerLink]="[
+    '../edit-lab-technicians',
+    tech.nationalId
+  ]" class="w-9 h-9 rounded-lg bg-blue-50 hover:bg-blue-100 transition">
 
                 <fa-icon [icon]="faPenToSquare" class="text-blue-600">
                 </fa-icon>
@@ -157,7 +162,8 @@
               </button>
 
               <!-- Delete -->
-              <button class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 transition duration-200">
+
+              <button class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 transition">
 
                 <fa-icon [icon]="faTrash" class="text-red-600">
                 </fa-icon>
@@ -168,6 +174,17 @@
 
           </td>
 
+        </tr>
+
+        } @empty {
+
+        <tr>
+
+          <td colspan="7" class="py-10 text-center text-gray-500">
+
+            No laboratory technicians found.
+
+          </td>
 
         </tr>
 
@@ -175,12 +192,14 @@
 
       </tbody>
 
-
     </table>
 
   </div>
 
+  <!-- Pagination -->
 
-
+  <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" [totalCount]="totalCount"
+    [pageSize]="request.pageSize" (pageChange)="onPageChange($event)">
+  </app-pagination>
 
 </div>

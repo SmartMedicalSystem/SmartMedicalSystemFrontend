@@ -2,9 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 
 import { TechniciansTable } from './components/technicians-table/technicians-table';
-import { Pagination } from './components/pagination/pagination';
 import { FilterToolbar } from './components/filter-toolbar/filter-toolbar';
-
 
 @Component({
   selector: 'app-technicians',
@@ -12,7 +10,6 @@ import { FilterToolbar } from './components/filter-toolbar/filter-toolbar';
   imports: [
     CommonModule,
     TechniciansTable,
-    Pagination,
     FilterToolbar
   ],
   templateUrl: './all-lab-technicians.html',
@@ -20,22 +17,12 @@ import { FilterToolbar } from './components/filter-toolbar/filter-toolbar';
 })
 export class AllLabTechnicians {
 
+  filters: any = {};
 
-  currentPage: number = 1;
+  onFilterChanged(filters: any): void {
 
-  totalPages: number = 5;
-
-
-
-  changePage(page: number){
-
-    this.currentPage = page;
-
-    // هنا بعدين هننادي الـ API
-    // getTechnicians(page)
+    this.filters = filters;
 
   }
-
-
 
 }

@@ -4,16 +4,19 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-pagination',
   standalone: true,
-  imports: [
-    CommonModule
-  ],
+  imports: [CommonModule],
   templateUrl: './pagination.html',
   styleUrl: './pagination.css'
 })
 export class Pagination {
 
-  @Input() currentPage: number = 1;
-  @Input() totalPages: number = 5;
+  @Input() currentPage = 1;
+
+  @Input() totalPages = 1;
+
+  @Input() totalCount = 0;
+
+  @Input() pageSize = 10;
 
   @Output() pageChange = new EventEmitter<number>();
 
@@ -22,32 +25,51 @@ export class Pagination {
 
     return Array.from(
       { length: this.totalPages },
-      (_, i) => i + 1
+      (_, index) => index + 1
     );
 
   }
 
 
-  changePage(page: number) {
+  get firstItem(): number {
 
-    if(page < 1 || page > this.totalPages)
+    if (this.totalCount === 0)
+      return 0;
+
+    return (this.currentPage - 1) * this.pageSize + 1;
+
+  }
+
+
+  get lastItem(): number {
+
+    const last = this.currentPage * this.pageSize;
+
+    return last > this.totalCount
+      ? this.totalCount
+      : last;
+
+  }
+
+
+  changePage(page: number): void {
+
+    if (page < 1 || page > this.totalPages)
       return;
-
-    this.currentPage = page;
 
     this.pageChange.emit(page);
 
   }
 
 
-  previous(){
+  previous(): void {
 
     this.changePage(this.currentPage - 1);
 
   }
 
 
-  next(){
+  next(): void {
 
     this.changePage(this.currentPage + 1);
 

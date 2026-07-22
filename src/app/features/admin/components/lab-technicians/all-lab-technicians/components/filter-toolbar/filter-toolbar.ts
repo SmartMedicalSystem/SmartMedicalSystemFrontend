@@ -1,8 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterOutlet } from '@angular/router';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import {
+  CommonModule
+} from '@angular/common';
+
+import {
+  Component,
+  EventEmitter,
+  Output
+} from '@angular/core';
+
+import {
+  FormsModule
+} from '@angular/forms';
+
+import {
+  FontAwesomeModule
+} from '@fortawesome/angular-fontawesome';
 
 import {
   faPlus,
@@ -16,84 +28,252 @@ import {
 
 @Component({
   selector: 'app-filter-toolbar',
+
   standalone: true,
+
   imports: [
     CommonModule,
     FormsModule,
-    FontAwesomeModule,
-    RouterOutlet,
-    RouterLink
-
+    FontAwesomeModule
   ],
+
   templateUrl: './filter-toolbar.html',
+
   styleUrl: './filter-toolbar.css'
 })
 export class FilterToolbar {
 
-  faPlus = faPlus;
-  faUpload = faUpload;
-  faDownload = faDownload;
-  faMagnifyingGlass = faMagnifyingGlass;
-  faFilter = faFilter;
-  faCalendarDays = faCalendarDays;
-  faRotateRight = faRotateRight;
+  @Output()
+  filterChanged =
+    new EventEmitter<any>();
 
-  searchText = '';
+  // =========================
+  // Icons
+  // =========================
 
-  selectedLaboratory = '';
-  selectedStatus = '';
-  selectedShift = '';
-  joiningDate = '';
+  faPlus =
+    faPlus;
+
+  faUpload =
+    faUpload;
+
+  faDownload =
+    faDownload;
+
+  faMagnifyingGlass =
+    faMagnifyingGlass;
+
+  faFilter =
+    faFilter;
+
+  faCalendarDays =
+    faCalendarDays;
+
+  faRotateRight =
+    faRotateRight;
+
+  // =========================
+  // Filter Values
+  // =========================
+
+  searchText =
+    '';
+
+  selectedLaboratory =
+    '';
+
+  selectedStatus:
+    number | undefined;
+
+  selectedShift:
+    number | undefined;
+
+  joiningDate =
+    '';
+
+  // =========================
+  // Laboratories
+  // =========================
 
   laboratories = [
-    'All Laboratories',
-    'Central Laboratory',
-    'Blood Bank',
-    'Microbiology',
-    'Pathology'
+
+    {
+      value: '',
+      name: 'All Laboratories'
+    },
+
+    {
+      value:
+        'Central Chemistry Laboratory',
+
+      name:
+        'Central Chemistry Laboratory'
+    },
+
+    {
+      value:
+        'Hematology Laboratory',
+
+      name:
+        'Hematology Laboratory'
+    },
+
+    {
+      value:
+        'Microbiology Laboratory',
+
+      name:
+        'Microbiology Laboratory'
+    },
+
+    {
+      value:
+        'Pathology Laboratory',
+
+      name:
+        'Pathology Laboratory'
+    }
+
   ];
+
+  // =========================
+  // Statuses
+  // =========================
 
   statuses = [
-    'All Statuses',
-    'Active',
-    'Inactive',
-    'Vacation'
+
+    {
+      id: undefined,
+      name: 'All Statuses'
+    },
+
+    {
+      id: 1,
+      name: 'Active'
+    },
+
+    {
+      id: 2,
+      name: 'Inactive'
+    }
+
   ];
+
+  // =========================
+  // Shifts
+  // =========================
 
   shifts = [
-    'All Shifts',
-    'Morning',
-    'Evening',
-    'Night'
+
+    {
+      id: undefined,
+      name: 'All Shifts'
+    },
+
+    {
+      id: 1,
+      name: 'Morning'
+    },
+
+    {
+      id: 2,
+      name: 'Evening'
+    },
+
+    {
+      id: 3,
+      name: 'Night'
+    }
+
   ];
 
-  addTechnician() {
-    console.log('Add Technician');
+  // =========================
+  // Apply Filters
+  // =========================
+
+  applyFilters(): void {
+
+    this.filterChanged.emit({
+
+      search:
+        this.searchText.trim(),
+
+      laboratory:
+        this.selectedLaboratory,
+
+      employmentStatus:
+        this.selectedStatus,
+
+      workShift:
+        this.selectedShift,
+
+      joiningDate:
+        this.joiningDate
+
+    });
+
   }
 
-  importTechnicians() {
-    console.log('Import');
+  // =========================
+  // Search On Enter
+  // =========================
+
+  onSearchEnter(): void {
+
+    this.applyFilters();
+
   }
 
-  exportTechnicians() {
-    console.log('Export');
+  // =========================
+  // Clear Filters
+  // =========================
+
+  clearFilters(): void {
+
+    this.searchText =
+      '';
+
+    this.selectedLaboratory =
+      '';
+
+    this.selectedStatus =
+      undefined;
+
+    this.selectedShift =
+      undefined;
+
+    this.joiningDate =
+      '';
+
+    this.applyFilters();
+
   }
 
-  applyFilters() {
-    console.log('Apply Filters');
+  // =========================
+  // Buttons
+  // =========================
+
+  addTechnician(): void {
+
+    console.log(
+      'Add Technician'
+    );
+
   }
 
-  clearFilters() {
+  importTechnicians(): void {
 
-    this.searchText = '';
+    console.log(
+      'Import'
+    );
 
-    this.selectedLaboratory = '';
+  }
 
-    this.selectedStatus = '';
+  exportTechnicians(): void {
 
-    this.selectedShift = '';
-
-    this.joiningDate = '';
+    console.log(
+      'Export'
+    );
 
   }
 
