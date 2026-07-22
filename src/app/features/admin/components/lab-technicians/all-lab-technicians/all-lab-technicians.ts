@@ -22,9 +22,7 @@ export class AllLabTechnicians {
   filters: any = {};
 
   onFilterChanged(filters: any): void {
-
     this.filters = filters;
-
   }
 
 }

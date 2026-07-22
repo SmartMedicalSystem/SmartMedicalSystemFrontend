@@ -18,13 +18,19 @@ export class AdminService {
 
   constructor(
     private http: HttpClient
-  ) {}
+  ) { }
 
   addLabTechnician(data: FormData): Observable<ILabTechnician> {
 
     return this.http.post<ILabTechnician>(
       `${this.baseUrl}/LabTechnicians/create`,
       data
+    );
+  }
+
+  deletLabTechnician(nationalId: string): Observable<void> {
+    return this.http.delete<void>(
+      `${this.baseUrl}/LabTechnicians/${nationalId}`
     );
   }
 
@@ -92,11 +98,11 @@ export class AdminService {
 
   getDashboardStats(): Observable<IAdminDashboard> {
 
-  return this.http.get<IAdminDashboard>(
-    `${this.baseUrl}/AdminDashboard`
-  );
+    return this.http.get<IAdminDashboard>(
+      `${this.baseUrl}/AdminDashboard`
+    );
 
-}
+  }
 
   getLabTechnicianById(
     nationalId: string

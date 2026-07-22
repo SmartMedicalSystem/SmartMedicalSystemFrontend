@@ -101,7 +101,10 @@
 
                 <!-- Delete -->
 
-                <button class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 transition">
+                <button
+                  (click)="deleteLabTechnician(tech.nationalId)"
+                  class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 transition"
+                >
                   <fa-icon [icon]="faTrash" class="text-red-600"> </fa-icon>
                 </button>
               </div>

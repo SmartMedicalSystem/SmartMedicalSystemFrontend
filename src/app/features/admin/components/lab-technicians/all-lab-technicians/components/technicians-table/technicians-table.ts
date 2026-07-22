@@ -25,6 +25,7 @@ import { AdminService } from '../../../../../../../core/services/admin-service';
 import { ILabTechnician } from '../../../../../../../shared/interfaces/Admin/ILabTechnician';
 
 import { IGetLabTechnicians } from '../../../../../../../shared/interfaces/Admin/IGetLabTechnicians';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-technicians-table',
@@ -169,6 +170,33 @@ export class TechniciansTable
         }
 
       });
+  }
+
+  deleteLabTechnician(nationalId: string): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this technician!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService.deletLabTechnician(nationalId).subscribe({
+          next: (res) => {
+            Swal.fire('Deleted!', 'The technician has been deleted.', 'success').then(() => {
+              this.loadTechnicians();
+            });
+
+          },
+          error: (error) => {
+            Swal.fire('Error!', 'Failed to delete the technician.', 'error').then(() => { });
+          }
+        });
+      } else {
+        Swal.fire('Cancelled', 'The technician is safe :)', 'info');
+      }
+    })
   }
 
   onPageChange(
