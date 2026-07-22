@@ -1,45 +1,21 @@
 <div class="min-h-screen bg-[#F8F9FA] p-6">
+  <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-5">
+    <div class="">
+      <h1 class="text-2xl font-bold text-gray-800">Laboratory Technicians</h1>
 
-
-    <!-- Header -->
-    <div class="mb-6">
-
-        <h1 class="text-2xl font-bold text-gray-800">
-            Laboratory Technicians
-        </h1>
-
-        <p class="text-gray-500 mt-1">
-            Manage and monitor all laboratory technicians
-        </p>
-
+      <p class="text-gray-500 mt-1">Manage and monitor all laboratory technicians</p>
     </div>
+    <button
+      class="bg-primary rounded-lg text-neutral px-4 py-2"
+      routerLink="../add-lab-technicians"
+    >
+      Add Technician
+    </button>
+  </div>
 
+  <app-filter-toolbar (filterChanged)="onFilterChanged($event)"> </app-filter-toolbar>
 
-
-    <app-filter-toolbar></app-filter-toolbar>
-
-
-
-
-    <!-- Table -->
-    <div class="mt-6">
-
-        <app-technicians-table>
-        </app-technicians-table>
-
-    </div>
-
-
-
-
-    <!-- Pagination -->
-
-    <div class="bg-white rounded-b-2xl border-x border-b border-gray-200">
-
-        <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" (pageChange)="changePage($event)">
-        </app-pagination>
-
-    </div>
-
-
+  <div class="mt-6">
+    <app-technicians-table [filters]="filters"> </app-technicians-table>
+  </div>
 </div>
