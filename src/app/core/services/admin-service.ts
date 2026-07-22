@@ -6,6 +6,7 @@ import { IAddLabTechnician } from '../../shared/interfaces/Admin/IAddLabTechnici
 import { IGetLabTechnicians } from '../../shared/interfaces/Admin/IGetLabTechnicians';
 import { IPagedResponse } from '../../shared/interfaces/Admin/IPagedResponse';
 import { ILabTechnician } from '../../shared/interfaces/Admin/ILabTechnician';
+import { IAdminDashboard } from '../../shared/interfaces/Admin/IAdminDashboard';
 
 @Injectable({
   providedIn: 'root',
@@ -88,6 +89,14 @@ export class AdminService {
       { params }
     );
   }
+
+  getDashboardStats(): Observable<IAdminDashboard> {
+
+  return this.http.get<IAdminDashboard>(
+    `${this.baseUrl}/AdminDashboard`
+  );
+
+}
 
   getLabTechnicianById(
     nationalId: string

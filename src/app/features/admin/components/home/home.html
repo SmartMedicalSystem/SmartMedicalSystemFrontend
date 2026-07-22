@@ -1,224 +1,497 @@
-<div class="space-y-6">
+<div class="space-y-8">
+
   <!-- Welcome -->
-  <div class=" ">
+  <div>
     <h2 class="text-2xl font-bold text-tertiary">
-      Good Morning, <span class="text-sky-600">Dr. Sarah Miller</span>
+      Good Morning,
+      <span class="text-sky-600">
+        Admin
+      </span>
     </h2>
   </div>
 
+
+  <!-- Loading -->
+  @if (isLoading) {
+
+    <div class="rounded-xl bg-white p-6 text-center shadow-sm">
+
+      <p class="text-gray-500">
+        Loading dashboard statistics...
+      </p>
+
+    </div>
+
+  }
+
+
+  <!-- Error -->
+  @if (errorMessage) {
+
+    <div class="rounded-xl border border-red-200 bg-red-50 p-4 text-red-700">
+
+      {{ errorMessage }}
+
+    </div>
+
+  }
+
+
   <!-- Statistics -->
-  <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-    <!-- Card -->
-    <div class="rounded-xl bg-white p-5 shadow-sm">
-      <div
-        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-neutral"
-      >
-        <fa-icon [icon]="patients"></fa-icon>
+  @if (!isLoading && !errorMessage) {
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+
+
+      <!-- Total Patients -->
+      <div class="rounded-xl bg-white p-6 shadow-sm transition hover:shadow-md">
+
+        <div
+          class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-secondary text-neutral"
+        >
+
+          <fa-icon [icon]="patients"></fa-icon>
+
+        </div>
+
+
+        <h3 class="text-3xl font-bold">
+
+          {{ totalPatients | number }}
+
+        </h3>
+
+
+        <p class="mt-3 font-semibold text-gray-800">
+
+          Total Patients
+
+        </p>
+
+
+        <p class="mt-1 text-sm text-gray-500">
+
+          Total registered patients in the system.
+
+        </p>
+
       </div>
 
-      <h3 class="text-3xl font-bold">12,482</h3>
 
-      <p class="mt-2 font-semibold text-gray-800">Total Patients</p>
+      <!-- Active Doctors -->
+      <div class="rounded-xl bg-white p-6 shadow-sm transition hover:shadow-md">
 
-      <p class="mt-1 text-sm text-gray-500">Total registered patients in the system.</p>
-    </div>
+        <div
+          class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600"
+        >
 
-    <!-- Card -->
-    <div class="rounded-xl bg-white p-5 shadow-sm">
-      <div
-        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-emerald-100 text-emerald-600"
-      >
-        <fa-icon [icon]="doctors"></fa-icon>
+          <fa-icon [icon]="doctors"></fa-icon>
+
+        </div>
+
+
+        <h3 class="text-3xl font-bold">
+
+          {{ activeDoctors | number }}
+
+        </h3>
+
+
+        <p class="mt-3 font-semibold text-gray-800">
+
+          Active Doctors
+
+        </p>
+
+
+        <p class="mt-1 text-sm text-gray-500">
+
+          Qualified medical professionals working.
+
+        </p>
+
       </div>
 
-      <h3 class="text-3xl font-bold">458</h3>
 
-      <p class="mt-2 font-semibold text-gray-800">Active Doctors</p>
+      <!-- Departments -->
+      <div class="rounded-xl bg-white p-6 shadow-sm transition hover:shadow-md">
 
-      <p class="mt-1 text-sm text-gray-500">Qualified medical professionals working.</p>
-    </div>
+        <div
+          class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 text-orange-600"
+        >
 
-    <!-- Card -->
-    <div class="rounded-xl bg-white p-5 shadow-sm">
-      <div
-        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-orange-100 text-orange-600"
-      >
-        <fa-icon [icon]="departments"></fa-icon>
+          <fa-icon [icon]="departments"></fa-icon>
+
+        </div>
+
+
+        <h3 class="text-3xl font-bold">
+
+          {{ totalDepartments | number }}
+
+        </h3>
+
+
+        <p class="mt-3 font-semibold text-gray-800">
+
+          Departments
+
+        </p>
+
+
+        <p class="mt-1 text-sm text-gray-500">
+
+          Specialized medical departments.
+
+        </p>
+
       </div>
 
-      <h3 class="text-3xl font-bold">32</h3>
 
-      <p class="mt-2 font-semibold text-gray-800">Departments</p>
+      <!-- Laboratories -->
+      <div class="rounded-xl bg-white p-6 shadow-sm transition hover:shadow-md">
 
-      <p class="mt-1 text-sm text-gray-500">Specialized medical departments.</p>
-    </div>
+        <div
+          class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-gray-600"
+        >
 
-    <!-- Card -->
-    <div class="rounded-xl bg-white p-5 shadow-sm">
-      <div
-        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-gray-100 text-gray-600"
-      >
-        <fa-icon [icon]="laboratories"></fa-icon>
+          <fa-icon [icon]="laboratories"></fa-icon>
+
+        </div>
+
+
+        <h3 class="text-3xl font-bold">
+
+          {{ totalLaboratories | number }}
+
+        </h3>
+
+
+        <p class="mt-3 font-semibold text-gray-800">
+
+          Laboratories
+
+        </p>
+
+
+        <p class="mt-1 text-sm text-gray-500">
+
+          Internal & external diagnostic facilities.
+
+        </p>
+
       </div>
 
-      <h3 class="text-3xl font-bold">14</h3>
 
-      <p class="mt-2 font-semibold text-gray-800">Laboratories</p>
+      <!-- Lab Technicians -->
+      <div class="rounded-xl bg-white p-6 shadow-sm transition hover:shadow-md">
 
-      <p class="mt-1 text-sm text-gray-500">Internal & external diagnostic facilities.</p>
-    </div>
+        <div
+          class="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-100 text-cyan-600"
+        >
 
-    <!-- Card -->
-    <div class="rounded-xl bg-white p-5 shadow-sm">
-      <div
-        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-cyan-100 text-cyan-600"
-      >
-        <fa-icon [icon]="labTech"></fa-icon>
+          <fa-icon [icon]="labTech"></fa-icon>
+
+        </div>
+
+
+        <h3 class="text-3xl font-bold">
+
+          {{ totalLabTechnicians | number }}
+
+        </h3>
+
+
+        <p class="mt-3 font-semibold text-gray-800">
+
+          Lab Technicians
+
+        </p>
+
+
+        <p class="mt-1 text-sm text-gray-500">
+
+          Laboratory equipment & testing staff.
+
+        </p>
+
       </div>
 
-      <h3 class="text-3xl font-bold">89</h3>
-
-      <p class="mt-2 font-semibold text-gray-800">Lab Technicians</p>
-
-      <p class="mt-1 text-sm text-gray-500">Laboratory equipment & testing staff.</p>
     </div>
 
-    <!-- Card -->
-    <div class="rounded-xl bg-white p-5 shadow-sm">
-      <div
-        class="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-red-100 text-red-600"
-      >
-        <fa-icon [icon]="reports"></fa-icon>
-      </div>
+  }
 
-      <h3 class="text-3xl font-bold">27</h3>
-
-      <p class="mt-2 font-semibold text-gray-800">Pending Reports</p>
-
-      <p class="mt-1 text-sm text-gray-500">Awaiting review and verification.</p>
-    </div>
-  </div>
 
   <!-- Quick Management -->
   <div>
-    <div class="mb-4 flex items-center justify-between">
-      <h2 class="text-xl font-semibold text-tertiary">Quick Management</h2>
+
+    <div class="mb-5 flex items-center justify-between">
+
+      <h2 class="text-xl font-semibold text-tertiary">
+
+        Quick Management
+
+      </h2>
+
     </div>
 
-    <div class="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+
+    <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
+
+
+      <!-- Add Patient -->
       <button
-        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+        type="button"
+        (click)="addPatient()"
+        class="flex cursor-pointer items-center justify-between rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
       >
+
         <div class="flex items-center gap-3">
+
           <div
             class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
           >
+
             <fa-icon [icon]="plus"></fa-icon>
+
           </div>
+
 
           <div class="text-left">
-            <h3 class="font-semibold">Add Patient</h3>
-            <p class="text-xs text-gray-500">Register a new patient</p>
+
+            <h3 class="font-semibold">
+              Add Patient
+            </h3>
+
+            <p class="text-xs text-gray-500">
+              Register a new patient
+            </p>
+
           </div>
+
         </div>
 
-        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+
+        <span class="text-tertiary">
+
+          <fa-icon [icon]="arrowRight"></fa-icon>
+
+        </span>
+
       </button>
 
+
+      <!-- Add Doctor -->
       <button
-        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+        type="button"
+        (click)="addDoctor()"
+        class="flex cursor-pointer items-center justify-between rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
       >
+
         <div class="flex items-center gap-3">
+
           <div
             class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
           >
+
             <fa-icon [icon]="plus"></fa-icon>
+
           </div>
+
 
           <div class="text-left">
-            <h3 class="font-semibold">Add Doctor</h3>
-            <p class="text-xs text-gray-500">Register medical staff</p>
+
+            <h3 class="font-semibold">
+              Add Doctor
+            </h3>
+
+            <p class="text-xs text-gray-500">
+              Register medical staff
+            </p>
+
           </div>
+
         </div>
 
-        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+
+        <span class="text-tertiary">
+
+          <fa-icon [icon]="arrowRight"></fa-icon>
+
+        </span>
+
       </button>
 
+
+      <!-- Add Department -->
       <button
-        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+        type="button"
+        (click)="addDepartment()"
+        class="flex cursor-pointer items-center justify-between rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
       >
+
         <div class="flex items-center gap-3">
+
           <div
             class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
           >
+
             <fa-icon [icon]="plus"></fa-icon>
+
           </div>
+
 
           <div class="text-left">
-            <h3 class="font-semibold">Add Department</h3>
-            <p class="text-xs text-gray-500">Expand hospital services</p>
+
+            <h3 class="font-semibold">
+              Add Department
+            </h3>
+
+            <p class="text-xs text-gray-500">
+              Expand hospital services
+            </p>
+
           </div>
+
         </div>
 
-        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+
+        <span class="text-tertiary">
+
+          <fa-icon [icon]="arrowRight"></fa-icon>
+
+        </span>
+
       </button>
 
+
+      <!-- Add Laboratory -->
       <button
-        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+        type="button"
+        (click)="addLaboratory()"
+        class="flex cursor-pointer items-center justify-between rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
       >
+
         <div class="flex items-center gap-3">
+
           <div
             class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
           >
+
             <fa-icon [icon]="plus"></fa-icon>
+
           </div>
+
 
           <div class="text-left">
-            <h3 class="font-semibold">Add Laboratory</h3>
-            <p class="text-xs text-gray-500">Connect a new laboratory</p>
+
+            <h3 class="font-semibold">
+              Add Laboratory
+            </h3>
+
+            <p class="text-xs text-gray-500">
+              Connect a new laboratory
+            </p>
+
           </div>
+
         </div>
 
-        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+
+        <span class="text-tertiary">
+
+          <fa-icon [icon]="arrowRight"></fa-icon>
+
+        </span>
+
       </button>
 
+
+      <!-- Add Lab Test -->
       <button
-        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+        type="button"
+        (click)="addLabTest()"
+        class="flex cursor-pointer items-center justify-between rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
       >
+
         <div class="flex items-center gap-3">
+
           <div
             class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
           >
+
             <fa-icon [icon]="plus"></fa-icon>
+
           </div>
+
 
           <div class="text-left">
-            <h3 class="font-semibold">Add Lab Test</h3>
-            <p class="text-xs text-gray-500">Define testing protocol</p>
+
+            <h3 class="font-semibold">
+              Add Lab Test
+            </h3>
+
+            <p class="text-xs text-gray-500">
+              Define testing protocol
+            </p>
+
           </div>
+
         </div>
 
-        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+
+        <span class="text-tertiary">
+
+          <fa-icon [icon]="arrowRight"></fa-icon>
+
+        </span>
+
       </button>
 
+
+      <!-- Add Lab Technician -->
       <button
-        class="cursor-pointer flex items-center justify-between rounded-xl bg-white p-4 shadow-sm transition hover:border-sky-500 hover:shadow-md"
+        type="button"
+        (click)="addLabTechnician()"
+        class="flex cursor-pointer items-center justify-between rounded-xl bg-white p-5 shadow-sm transition hover:shadow-md"
       >
+
         <div class="flex items-center gap-3">
+
           <div
             class="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-neutral"
           >
+
             <fa-icon [icon]="plus"></fa-icon>
+
           </div>
+
 
           <div class="text-left">
-            <h3 class="font-semibold">Add Lab Technician</h3>
-            <p class="text-xs text-gray-500">Assign laboratory staff</p>
+
+            <h3 class="font-semibold">
+              Add Lab Technician
+            </h3>
+
+            <p class="text-xs text-gray-500">
+              Assign laboratory staff
+            </p>
+
           </div>
+
         </div>
 
-        <span class="text-tertiary"> <fa-icon [icon]="arrowRight"></fa-icon> </span>
+
+        <span class="text-tertiary">
+
+          <fa-icon [icon]="arrowRight"></fa-icon>
+
+        </span>
+
       </button>
+
     </div>
+
   </div>
+
 </div>
