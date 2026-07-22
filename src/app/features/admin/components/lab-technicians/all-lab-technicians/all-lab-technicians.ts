@@ -3,6 +3,7 @@ import { Component } from '@angular/core';
 
 import { TechniciansTable } from './components/technicians-table/technicians-table';
 import { FilterToolbar } from './components/filter-toolbar/filter-toolbar';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-technicians',
@@ -10,7 +11,8 @@ import { FilterToolbar } from './components/filter-toolbar/filter-toolbar';
   imports: [
     CommonModule,
     TechniciansTable,
-    FilterToolbar
+    FilterToolbar,
+    RouterLink
   ],
   templateUrl: './all-lab-technicians.html',
   styleUrl: './all-lab-technicians.css'

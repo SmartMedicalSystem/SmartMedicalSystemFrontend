@@ -17,6 +17,7 @@ import {
 } from '@angular/router';
 
 import { AdminService } from '../../../../../core/services/admin-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-add-lab-technicians',
@@ -604,46 +605,24 @@ export class AddLabTechnicians {
         formData
       )
       .subscribe({
-
-        next: () => {
-
-          alert(
-            'Lab Technician Added Successfully'
-          );
-
-
-          this.router.navigate([
-
-            '/admin/all-lab-technicians'
-
-          ]);
-
+        next: (res) => {
+          Swal.fire({
+            icon: 'success',
+            text: 'Lab Technician added successfully',
+            showConfirmButton: true
+          }).then(() => {
+            this.router.navigate([
+              '/admin/dashboard/labtechnicians/all-lab-technicians'
+            ]);
+          })
         },
-
-
         error: (err) => {
-
-          console.error(
-            'Status:',
-            err.status
-          );
-
-
-          console.error(
-            'Error:',
-            err.error
-          );
-
-
-          console.error(
-            'Validation Errors:',
-            err.error?.errors
-          );
-
+          Swal.fire({
+            icon: 'error',
+            text: err.error.message,
+            showConfirmButton: true
+          })
         }
-
       });
-
   }
-
 }

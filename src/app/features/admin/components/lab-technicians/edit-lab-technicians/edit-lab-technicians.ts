@@ -19,6 +19,7 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { AdminService } from '../../../../../core/services/admin-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-edit-lab-technicians',
@@ -805,12 +806,10 @@ export class EditLabTechnicians implements OnInit {
     for (
       const pair of formData.entries()
     ) {
-
       console.log(
         pair[0],
         pair[1]
       );
-
     }
 
 
@@ -820,64 +819,31 @@ export class EditLabTechnicians implements OnInit {
 
     this.adminService
       .updateLabTechnician(
-
         this.technicianNationalId,
-
         formData
-
       )
       .subscribe({
-
-        next: () => {
-
-          alert(
-            'Laboratory Technician Updated Successfully'
-          );
-
-
+        next: (res) => {
+          console.log(res);
+          Swal.fire({
+            icon: 'success',
+            text: 'Laboratory Technician Updated Successfully',
+            showConfirmButton: true
+          });
           this.router.navigate([
-
             '/admin/dashboard/labtechnicians/all-lab-technicians'
-
           ]);
-
         },
-
-
         error: (err) => {
-
-          console.error(
-            'Update Technician Error:',
-            err
-          );
-
-
-          console.error(
-            'Status:',
-            err.status
-          );
-
-
-          console.error(
-            'Error Body:',
-            err.error
-          );
-
-
-          alert(
-
-            err.error?.message
-            ??
-            err.error?.title
-            ??
-            'Something went wrong.'
-
-          );
-
+          console.log(err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Something went wrong.',
+            text: err.error.message,
+            showConfirmButton: true
+          })
         }
-
       });
-
   }
 
 }

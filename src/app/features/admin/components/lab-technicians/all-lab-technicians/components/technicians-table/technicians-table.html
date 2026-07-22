@@ -1,205 +1,131 @@
 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
-
   <div class="overflow-x-auto">
-
     <table class="w-full text-left">
-
       <thead class="bg-gray-50 border-b border-gray-200">
-
         <tr>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Technician</th>
 
-          <th class="px-6 py-4 text-sm font-semibold text-gray-600">
-            Technician
-          </th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Laboratory</th>
 
-          <th class="px-6 py-4 text-sm font-semibold text-gray-600">
-            Laboratory
-          </th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">City</th>
 
-          <th class="px-6 py-4 text-sm font-semibold text-gray-600">
-            City
-          </th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Contact</th>
 
-          <th class="px-6 py-4 text-sm font-semibold text-gray-600">
-            Contact
-          </th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Shift</th>
 
-          <th class="px-6 py-4 text-sm font-semibold text-gray-600">
-            Shift
-          </th>
+          <th class="px-6 py-4 text-sm font-semibold text-gray-600">Status</th>
 
-          <th class="px-6 py-4 text-sm font-semibold text-gray-600">
-            Status
-          </th>
-
-          <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">
-            Actions
-          </th>
-
+          <th class="px-6 py-4 text-center text-sm font-semibold text-gray-600">Actions</th>
         </tr>
-
       </thead>
 
       <tbody>
-
         @for (tech of technicians; track tech.nationalId) {
+          <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+            <!-- Technician -->
 
-        <tr class="border-b border-gray-100 hover:bg-gray-50 transition">
+            <td class="px-6 py-4">
+              <div class="flex items-center gap-3">
+                <img
+                  [src]="getImageUrl(tech.photoUrl)"
+                  alt="Technician"
+                  class="w-11 h-11 rounded-full object-cover border border-gray-200"
+                />
 
-          <!-- Technician -->
-
-          <td class="px-6 py-4">
-
-            <div class="flex items-center gap-3">
-
-              <img [src]="getImageUrl(tech.photoUrl)" alt="Technician"
-                class="w-11 h-11 rounded-full object-cover border border-gray-200">
-
-              <div>
-
-                <p class="font-semibold text-gray-800">
-                  {{ getFullName(tech) }}
-                </p>
-
+                <div>
+                  <p class="font-semibold text-gray-800">
+                    {{ getFullName(tech) }}
+                  </p>
+                </div>
               </div>
+            </td>
 
-            </div>
+            <!-- Laboratory -->
 
-          </td>
-
-          <!-- Laboratory -->
-
-          <td class="px-6 py-4">
-
-            <span class="font-medium text-gray-800">
-              {{ tech.laboratoryId }}
-            </span>
-
-          </td>
-
-          <!-- City -->
-
-          <td class="px-6 py-4 text-gray-600">
-
-            {{ tech.city }}
-
-          </td>
-
-          <!-- Contact -->
-
-          <td class="px-6 py-4">
-
-            <div class="flex flex-col gap-1 text-sm">
-
-              <span class="flex items-center gap-2 text-gray-600">
-
-                <fa-icon [icon]="faPhone" class="text-blue-500">
-                </fa-icon>
-
-                {{ tech.phoneNumber }}
-
+            <td class="px-6 py-4">
+              <span class="font-medium text-gray-800">
+                {{ tech.laboratoryId }}
               </span>
+            </td>
 
-              <span class="flex items-center gap-2 text-gray-600">
+            <!-- City -->
 
-                <fa-icon [icon]="faEnvelope" class="text-blue-500">
-                </fa-icon>
+            <td class="px-6 py-4 text-gray-600">
+              {{ tech.city }}
+            </td>
 
-                {{ tech.email }}
+            <!-- Contact -->
 
+            <td class="px-6 py-4">
+              <div class="flex flex-col gap-1 text-sm">
+                <span class="flex items-center gap-2 text-gray-600">
+                  <fa-icon [icon]="faPhone" class="text-blue-500"> </fa-icon>
+
+                  {{ tech.phoneNumber }}
+                </span>
+
+                <span class="flex items-center gap-2 text-gray-600">
+                  <fa-icon [icon]="faEnvelope" class="text-blue-500"> </fa-icon>
+
+                  {{ tech.email }}
+                </span>
+              </div>
+            </td>
+
+            <!-- Shift -->
+
+            <td class="px-6 py-4 text-gray-700">
+              {{ getShiftName(tech.workShift) }}
+            </td>
+
+            <!-- Status -->
+
+            <td class="px-6 py-4">
+              <span class="status" [ngClass]="getStatusClass(tech.employmentStatus)">
+                {{ getStatusName(tech.employmentStatus) }}
               </span>
+            </td>
 
-            </div>
+            <!-- Actions -->
 
-          </td>
+            <td class="px-6 py-4">
+              <div class="flex items-center justify-center gap-2">
+                <!-- Edit -->
+                <button
+                  type="button"
+                  [routerLink]="['../edit-lab-technicians', tech.nationalId]"
+                  class="w-9 h-9 rounded-lg bg-blue-50 hover:bg-blue-100 transition"
+                >
+                  <fa-icon [icon]="faPenToSquare" class="text-blue-600"> </fa-icon>
+                </button>
 
-          <!-- Shift -->
+                <!-- Delete -->
 
-          <td class="px-6 py-4 text-gray-700">
-
-            {{ getShiftName(tech.workShift) }}
-
-          </td>
-
-          <!-- Status -->
-
-          <td class="px-6 py-4">
-
-            <span class="status" [ngClass]="getStatusClass(tech.employmentStatus)">
-
-              {{ getStatusName(tech.employmentStatus) }}
-
-            </span>
-
-          </td>
-
-          <!-- Actions -->
-
-          <td class="px-6 py-4">
-
-            <div class="flex items-center justify-center gap-2">
-
-              <!-- Add -->
-
-              <button routerLink="../add-lab-technicians"
-                class="w-9 h-9 rounded-lg bg-green-50 hover:bg-green-100 transition">
-
-                <fa-icon [icon]="faPlus" class="text-green-600">
-                </fa-icon>
-
-              </button>
-
-              <!-- Edit -->
-
-              <button type="button" [routerLink]="[
-    '../edit-lab-technicians',
-    tech.nationalId
-  ]" class="w-9 h-9 rounded-lg bg-blue-50 hover:bg-blue-100 transition">
-
-                <fa-icon [icon]="faPenToSquare" class="text-blue-600">
-                </fa-icon>
-
-              </button>
-
-              <!-- Delete -->
-
-              <button class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 transition">
-
-                <fa-icon [icon]="faTrash" class="text-red-600">
-                </fa-icon>
-
-              </button>
-
-            </div>
-
-          </td>
-
-        </tr>
-
+                <button class="w-9 h-9 rounded-lg bg-red-50 hover:bg-red-100 transition">
+                  <fa-icon [icon]="faTrash" class="text-red-600"> </fa-icon>
+                </button>
+              </div>
+            </td>
+          </tr>
         } @empty {
-
-        <tr>
-
-          <td colspan="7" class="py-10 text-center text-gray-500">
-
-            No laboratory technicians found.
-
-          </td>
-
-        </tr>
-
+          <tr>
+            <td colspan="7" class="py-10 text-center text-gray-500">
+              No laboratory technicians found.
+            </td>
+          </tr>
         }
-
       </tbody>
-
     </table>
-
   </div>
 
   <!-- Pagination -->
 
-  <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" [totalCount]="totalCount"
-    [pageSize]="request.pageSize" (pageChange)="onPageChange($event)">
+  <app-pagination
+    [currentPage]="currentPage"
+    [totalPages]="totalPages"
+    [totalCount]="totalCount"
+    [pageSize]="request.pageSize"
+    (pageChange)="onPageChange($event)"
+  >
   </app-pagination>
-
 </div>

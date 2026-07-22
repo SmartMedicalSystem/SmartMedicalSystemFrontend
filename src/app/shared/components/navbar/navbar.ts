@@ -40,11 +40,11 @@ export class Navbar {
 
   role: string = '';
   userName: string = '';
-  // constructor(private authServ: AuthenticationService) {
-  //   const decoded = jwtDecode(this.authServ.getAccessToken() || '') as any;
-  //   this.role = this.authServ.getUserRole() || '';
-  //   this.userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-  // }
+  constructor(private authServ: AuthenticationService) {
+    const decoded = jwtDecode(this.authServ.getAccessToken() || '') as any;
+    this.role = this.authServ.getUserRole() || '';
+    this.userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+  }
 
 
 

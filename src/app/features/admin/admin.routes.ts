@@ -137,7 +137,7 @@ export const adminRoutes: Routes = [
                     (m) => m.AllLaboratories,
                   ),
               },
-             
+
               {
                 path: 'add-laboratories',
                 loadComponent: () =>
