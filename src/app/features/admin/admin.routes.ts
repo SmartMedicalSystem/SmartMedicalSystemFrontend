@@ -137,13 +137,7 @@ export const adminRoutes: Routes = [
                     (m) => m.AllLaboratories,
                   ),
               },
-              {
-                path: 'edit-laboratories/:id', // :id
-                loadComponent: () =>
-                  import('./components/laboratories/edit-laboratories/edit-laboratories').then(
-                    (m) => m.EditLaboratories,
-                  ),
-              },
+             
               {
                 path: 'add-laboratories',
                 loadComponent: () =>
@@ -178,7 +172,7 @@ export const adminRoutes: Routes = [
                   ),
               },
               {
-                path: 'edit-lab-technicians', // :id
+                path: 'edit-lab-technicians/:nationalId', // :id
                 loadComponent: () =>
                   import('./components/lab-technicians/edit-lab-technicians/edit-lab-technicians').then(
                     (m) => m.EditLabTechnicians,

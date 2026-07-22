@@ -1,7 +1,5 @@
 <div class="min-h-screen bg-[#F8F9FA] p-6">
 
-
-    <!-- Header -->
     <div class="mb-6">
 
         <h1 class="text-2xl font-bold text-gray-800">
@@ -14,32 +12,16 @@
 
     </div>
 
+    <app-filter-toolbar
+        (filterChanged)="onFilterChanged($event)">
+    </app-filter-toolbar>
 
-
-    <app-filter-toolbar></app-filter-toolbar>
-
-
-
-
-    <!-- Table -->
     <div class="mt-6">
 
-        <app-technicians-table>
+        <app-technicians-table
+            [filters]="filters">
         </app-technicians-table>
 
     </div>
-
-
-
-
-    <!-- Pagination -->
-
-    <div class="bg-white rounded-b-2xl border-x border-b border-gray-200">
-
-        <app-pagination [currentPage]="currentPage" [totalPages]="totalPages" (pageChange)="changePage($event)">
-        </app-pagination>
-
-    </div>
-
 
 </div>
