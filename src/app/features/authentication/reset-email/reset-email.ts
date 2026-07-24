@@ -2,16 +2,16 @@ import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from "@angular/router";
 import { AuthenticationService } from '../../../core/services/authenticationService';
+import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-reset-password',
+  selector: 'app-reset-email',
   imports: [ReactiveFormsModule, RouterLink],
-  templateUrl: './reset-password.html',
-  styleUrl: './reset-password.css',
+  templateUrl: './reset-email.html',
+  styleUrl: './reset-email.css',
 })
-export class ResetPassword {
+export class ResetEmail {
   isLoading = signal(false);
-
   authService = inject(AuthenticationService);
   router = inject(Router);
   resetForm = new FormGroup({
@@ -30,17 +30,27 @@ export class ResetPassword {
   reset() {
     this.isLoading.set(true);
     const email = this.resetForm.get('email')?.value || '';
-    this.authService.resetPassword(email).subscribe({
+    this.authService.resetEmail(email).subscribe({
       next: (res) => {
-        this.router.navigate(['/auth/reset-success'], {
-          state: { email }
-        });
-        this.isLoading.set(false);
+        Swal.fire({
+          icon: 'success',
+          title: 'Email sent successfully',
+          text: res.message,
+          showConfirmButton: true,
+        }).then(() => {
+          this.router.navigate(['/auth/reset-success'], { state: { email } });
+          this.isLoading.set(false);
+        })
       },
       error: (err) => {
-        this.isLoading.set(false);
+        Swal.fire({
+          icon: 'error',
+          text: err.message,
+          showConfirmButton: true,
+        }).then(() => {
+          this.isLoading.set(false);
+        })
       }
     })
   }
-
 }

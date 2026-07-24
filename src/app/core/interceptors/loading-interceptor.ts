@@ -6,9 +6,9 @@ import { finalize } from 'rxjs';
 export const loadingInterceptor: HttpInterceptorFn = (req, next) => {
   const loadingService = inject(LoadingService);
 
-  if (req.url.includes('/login')) {
-    return next(req);
-  }
+  // if (req.url.includes('/login')) {
+  //   return next(req);
+  // }
 
   loadingService.show();
   return next(req).pipe(

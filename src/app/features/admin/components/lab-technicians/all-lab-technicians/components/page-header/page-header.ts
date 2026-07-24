@@ -1,8 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-
-import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
+import { faChevronRight, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
   selector: 'app-page-header',
@@ -17,5 +16,6 @@ import { faChevronRight } from '@fortawesome/free-solid-svg-icons';
 export class PageHeader {
 
   faChevronRight = faChevronRight;
+  faPlus = faPlus;
 
 }

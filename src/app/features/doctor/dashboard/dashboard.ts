@@ -1,8 +1,8 @@
 import { Component, signal } from '@angular/core';
 import { Footer } from "../../../shared/components/footer/footer";
 import { RouterOutlet } from '@angular/router';
-import { Sidebar } from '../components/sidebar/sidebar';
-import { Navbar } from '../components/navbar/navbar';
+import { Navbar } from '../../../shared/components/navbar/navbar';
+import { Sidebar } from '../../../shared/components/sidebar/sidebar';
 
 @Component({
   selector: 'app-dashboard',

@@ -2,12 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
+import { jwtDecode } from 'jwt-decode';
+
+import { ILogin } from '../../shared/interfaces/Authentication/ilogin';
+import { ILoginResponse } from '../../shared/interfaces/Authentication/ILoginResponse';
+import { IRefreshTokenResponse } from '../../shared/interfaces/Authentication/irefresh-token-response';
+import { IRefreshTokenRequest } from '../../shared/interfaces/Authentication/irefresh-token-request';
+import { IResetPassword } from '../../shared/interfaces/Authentication/i-reset-password';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private readonly REFRESH_KEY = 'refresh_token';
+  private readonly baseUrl = 'https://smartmedicalsystem.runasp.net/api/';
+  private readonly REFRESH_KEY = 'refreshToken';
   private readonly accessToken = signal<string | null>(null);
 
   constructor(
@@ -15,30 +23,63 @@ export class AuthenticationService {
     private router: Router
   ) { }
 
-  // APIs
-  login(loginObj: Object): Observable<any> {
-    return this.http.post<any>('YOUR_LOGIN_API', loginObj);
+
+
+
+  // ================= APIs =================
+
+  login(loginObj: ILogin): Observable<ILoginResponse> {
+    return this.http
+      .post<ILoginResponse>(`${this.baseUrl}Auth/login`, loginObj)
+      .pipe(
+        tap((response) => {
+          if (response.isSuccess) {
+            this.setToken(
+              response.accessToken,
+              response.refreshToken
+            );
+          }
+        })
+      );
   }
 
-  refreshToken(): Observable<any> {
-    const refreshToken = this.getRefreshToken();
-    return this.http.post<any>(
-      'YOUR_REFRESH_API',
-      {
-        refreshToken
-      }
-    );
+  refreshToken(): Observable<IRefreshTokenResponse> {
+
+    const body: IRefreshTokenRequest = {
+      refreshToken: this.getRefreshToken()!
+    };
+
+    return this.http
+      .post<IRefreshTokenResponse>(
+        `${this.baseUrl}Auth/Refresh-Token`,
+        body
+      )
+      .pipe(
+        tap((response) => {
+          if (response.isSuccess) {
+            this.setToken(
+              response.accessToken,
+              response.refreshToken
+            );
+          }
+        })
+      );
   }
 
-  resetPassword(email: string): Observable<any> {
-    return this.http.post('', email);
+  restoreSession(): Observable<IRefreshTokenResponse> {
+    return this.refreshToken();
   }
 
-  updatePassword(passwordObj: Object): Observable<any> {
-    return this.http.post('', passwordObj);
+  resetEmail(email: string): Observable<any> {
+    return this.http.post(`${this.baseUrl}Auth/forget-password`, { email });
   }
 
-  // Access Token
+  resetPassword(passwordObj: IResetPassword): Observable<any> {
+    return this.http.post(`${this.baseUrl}Auth/new-password`, passwordObj);
+  }
+
+  // ================= Access Token =================
+
   setToken(accessToken: string, refreshToken: string): void {
     this.accessToken.set(accessToken);
     localStorage.setItem(
@@ -51,31 +92,28 @@ export class AuthenticationService {
     return this.accessToken();
   }
 
-  // Refresh Token
+  // ================= Refresh Token =================
   getRefreshToken(): string | null {
     return localStorage.getItem(
       this.REFRESH_KEY
     );
   }
 
-  // Session Restore
-  restoreSession(): Observable<any> {
-    return this.refreshToken().pipe(
-      tap((response) => {
-        this.setToken(
-          response.accessToken,
-          response.refreshToken
-        );
-      })
-    );
-  }
-
-  // Authentication
   isAuthenticated(): boolean {
     return this.accessToken() !== null;
   }
+  getUserRole(): string | null {
+    const token = this.getAccessToken();
+    if (!token) {
+      return null;
+    }
+    const decoded = jwtDecode<any>(token);
+    return decoded[
+      'http://schemas.microsoft.com/ws/2008/06/identity/claims/role'
+    ] ?? null;
+  }
 
-  // Logout
+
   clearToken(): void {
     this.accessToken.set(null);
     localStorage.removeItem(

@@ -1,11 +1,10 @@
 import { Routes } from '@angular/router';
-import { authGuard } from '../../core/guards/auth-guard';
 import { adminGuard } from '../../core/guards/admin-guard';
 
 export const adminRoutes: Routes = [
   {
     path: 'admin',
-    canActivate: [authGuard, adminGuard],
+    canActivate: [adminGuard],
     children: [
       {
         path: '',
@@ -50,6 +49,8 @@ export const adminRoutes: Routes = [
                   import('../patient/add-patients/add-patients').then((m) => m.AddPatients),
               },
             ],
+
+
           },
           {
             path: 'doctors',
@@ -136,18 +137,12 @@ export const adminRoutes: Routes = [
                     (m) => m.AllLaboratories,
                   ),
               },
-              {
-                path: 'edit-laboratories/:id', // :id
-                loadComponent: () =>
-                  import('./components/laboratories/edit-laboratories/edit-laboratories').then(
-                    (m) => m.EditLaboratory,
-                  ),
-              },
+
               {
                 path: 'add-laboratories',
                 loadComponent: () =>
-                  import('./components/laboratories/add-laboratories/add-laboratory').then(
-                    (m) => m.AddLaboratory,
+                  import('./components/laboratories/add-laboratories/add-laboratories').then(
+                    (m) => m.AddLaboratories,
                   ),
               },
               {
@@ -177,7 +172,7 @@ export const adminRoutes: Routes = [
                   ),
               },
               {
-                path: 'edit-lab-technicians', // :id
+                path: 'edit-lab-technicians/:nationalId', // :id
                 loadComponent: () =>
                   import('./components/lab-technicians/edit-lab-technicians/edit-lab-technicians').then(
                     (m) => m.EditLabTechnicians,

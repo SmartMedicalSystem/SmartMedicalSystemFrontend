@@ -1,24 +1,752 @@
--<div class="min-h-screen bg-neutral p-4 md:p-8">
+<form [formGroup]="form" (ngSubmit)="submit()">
+    <div class="min-h-screen bg-neutral ">
 
-    <!-- Header -->
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
+        <!-- ================= HEADER ================= -->
 
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
 
-            <div>
-                <h1 class="text-3xl font-bold text-primary">
-                    Add Laboratory Technician
-                </h1>
+            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
 
-                <p class="text-gray-500 mt-2">
-                    Fill in the information below to create a new laboratory technician account.
+                <div>
+
+                    <h1 class="text-3xl font-bold text-primary">
+                        Add Laboratory Technician
+                    </h1>
+
+                    <p class="text-gray-500 mt-2">
+                        Fill in the information below to create a new laboratory technician account.
+                    </p>
+
+                </div>
+
+                <button type="button" routerLink="../all-lab-technicians"
+                    class="bg-primary text-white px-6 py-3 rounded-lg hover:opacity-90 transition">
+
+                    ← Back
+
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= PROFILE PHOTO ================= -->
+
+        <div class="bg-white rounded-xl shadow p-6 mb-6">
+
+            <h2 class="text-xl font-semibold text-primary mb-6">
+                Profile Photo
+            </h2>
+
+            <div class="flex flex-col items-center">
+
+                <div
+                    class="w-40 h-40 rounded-full border-4 border-dashed border-secondary overflow-hidden flex items-center justify-center bg-gray-100">
+
+                    @if (imagePreview) {
+
+                    <img [src]="imagePreview" alt="Profile Preview" class="w-full h-full object-cover" />
+
+                    } @else {
+
+                    <span class="text-gray-400 text-center">
+
+                        Upload
+                        <br />
+                        Photo
+
+                    </span>
+
+                    }
+
+                </div>
+
+
+                <input #fileInput type="file" hidden accept=".png,.jpg,.jpeg" (change)="onImageSelected($event)" />
+
+
+                <button type="button" (click)="fileInput.click()"
+                    class="mt-6 bg-secondary text-white px-6 py-3 rounded-lg hover:opacity-90">
+
+                    Choose Image
+
+                </button>
+
+
+                <p class="text-sm text-gray-500 mt-3">
+
+                    PNG, JPG or JPEG (Maximum 5MB)
+
                 </p>
 
             </div>
 
-            <button routerLink="../all-lab-technicians"
-                class="bg-primary text-white px-6 py-3 rounded-lg hover:opacity-90 transition">
-                ← Back
+        </div>
+
+
+        <!-- ================= PERSONAL INFORMATION ================= -->
+
+        <div class="bg-white rounded-xl shadow p-6">
+
+            <h2 class="text-xl font-semibold text-primary mb-6">
+
+                Personal Information
+
+            </h2>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+                <!-- First Name -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        First Name
+
+                    </label>
+
+
+                    <input type="text" formControlName="firstName"
+                        class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary" />
+
+                </div>
+
+
+                <!-- Last Name -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Last Name
+
+                    </label>
+
+
+                    <input type="text" formControlName="lastName"
+                        class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary" />
+
+                </div>
+
+
+                <!-- Gender -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Gender
+
+                    </label>
+
+
+                    <select formControlName="gender"
+                        class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
+
+                        <option [ngValue]="0">
+                            Male
+                        </option>
+
+                        <option [ngValue]="1">
+                            Female
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Date Of Birth -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Date of Birth
+
+                    </label>
+
+
+                    <input type="date" formControlName="dateOfBirth"
+                        class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary" />
+
+                </div>
+
+
+                <!-- Nationality -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Nationality
+
+                    </label>
+
+
+                    <input type="text" formControlName="nationality"
+                        class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary" />
+
+                </div>
+
+
+                <!-- National ID -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        National ID
+
+                    </label>
+
+
+                    <input type="text" formControlName="nationalId" maxlength="14"
+                        class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= EMPLOYMENT INFORMATION ================= -->
+
+        <div class="bg-white rounded-xl shadow p-6 mt-6">
+
+            <h2 class="text-xl font-semibold text-primary mb-6">
+
+                Employment Information
+
+            </h2>
+
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+
+                <!-- Laboratory -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Assigned Laboratory
+
+                    </label>
+
+
+                    <select formControlName="laboratoryId"
+                        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
+
+                        <option [ngValue]="null">
+                            Select Laboratory
+                        </option>
+
+                       
+                        <option [ngValue]="1">
+                            Central Medical Laboratory
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Job Title -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Job Title
+
+                    </label>
+
+
+                    <input type="text" formControlName="jobTitle"
+                        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+
+                <!-- Employment Status -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Employment Status
+
+                    </label>
+
+
+                    <select formControlName="employmentStatus"
+                        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
+
+                        <option [ngValue]="1">
+                            Active
+                        </option>
+
+                        <option [ngValue]="2">
+                            Inactive
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Work Shift -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Work Shift
+
+                    </label>
+
+
+                    <select formControlName="workShift"
+                        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
+
+                        <option [ngValue]="1">
+                            Morning
+                        </option>
+
+                        <option [ngValue]="2">
+                            Evening
+                        </option>
+
+                        <option [ngValue]="3">
+                            Night
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <!-- Joining Date -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Joining Date
+
+                    </label>
+
+
+                    <input type="date" formControlName="joiningDate"
+                        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+
+                <!-- Years Of Experience -->
+
+                <div>
+
+                    <label class="block mb-2 font-medium">
+
+                        Years of Experience
+
+                    </label>
+
+
+                    <input type="number" formControlName="yearsOfExperience" min="0"
+                        class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= CONTACT INFORMATION ================= -->
+
+        <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
+
+            <div class="flex items-center gap-2 mb-6">
+
+                <div class="w-1 h-6 bg-secondary rounded-full"></div>
+
+                <h2 class="text-xl font-bold text-primary">
+
+                    Contact Information
+
+                </h2>
+
+            </div>
+
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+
+
+                <!-- Phone -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Phone Number
+
+                    </label>
+
+
+                    <input type="text" formControlName="phoneNumber" placeholder="+20 10xxxxxxxx"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+
+                <!-- Alternative Phone -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Alternative Phone
+
+                    </label>
+
+
+                    <input type="text" formControlName="alternativePhone" placeholder="+20 10xxxxxxxx"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+
+                <!-- Email -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Email Address
+
+                    </label>
+
+
+                    <input type="email" formControlName="email" placeholder="example@email.com"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+
+                <!-- Address -->
+
+                <div class="lg:col-span-3">
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Address
+
+                    </label>
+
+
+                    <textarea rows="4" formControlName="address"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none"></textarea>
+
+                </div>
+
+
+                <!-- City -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        City
+
+                    </label>
+
+
+                    <input type="text" formControlName="city"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+
+                <!-- Country -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Country
+
+                    </label>
+
+
+                    <input type="text" formControlName="country"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+
+                <!-- Postal Code -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Postal Code
+
+                    </label>
+
+
+                    <input type="text" formControlName="postalCode"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= ACCOUNT INFORMATION ================= -->
+
+        <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
+
+            <div class="flex items-center gap-2 mb-6">
+
+                <div class="w-1 h-6 bg-secondary rounded-full"></div>
+
+                <h2 class="text-xl font-bold text-primary">
+
+                    Account Information
+
+                </h2>
+
+            </div>
+
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+
+                <!-- Username -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Username
+
+                    </label>
+
+
+                    <input type="text" formControlName="username" placeholder="Enter username"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+
+                <!-- Password -->
+
+                <div>
+
+                    <label class="block text-sm font-medium mb-2">
+
+                        Password
+
+                    </label>
+
+
+                    <input type="password" formControlName="password" placeholder="Enter Password"
+                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= SYSTEM SETTINGS ================= -->
+
+        <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
+
+            <div class="flex items-center gap-2 mb-6">
+
+                <div class="w-1 h-6 bg-secondary rounded-full"></div>
+
+                <h2 class="text-xl font-bold text-primary">
+
+                    System Settings
+
+                </h2>
+
+            </div>
+
+
+            <div class="space-y-4">
+
+
+                <!-- Account Active -->
+
+                <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
+
+                    <div>
+
+                        <h3 class="font-semibold">
+
+                            Account Active
+
+                        </h3>
+
+
+                        <p class="text-sm text-gray-500">
+
+                            Enable this account immediately after creation.
+
+                        </p>
+
+                    </div>
+
+
+                    <input type="checkbox" formControlName="accountActive" class="h-5 w-5" />
+
+                </div>
+
+
+                <!-- Allow Login -->
+
+                <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
+
+                    <div>
+
+                        <h3 class="font-semibold">
+
+                            Allow Login
+
+                        </h3>
+
+
+                        <p class="text-sm text-gray-500">
+
+                            Technician can log in using this account.
+
+                        </p>
+
+                    </div>
+
+
+                    <input type="checkbox" formControlName="allowLogin" class="h-5 w-5" />
+
+                </div>
+
+
+                <!-- Receive Notifications -->
+
+                <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
+
+                    <div>
+
+                        <h3 class="font-semibold">
+
+                            Receive Notifications
+
+                        </h3>
+
+
+                        <p class="text-sm text-gray-500">
+
+                            Technician will receive notifications.
+
+                        </p>
+
+                    </div>
+
+
+                    <input type="checkbox" formControlName="receiveNotifications" class="h-5 w-5" />
+
+                </div>
+
+
+                <!-- Welcome Email -->
+
+                <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
+
+                    <div>
+
+                        <h3 class="font-semibold">
+
+                            Send Welcome Email
+
+                        </h3>
+
+
+                        <p class="text-sm text-gray-500">
+
+                            Send welcome email after account creation.
+
+                        </p>
+
+                    </div>
+
+
+                    <input type="checkbox" formControlName="sendWelcomeEmail" class="h-5 w-5" />
+
+                </div>
+
+
+                <!-- Login Credentials -->
+
+                <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
+
+                    <div>
+
+                        <h3 class="font-semibold">
+
+                            Send Login Credentials
+
+                        </h3>
+
+
+                        <p class="text-sm text-gray-500">
+
+                            Send username and password to technician.
+
+                        </p>
+
+                    </div>
+
+
+                    <input type="checkbox" formControlName="sendLoginCredentials" class="h-5 w-5" />
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= BUTTONS ================= -->
+
+        <div class="flex justify-end gap-4 mt-8">
+
+
+            <button type="button" routerLink="../all-lab-technicians"
+                class="px-6 py-3 rounded-lg border border-gray-300">
+
+                Cancel
+
+            </button>
+
+
+            <button type="submit" class="px-8 py-3 rounded-lg bg-primary text-white hover:opacity-90">
+
+                Create Technician
+
             </button>
 
         </div>
@@ -26,611 +754,4 @@
     </div>
 
 
-
-    <!-- Upload Image -->
-
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
-
-        <h2 class="text-xl font-semibold text-primary mb-6">
-            Profile Photo
-        </h2>
-
-        <div class="flex flex-col items-center">
-
-            <div
-                class="w-40 h-40 rounded-full border-4 border-dashed border-secondary flex items-center justify-center bg-gray-100">
-
-                <span class="text-gray-400 text-center">
-                    Upload
-                    <br>
-                    Photo
-                </span>
-
-            </div>
-
-            <button class="mt-6 bg-secondary text-white px-6 py-3 rounded-lg hover:opacity-90">
-
-                Choose Image
-
-            </button>
-
-            <p class="text-sm text-gray-500 mt-3">
-                PNG, JPG or JPEG (Maximum 5MB)
-            </p>
-
-        </div>
-
-    </div>
-
-
-
-    <!-- Personal Information -->
-
-    <div class="bg-white rounded-xl shadow p-6">
-
-        <h2 class="text-xl font-semibold text-primary mb-6">
-
-            Personal Information
-
-        </h2>
-
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <!-- First Name -->
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    First Name
-                </label>
-
-                <input type="text"
-                    class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
-
-            </div>
-
-
-
-            <!-- Last Name -->
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    Last Name
-                </label>
-
-                <input type="text"
-                    class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
-
-            </div>
-
-
-
-            <!-- Gender -->
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    Gender
-                </label>
-
-                <select class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
-
-                    <option>Select Gender</option>
-                    <option>Male</option>
-                    <option>Female</option>
-
-                </select>
-
-            </div>
-
-
-
-            <!-- Date Of Birth -->
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    Date of Birth
-                </label>
-
-                <input type="date"
-                    class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
-
-            </div>
-
-
-
-            <!-- Nationality -->
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    Nationality
-                </label>
-
-                <input type="text"
-                    class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
-
-            </div>
-
-
-
-            <!-- National ID -->
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    National ID
-                </label>
-
-                <input type="text"
-                    class="w-full border rounded-lg p-3 focus:outline-none focus:ring-2 focus:ring-primary">
-
-            </div>
-
-        </div>
-
-    </div>
-    <!-- Employment Information -->
-
-    <div class="bg-white rounded-xl shadow p-6 mt-6">
-
-        <h2 class="text-xl font-semibold text-primary mb-6">
-            Employment Information
-        </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-            <div>
-                <label class="block mb-2 font-medium">Employee ID</label>
-                <input type="text" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
-            </div>
-
-            <div>
-                <label class="block mb-2 font-medium">Assigned Laboratory</label>
-
-                <select class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
-
-                    <option>Select Laboratory</option>
-                    <option>Hematology</option>
-                    <option>Microbiology</option>
-                    <option>Biochemistry</option>
-
-                </select>
-            </div>
-
-            <div>
-                <label class="block mb-2 font-medium">Job Title</label>
-
-                <input type="text" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
-            </div>
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    Employment Status
-                </label>
-
-                <select class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
-
-                    <option>Active</option>
-                    <option>Inactive</option>
-
-                </select>
-
-            </div>
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    Work Shift
-                </label>
-
-                <select class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
-
-                    <option>Morning</option>
-                    <option>Evening</option>
-                    <option>Night</option>
-
-                </select>
-
-            </div>
-
-            <div>
-
-                <label class="block mb-2 font-medium">
-                    Joining Date
-                </label>
-
-                <input type="date" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
-
-            </div>
-
-            <div class="md:col-span-2">
-
-                <label class="block mb-2 font-medium">
-                    Years of Experience
-                </label>
-
-                <input type="number" class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
-
-            </div>
-
-        </div>
-
-    </div>
-    <!-- Contant Information -->
-
-    <!-- Contact Information -->
-
-    <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
-
-        <div class="flex items-center gap-2 mb-6">
-
-            <div class="w-1 h-6 bg-secondary rounded-full"></div>
-
-            <h2 class="text-xl font-bold text-primary">
-                Contact Information
-            </h2>
-
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-            <!-- Phone -->
-
-            <div>
-
-                <label class="block text-sm font-medium mb-2">
-                    Phone Number
-                </label>
-
-                <div class="relative">
-
-                    <input type="text" placeholder="+20 10xxxxxxxx"
-                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 pl-11 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-
-                    <span class="absolute left-4 top-3.5 text-gray-400">
-
-                        📞
-
-                    </span>
-
-                </div>
-
-            </div>
-
-            <!-- Alternative -->
-
-            <div>
-
-                <label class="block text-sm font-medium mb-2">
-                    Alternative Phone
-                </label>
-
-                <div class="relative">
-
-                    <input type="text" placeholder="+20 10xxxxxxxx"
-                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 pl-11 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-
-                    <span class="absolute left-4 top-3.5 text-gray-400">
-
-                        📱
-
-                    </span>
-
-                </div>
-
-            </div>
-
-            <!-- Email -->
-
-            <div>
-
-                <label class="block text-sm font-medium mb-2">
-                    Email Address
-                </label>
-
-                <div class="relative">
-
-                    <input type="email" placeholder="example@email.com"
-                        class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 pl-11 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-
-                    <span class="absolute left-4 top-3.5 text-gray-400">
-
-                        ✉️
-
-                    </span>
-
-                </div>
-
-            </div>
-
-            <!-- Address -->
-
-            <div class="lg:col-span-3">
-
-                <label class="block text-sm font-medium mb-2">
-
-                    Address
-
-                </label>
-
-                <textarea rows="4" placeholder="Street, Building, Apartment..."
-                    class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-
-            </textarea>
-
-            </div>
-
-            <!-- City -->
-
-            <div>
-
-                <label class="block text-sm font-medium mb-2">
-
-                    City
-
-                </label>
-
-                <input type="text"
-                    class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-
-            </div>
-
-            <!-- Country -->
-
-            <div>
-
-                <label class="block text-sm font-medium mb-2">
-
-                    Country
-
-                </label>
-
-                <input type="text"
-                    class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-
-            </div>
-
-            <!-- Postal -->
-
-            <div>
-
-                <label class="block text-sm font-medium mb-2">
-
-                    Postal Code
-
-                </label>
-
-                <input type="text"
-                    class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-
-            </div>
-
-        </div>
-
-    </div>
-    <!-- Account Information -->
-
-    <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
-
-        <div class="flex items-center gap-2 mb-6">
-
-            <div class="w-1 h-6 bg-secondary rounded-full"></div>
-
-            <h2 class="text-xl font-bold text-primary">
-                Account Information
-            </h2>
-
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            <!-- Username -->
-            <div>
-                <label class="block text-sm font-medium mb-2">
-                    Username
-                </label>
-
-                <input type="text" placeholder="Enter username"
-                    class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-            </div>
-
-            <!-- Role -->
-            <div>
-                <label class="block text-sm font-medium mb-2">
-                    Role
-                </label>
-
-                <select
-                    class="w-full rounded-xl border border-gray-300 bg-gray-50 p-3 focus:border-primary focus:ring-2 focus:ring-primary outline-none">
-
-                    <option selected>Lab Technician</option>
-                    <option>Senior Lab Technician</option>
-                    <option>Lab Supervisor</option>
-
-                </select>
-            </div>
-
-            <!-- Temporary Password -->
-            <div>
-                <label class="block text-sm font-medium mb-2">
-                    Temporary Password
-                </label>
-
-                <div class="relative">
-
-                    <input type="password" placeholder="Auto Generated" readonly
-                        class="w-full rounded-xl border border-gray-300 bg-gray-100 p-3 pr-10 focus:outline-none">
-
-                    <button type="button"
-                        class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-primary">
-
-                        👁️
-
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </div>
-    <!-- System Settings -->
-
-    <div class="bg-white rounded-2xl border border-gray-200 p-6 mt-6">
-
-        <!-- Title -->
-
-        <div class="flex items-center gap-2 mb-6">
-
-            <div class="w-1 h-6 bg-secondary rounded-full"></div>
-
-            <h2 class="text-xl font-bold text-primary">
-                System Settings
-            </h2>
-
-        </div>
-
-        <div class="space-y-4">
-
-            <!-- Account Active -->
-
-            <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
-
-                <div>
-
-                    <h3 class="font-semibold text-gray-800">
-                        Account Active
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mt-1">
-                        Enable this account immediately after creation.
-                    </p>
-
-                </div>
-
-                <label class="relative inline-flex cursor-pointer items-center">
-
-                    <input type="checkbox" class="peer sr-only" checked>
-
-                    <div class="peer h-7 w-12 rounded-full bg-gray-300 transition-all
-                    peer-checked:bg-secondary
-                    after:absolute after:left-1 after:top-1
-                    after:h-5 after:w-5
-                    after:rounded-full after:bg-white
-                    after:transition-all
-                    peer-checked:after:translate-x-5">
-                    </div>
-
-                </label>
-
-            </div>
-
-            <!-- Allow Login -->
-
-            <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
-
-                <div>
-
-                    <h3 class="font-semibold text-gray-800">
-                        Allow Login
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mt-1">
-                        Technician can log in using the created account.
-                    </p>
-
-                </div>
-
-                <label class="relative inline-flex cursor-pointer items-center">
-
-                    <input type="checkbox" class="peer sr-only" checked>
-
-                    <div class="peer h-7 w-12 rounded-full bg-gray-300 transition-all
-                    peer-checked:bg-secondary
-                    after:absolute after:left-1 after:top-1
-                    after:h-5 after:w-5
-                    after:rounded-full after:bg-white
-                    after:transition-all
-                    peer-checked:after:translate-x-5">
-                    </div>
-
-                </label>
-
-            </div>
-
-            <!-- Email Notification -->
-
-            <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
-
-                <div>
-
-                    <h3 class="font-semibold text-gray-800">
-                        Email Notification
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mt-1">
-                        Send email notification after creating the account.
-                    </p>
-
-                </div>
-
-                <label class="relative inline-flex cursor-pointer items-center">
-
-                    <input type="checkbox" class="peer sr-only">
-
-                    <div class="peer h-7 w-12 rounded-full bg-gray-300 transition-all
-                    peer-checked:bg-secondary
-                    after:absolute after:left-1 after:top-1
-                    after:h-5 after:w-5
-                    after:rounded-full after:bg-white
-                    after:transition-all
-                    peer-checked:after:translate-x-5">
-                    </div>
-
-                </label>
-
-            </div>
-
-            <!-- SMS Notification -->
-
-            <div class="flex items-center justify-between rounded-xl border border-gray-200 p-5">
-
-                <div>
-
-                    <h3 class="font-semibold text-gray-800">
-                        SMS Notification
-                    </h3>
-
-                    <p class="text-sm text-gray-500 mt-1">
-                        Send login credentials via SMS.
-                    </p>
-
-                </div>
-
-                <label class="relative inline-flex cursor-pointer items-center">
-
-                    <input type="checkbox" class="peer sr-only">
-
-                    <div class="peer h-7 w-12 rounded-full bg-gray-300 transition-all
-                    peer-checked:bg-secondary
-                    after:absolute after:left-1 after:top-1
-                    after:h-5 after:w-5
-                    after:rounded-full after:bg-white
-                    after:transition-all
-                    peer-checked:after:translate-x-5">
-                    </div>
-
-                </label>
-
-            </div>
-
-        </div>
-
-    </div>
-</div>
+</form>

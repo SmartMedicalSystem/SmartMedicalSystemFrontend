@@ -1,190 +1,186 @@
-<div class="space-y-6">
+<div class="w-full rounded-xl bg-white p-4 shadow-sm">
 
-    <!-- Top Toolbar -->
+  <div class="flex flex-col gap-4">
 
-    <div class="flex flex-col xl:flex-row xl:justify-between xl:items-center gap-4">
+    <!-- Search -->
 
-        <!-- Buttons -->
+    <div class="relative w-full">
 
-        <div class="flex flex-wrap gap-3">
+      <fa-icon
+        [icon]="faMagnifyingGlass"
+        class="absolute left-3 top-1/2
+               -translate-y-1/2
+               text-gray-400">
+      </fa-icon>
 
-            <button routerLink="../add-lab-technicians" (click)="addTechnician()" class="primary-btn">
+      <input
+        type="text"
 
-                <fa-icon [icon]="faPlus"></fa-icon>
+        [(ngModel)]="searchText"
 
-                Add Technician
+        (keyup.enter)="onSearchEnter()"
 
-            </button>
+        placeholder="Search by name, email, phone or username..."
 
-            <button (click)="importTechnicians()" class="outline-btn">
+        class="w-full rounded-lg
+               border border-gray-300
+               py-3 pl-10 pr-4
+               text-sm
+               outline-none
+               transition
 
-                <fa-icon [icon]="faUpload"></fa-icon>
-
-                Import
-
-            </button>
-
-            <button (click)="exportTechnicians()" class="outline-btn">
-
-                <fa-icon [icon]="faDownload"></fa-icon>
-
-                Export
-
-            </button>
-
-        </div>
-
-        <!-- Search -->
-
-        <div class="relative w-full xl:w-96">
-
-            <fa-icon [icon]="faMagnifyingGlass" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">
-            </fa-icon>
-
-            <input [(ngModel)]="searchText" placeholder="Search by technician name , employeeId , email"
-                class="input pl-12">
-
-        </div>
+               focus:border-primary
+               focus:ring-2
+               focus:ring-primary/20"
+      />
 
     </div>
 
-    <!-- Filter Card -->
+    <!-- Filters -->
 
-    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm">
+    <div
+      class="grid grid-cols-1
+             gap-3
+             md:grid-cols-2
+             lg:grid-cols-4">
 
-        <!-- Header -->
+      <!-- Laboratory -->
 
-        <div class="flex items-center gap-2 border-b border-gray-100 px-6 py-4">
+      <select
+        [(ngModel)]="selectedLaboratory"
 
-            <fa-icon [icon]="faFilter" class="text-primary">
-            </fa-icon>
+        class="rounded-lg
+               border border-gray-300
+               px-3 py-3
+               text-sm
+               outline-none
+               focus:border-primary">
 
-            <h3 class="font-semibold text-lg">
+        <option
+          *ngFor="let lab of laboratories"
+          [value]="lab.value">
 
-                Filters
+          {{ lab.name }}
 
-            </h3>
+        </option>
 
-        </div>
+      </select>
 
-        <!-- Body -->
+      <!-- Status -->
 
-        <div class="p-6">
+      <select
+        [(ngModel)]="selectedStatus"
 
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        class="rounded-lg
+               border border-gray-300
+               px-3 py-3
+               text-sm
+               outline-none
+               focus:border-primary">
 
-                <!-- Laboratory -->
+        <option
+          *ngFor="let status of statuses"
+          [ngValue]="status.id">
 
-                <div>
+          {{ status.name }}
 
-                    <label class="label">
+        </option>
 
-                        Laboratory
+      </select>
 
-                    </label>
+      <!-- Shift -->
 
-                    <select [(ngModel)]="selectedLaboratory" class="input">
+      <select
+        [(ngModel)]="selectedShift"
 
-                        <option *ngFor="let lab of laboratories">
+        class="rounded-lg
+               border border-gray-300
+               px-3 py-3
+               text-sm
+               outline-none
+               focus:border-primary">
 
-                            {{lab}}
+        <option
+          *ngFor="let shift of shifts"
+          [ngValue]="shift.id">
 
-                        </option>
+          {{ shift.name }}
 
-                    </select>
+        </option>
 
-                </div>
+      </select>
 
-                <!-- Status -->
+      <!-- Joining Date -->
 
-                <div>
+      <input
+        type="date"
 
-                    <label class="label">
+        [(ngModel)]="joiningDate"
 
-                        Status
-
-                    </label>
-
-                    <select [(ngModel)]="selectedStatus" class="input">
-
-                        <option *ngFor="let item of statuses">
-
-                            {{item}}
-
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <!-- Shift -->
-
-                <div>
-
-                    <label class="label">
-
-                        Shift
-
-                    </label>
-
-                    <select [(ngModel)]="selectedShift" class="input">
-
-                        <option *ngFor="let item of shifts">
-
-                            {{item}}
-
-                        </option>
-
-                    </select>
-
-                </div>
-
-                <!-- Date -->
-
-                <div>
-
-                    <label class="label">
-
-                        Joining Date
-
-                    </label>
-
-                    <div class="relative">
-
-                        <input [(ngModel)]="joiningDate" type="date" class="input pr-10">
-
-                        <fa-icon [icon]="faCalendarDays"
-                            class="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                        </fa-icon>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <!-- Buttons -->
-
-            <div class="flex justify-end gap-3 mt-6">
-
-                <button (click)="clearFilters()" class="outline-btn">
-
-                    <fa-icon [icon]="faRotateRight"></fa-icon>
-
-                    Clear
-
-                </button>
-
-                <button (click)="applyFilters()" class="primary-btn">
-
-                    Apply Filters
-
-                </button>
-
-            </div>
-
-        </div>
+        class="rounded-lg
+               border border-gray-300
+               px-3 py-3
+               text-sm
+               outline-none
+               focus:border-primary"
+      />
 
     </div>
+
+    <!-- Actions -->
+
+    <div
+      class="flex flex-wrap
+             items-center
+             gap-3">
+
+      <button
+        type="button"
+
+        (click)="applyFilters()"
+
+        class="rounded-lg
+               bg-primary
+               px-5 py-3
+               text-sm
+               font-medium
+               text-white
+               transition
+               hover:opacity-90">
+
+        <fa-icon
+          [icon]="faFilter"
+          class="mr-2">
+        </fa-icon>
+
+        Apply Filters
+
+      </button>
+
+      <button
+        type="button"
+
+        (click)="clearFilters()"
+
+        class="rounded-lg
+               border border-gray-300
+               px-5 py-3
+               text-sm
+               text-gray-600
+               transition
+               hover:bg-gray-100">
+
+        <fa-icon
+          [icon]="faRotateRight"
+          class="mr-2">
+        </fa-icon>
+
+        Clear
+
+      </button>
+
+    </div>
+
+  </div>
 
 </div>

@@ -1,14 +1,32 @@
 import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
-import { jwtDecode } from 'jwt-decode';
+import { CanActivateFn, Router } from '@angular/router';
 import { AuthenticationService } from '../services/authenticationService';
+import { catchError, map, of } from 'rxjs';
 
-export const laboratoryGuard: CanActivateFn = (route, state) => {
+export const laboratoryGuard: CanActivateFn = () => {
+
   const authService = inject(AuthenticationService);
-  const token = authService.getAccessToken();
-  if (!token) {
-    return false;
+  const router = inject(Router);
+
+  const checkRole = () => {
+    return authService.getUserRole() === 'LabTechnician'
+      ? true
+      : router.createUrlTree(['/403']);
+  };
+
+  if (authService.isAuthenticated()) {
+    return checkRole();
   }
-  const decoded = jwtDecode(token) as any;
-  return decoded.role === 'LabTechnician';
+
+  if (authService.getRefreshToken()) {
+    return authService.restoreSession().pipe(
+      map(() => checkRole()),
+      catchError(() => {
+        authService.clearToken();
+        return of(router.createUrlTree(['/auth']));
+      })
+    );
+  }
+
+  return router.createUrlTree(['/auth']);
 };

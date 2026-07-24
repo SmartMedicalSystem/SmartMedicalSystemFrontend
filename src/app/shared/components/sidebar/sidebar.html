@@ -1,0 +1,185 @@
+<!-- Overlay -->
+@if (isOpen) {
+  <div class="fixed inset-0 bg-black/40 z-40 lg:hidden" (click)="closeSidebar()"></div>
+}
+
+<!-- Sidebar -->
+<aside
+  class="fixed inset-y-0 min-h-full left-0 z-50 w-72 bg-white border-r border-gray-200 flex flex-col justify-between transform transition-transform duration-300 ease-in-out -translate-x-full lg:static lg:translate-x-0 lg:h-auto lg:flex-shrink-0"
+  [class.translate-x-0]="isOpen"
+>
+  <!-- Top -->
+  <div>
+    <!-- Logo -->
+    <div class="p-4 lg:px-7 lg:py-8 flex items-center justify-between">
+      <div class="flex items-center gap-4">
+        <div class="w-14 h-14 rounded-xl bg-primary text-white flex items-center justify-center">
+          <fa-icon [icon]="hospital"></fa-icon>
+        </div>
+        <div class="flex flex-col items-center">
+          <h1 class="text-3xl font-bold text-primary">MediAI</h1>
+          @if (this.role === 'Admin') {
+            <h1 class="text-xl text-secondary">Adminstrator</h1>
+          } @else if (this.role === 'Doctor') {
+            <h1 class="text-xl text-secondary">Doctor</h1>
+          } @else if (this.role === 'LabTechnician') {
+            <h1 class="text-xl text-secondary">Laboratory</h1>
+          }
+        </div>
+      </div>
+
+      <button class="cursor-pointer lg:hidden text-xl" (click)="closeSidebar()">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <!-- Menu -->
+    @if (this.role === 'Admin') {
+      <nav class="space-y-2 px-4">
+        <a
+          routerLink="home"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="dashboard"></fa-icon>
+          Dashboard
+        </a>
+        <a
+          routerLink="patients"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="patients"></fa-icon>
+          Patients
+        </a>
+
+        <a
+          routerLink="doctors"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl transition"
+        >
+          <fa-icon [icon]="doctors"></fa-icon>
+          Doctors
+        </a>
+
+        <a
+          routerLink="departments"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="departments"></fa-icon>
+
+          Departments
+        </a>
+
+        <a
+          routerLink="laboratories"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="laboratories"></fa-icon>
+          Laboratories
+        </a>
+        <a
+          routerLink="labtechnicians"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="labTech"></fa-icon>
+          Lab Technicians
+        </a>
+      </nav>
+    } @else if (this.role === 'Doctor') {
+      <nav class="space-y-2 px-4">
+        <a
+          routerLink="home"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="dashboard"></fa-icon>
+          Dashboard
+        </a>
+        <a
+          routerLink="patients"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="patients"></fa-icon>
+          Patients
+        </a>
+
+        <a
+          routerLink="profile"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="labTech"></fa-icon>
+          Profile
+        </a>
+      </nav>
+    } @else if (this.role === 'LabTechnician') {
+      <nav class="space-y-2 px-4">
+        <a
+          routerLink="home"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="dashboard"></fa-icon>
+          Dashboard
+        </a>
+        <a
+          routerLink="requests"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="patients"></fa-icon>
+          Requests
+        </a>
+        <a
+          routerLink="profile"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          (click)="closeSidebar()"
+          class="flex items-center gap-4 px-5 py-4 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="labTech"></fa-icon>
+          Profile
+        </a>
+      </nav>
+    }
+  </div>
+
+  <!-- Bottom -->
+  <div class="p-4">
+    <div class="mt-4 lg:mt-8 space-y-2">
+      @if (this.role === 'Admin') {
+        <a
+          routerLink="settings"
+          routerLinkActive="bg-secondary text-white cursor-pointer hover:bg-secondary/90 transition"
+          class="flex items-center gap-4 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-100 transition"
+        >
+          <fa-icon [icon]="settings"></fa-icon>
+          Settings
+        </a>
+      }
+      <button>
+        <a
+          (click)="logoutFN()"
+          class="cursor-pointer hover:bg-gray-100 text-red-500 flex items-center gap-4 px-4 py-3 rounded-xl transition"
+        >
+          <fa-icon [icon]="logout"></fa-icon>
+          Logout
+        </a>
+      </button>
+    </div>
+  </div>
+</aside>

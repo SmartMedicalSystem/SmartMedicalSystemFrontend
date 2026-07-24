@@ -1,588 +1,461 @@
-<div class="min-h-screen bg-[#f8f9fa] p-4 md:p-8">
-
+<form [formGroup]="form" (ngSubmit)="submit()">
+  <div class="min-h-screen bg-[#f8f9fa]">
     <!-- Page Title -->
 
     <div class="mb-6">
+      <p class="text-sm text-gray-500">Dashboard / Lab Technicians / Edit Technician</p>
 
-        <p class="text-sm text-gray-500">
-            Dashboard / Lab Technicians / Edit Technician
-        </p>
-
-        <h1 class="text-3xl font-bold text-primary mt-1">
-            Edit Laboratory Technician
-        </h1>
-
+      <h1 class="text-3xl font-bold text-primary mt-1">Edit Laboratory Technician</h1>
     </div>
 
     <!-- Technician Header Card -->
 
     <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-sm">
+      <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
+        <!-- Left Side -->
 
-        <div class="flex flex-col xl:flex-row xl:items-center xl:justify-between gap-6">
+        <div class="flex items-center gap-5">
+          <!-- Image -->
 
-            <!-- Left Side -->
+          <div class="relative">
+            <img
+              [src]="imagePreview ? imagePreview : '/images/blank-profile.png'"
+              class="w-24 h-24 rounded-full border-4 border-secondary object-cover"
+            />
 
-            <div class="flex items-center gap-5">
+            <button
+              type="button"
+              (click)="fileInput.click()"
+              class="absolute bottom-0 right-0 bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center shadow"
+            >
+              ✎
+            </button>
 
-                <!-- Image -->
+            <input
+              #fileInput
+              hidden
+              type="file"
+              accept="image/png,image/jpeg,image/jpg"
+              (change)="onImageSelected($event)"
+            />
+          </div>
 
-                <div class="relative">
+          <!-- Info -->
 
-                    <img src="https://i.pravatar.cc/150?img=32"
-                        class="w-24 h-24 rounded-full border-4 border-secondary object-cover">
+          <div>
+            <div class="flex items-center gap-3 flex-wrap">
+              <h2 class="text-2xl font-bold">
+                {{ form.value.firstName }} {{ form.value.lastName }}
+              </h2>
 
-                    <button
-                        class="absolute bottom-0 right-0 bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center shadow">
-
-                        ✎
-
-                    </button>
-
-                </div>
-
-                <!-- Info -->
-
-                <div>
-
-                    <div class="flex items-center gap-3 flex-wrap">
-
-                        <h2 class="text-2xl font-bold">
-                            Sarah Jenkins
-                        </h2>
-
-                        <span class="bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-semibold">
-
-                            ACTIVE
-
-                        </span>
-
-                    </div>
-
-                    <div class="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-sm text-gray-600">
-
-                        <p>
-                            🆔 ID:
-                            <span class="font-medium">
-                                EMP-2024-0891
-                            </span>
-                        </p>
-
-                        <p>
-                            🧪 Lab:
-                            <span class="font-medium">
-                                Molecular Pathology
-                            </span>
-                        </p>
-
-                        <p>
-                            📅 Joined:
-                            <span class="font-medium">
-                                2024-03-15
-                            </span>
-                        </p>
-
-                    </div>
-
-                </div>
-
+              <span
+                class="px-3 py-1 rounded-full text-xs font-semibold"
+                [ngClass]="
+                  form.value.accountActive
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-red-100 text-red-700'
+                "
+              >
+                {{ form.value.accountActive ? 'ACTIVE' : 'INACTIVE' }}
+              </span>
             </div>
 
-            <!-- Rating -->
+            <div class="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-sm text-gray-600">
+              <p>
+                🧪 Lab:
 
-            <div class="text-center">
-
-                <p class="text-xs uppercase tracking-wider text-gray-500 mb-2">
-
-                    Technician Rating
-
-                </p>
-
-                <div class="text-2xl text-yellow-400">
-
-                    ★★★★★
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- Alert -->
-
-        <div class="mt-6 rounded-xl bg-blue-50 border border-blue-100 p-4 flex gap-3">
-
-            <div class="text-primary text-xl">
-
-                ℹ️
-
-            </div>
-
-            <p class="text-sm text-gray-700">
-
-                You are editing an existing laboratory technician.
-                <span class="font-semibold">
-                    Changes will affect system access immediately after saving.
+                <span class="font-medium">
+                  {{ form.value.laboratoryId }}
                 </span>
+              </p>
 
-            </p>
+              <p>
+                📅 Joined:
 
+                <span class="font-medium">
+                  {{ form.value.joiningDate }}
+                </span>
+              </p>
+            </div>
+          </div>
         </div>
+      </div>
 
+      <!-- Alert -->
+
+      <div class="mt-6 rounded-xl bg-blue-50 border border-blue-100 p-4 flex gap-3">
+        <div class="text-primary text-xl">ℹ️</div>
+
+        <p class="text-sm text-gray-700">
+          You are editing an existing laboratory technician.
+
+          <span class="font-semibold">
+            Changes will affect system access immediately after saving.
+          </span>
+        </p>
+      </div>
     </div>
+
     <!-- Personal Information -->
 
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm mt-6">
+      <div class="border-b border-gray-200 px-6 py-5">
+        <h2 class="text-2xl font-semibold flex items-center gap-2 text-primary">
+          👤 Personal Information
+        </h2>
+      </div>
 
-        <div class="border-b border-gray-200 px-6 py-5">
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- First Name -->
 
-            <h2 class="text-2xl font-semibold flex items-center gap-2 text-primary">
+          <div>
+            <label class="block text-sm font-medium mb-2"> First Name </label>
 
-                👤 Personal Information
+            <input
+              type="text"
+              formControlName="firstName"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
 
-            </h2>
+          <!-- Last Name -->
 
+          <div>
+            <label class="block text-sm font-medium mb-2"> Last Name </label>
+
+            <input
+              type="text"
+              formControlName="lastName"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <!-- Gender -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Gender </label>
+
+            <select
+              formControlName="gender"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
+            >
+              <option [value]="0">Male</option>
+              <option [value]="1">Female</option>
+            </select>
+          </div>
+
+          <!-- Date -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Date of Birth </label>
+
+            <input
+              type="date"
+              formControlName="dateOfBirth"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <!-- Nationality -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Nationality </label>
+
+            <input
+              type="text"
+              formControlName="nationality"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <!-- National ID -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> National ID </label>
+
+            <input
+              type="text"
+              formControlName="nationalId"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
         </div>
-
-        <div class="p-6">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <!-- First Name -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-
-                        First Name
-
-                    </label>
-
-                    <input type="text" value="Sarah"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
-
-                </div>
-
-                <!-- Last Name -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-
-                        Last Name
-
-                    </label>
-
-                    <input type="text" value="Jenkins"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
-
-                </div>
-
-                <!-- Gender -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-
-                        Gender
-
-                    </label>
-
-                    <select
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
-
-                        <option>Female</option>
-                        <option>Male</option>
-
-                    </select>
-
-                </div>
-
-                <!-- Date -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-
-                        Date of Birth
-
-                    </label>
-
-                    <input type="date" value="1992-05-24"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
-
-                </div>
-
-                <!-- Nationality -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-
-                        Nationality
-
-                    </label>
-
-                    <input type="text" value="American"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
-
-                </div>
-
-                <!-- National ID -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-
-                        National ID / SSN
-
-                    </label>
-
-                    <input type="text" value="***-**-6789"
-                        class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
-
-                </div>
-
-            </div>
-
-        </div>
-
+      </div>
     </div>
     <!-- Employment Information -->
 
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm mt-6">
+      <!-- Header -->
 
-        <!-- Header -->
+      <div class="border-b border-gray-200 px-6 py-5">
+        <h2 class="text-xl font-semibold flex items-center gap-2 text-primary">
+          💼 Employment Information
+        </h2>
+      </div>
 
-        <div class="border-b border-gray-200 px-6 py-5">
+      <!-- Body -->
 
-            <h2 class="text-xl font-semibold flex items-center gap-2 text-primary">
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Employee ID -->
 
-                💼 Employment Information
+          <!-- Assigned Laboratory -->
 
-            </h2>
+          <div>
+            <label class="block text-sm font-medium mb-2"> Assigned Laboratory </label>
 
+            <select
+              formControlName="laboratoryId"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+            >
+              <option [ngValue]="null">Select Laboratory</option>
+
+              <option [ngValue]="1">Central Medical Laboratory</option>
+            </select>
+          </div>
+
+          <!-- Job Title -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Job Title </label>
+
+            <input
+              type="text"
+              formControlName="jobTitle"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+            />
+          </div>
+
+          <!-- Employment Status -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Employment Status </label>
+
+            <select
+              formControlName="employmentStatus"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+            >
+              <option [value]="1">Active</option>
+              <option [value]="2">Inactive</option>
+              <option [value]="3">On Leave</option>
+              <option [value]="4">Suspended</option>
+            </select>
+          </div>
+
+          <!-- Work Shift -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Work Shift </label>
+
+            <select
+              formControlName="workShift"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+            >
+              <option [value]="1">Morning</option>
+              <option [value]="2">Evening</option>
+              <option [value]="3">Night</option>
+            </select>
+          </div>
+
+          <!-- Joining Date -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Joining Date </label>
+
+            <input
+              type="date"
+              formControlName="joiningDate"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+            />
+          </div>
+
+          <!-- Years Of Experience -->
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-2"> Years Of Experience </label>
+
+            <input
+              type="number"
+              formControlName="yearsOfExperience"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
+            />
+          </div>
         </div>
-
-        <!-- Body -->
-
-        <div class="p-6">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <!-- Employee ID -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Employee ID (Read-only)
-                    </label>
-
-                    <input type="text" value="EMP-2024-0891" readonly
-                        class="w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-3">
-
-                </div>
-
-                <!-- Assigned Laboratory -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Assigned Laboratory
-                    </label>
-
-                    <select
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
-
-                        <option>Molecular Pathology</option>
-                        <option>Clinical Chemistry</option>
-                        <option>Microbiology</option>
-
-                    </select>
-
-                </div>
-
-                <!-- Job Title -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Job Title
-                    </label>
-
-                    <input type="text" value="Senior Lab Technician"
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
-
-                </div>
-
-                <!-- Employment Status -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Employment Status
-                    </label>
-
-                    <select
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
-
-                        <option>Full-Time</option>
-                        <option>Part-Time</option>
-                        <option>On Leave</option>
-
-                    </select>
-
-                </div>
-
-                <!-- Work Shift -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Work Shift
-                    </label>
-
-                    <select
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
-
-                        <option>Day Shift (08:00 - 16:00)</option>
-                        <option>Evening Shift</option>
-                        <option>Night Shift</option>
-
-                    </select>
-
-                </div>
-
-                <!-- Joining Date -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Joining Date
-                    </label>
-
-                    <input type="date" value="2024-03-15"
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
-
-                </div>
-
-                <!-- Professional Experience -->
-
-                <div class="md:col-span-2">
-
-                    <label class="block text-sm font-medium mb-2">
-                        Professional Experience Summary
-                    </label>
-
-                    <textarea rows="4"
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none resize-none">Specialized in DNA sequencing and genomic analysis. Over 8 years of experience in clinical pathology laboratories.</textarea>
-
-                </div>
-
-            </div>
-
-        </div>
-
+      </div>
     </div>
+
     <!-- Contact Information -->
 
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm mt-6">
+      <div class="border-b border-gray-200 px-6 py-5">
+        <h2 class="text-2xl font-semibold text-primary">Contact Information</h2>
+      </div>
 
-        <div class="border-b border-gray-200 px-6 py-5">
+      <div class="p-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Phone -->
 
-            <h2 class="text-2xl font-semibold text-primary">
-                Contact Information
-            </h2>
+          <div>
+            <label class="block text-sm font-medium mb-2"> Phone Number </label>
 
+            <input
+              type="text"
+              formControlName="phoneNumber"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3"
+            />
+          </div>
+
+          <!-- Alternative -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Alternative Phone </label>
+
+            <input
+              type="text"
+              formControlName="alternativePhone"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3"
+            />
+          </div>
+
+          <!-- Email -->
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-2"> Email Address </label>
+
+            <input
+              type="email"
+              formControlName="email"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3"
+            />
+          </div>
+
+          <!-- Address -->
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-2"> Home Address </label>
+
+            <input
+              type="text"
+              formControlName="address"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3"
+            />
+          </div>
+
+          <!-- City -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> City </label>
+
+            <input
+              type="text"
+              formControlName="city"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3"
+            />
+          </div>
+
+          <!-- Country -->
+
+          <div>
+            <label class="block text-sm font-medium mb-2"> Country </label>
+
+            <input
+              type="text"
+              formControlName="country"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3"
+            />
+          </div>
+
+          <!-- Postal -->
+
+          <div class="md:col-span-2">
+            <label class="block text-sm font-medium mb-2"> Postal Code </label>
+
+            <input
+              type="text"
+              formControlName="postalCode"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3"
+            />
+          </div>
         </div>
-
-        <div class="p-6">
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                <!-- Phone -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Phone Number
-                    </label>
-
-                    <input type="text" value="+1 (555) 123-4567"
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3">
-
-                    <p class="text-xs text-gray-500 mt-2">
-                        Verified phone number.
-                    </p>
-
-                </div>
-
-                <!-- Alternative -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Alternative Phone
-                    </label>
-
-                    <input type="text" value="+1 (555) 000-0000"
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3">
-
-                </div>
-
-                <!-- Email -->
-
-                <div class="md:col-span-2">
-
-                    <label class="block text-sm font-medium mb-2">
-                        Email Address
-                    </label>
-
-                    <input type="email" value="s.jenkins@clinicalintel.sys"
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3">
-
-                    <p class="text-xs text-gray-500 mt-2">
-                        Primary corporate email.
-                    </p>
-
-                </div>
-
-                <!-- Address -->
-
-                <div class="md:col-span-2">
-
-                    <label class="block text-sm font-medium mb-2">
-                        Home Address
-                    </label>
-
-                    <input type="text" value="4522 Medical Center Blvd, Suite 201"
-                        class="w-full rounded-lg border border-gray-300 px-4 py-3">
-
-                </div>
-
-                <!-- City -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        City
-                    </label>
-
-                    <input type="text" value="Rochester" class="w-full rounded-lg border border-gray-300 px-4 py-3">
-
-                </div>
-
-                <!-- Postal -->
-
-                <div>
-
-                    <label class="block text-sm font-medium mb-2">
-                        Postal Code
-                    </label>
-
-                    <input type="text" value="55901" class="w-full rounded-lg border border-gray-300 px-4 py-3">
-
-                </div>
-
-            </div>
-
-        </div>
-
+      </div>
     </div>
-    <!-- system settings -->
+    <!-- Account Settings -->
+
     <div class="bg-white rounded-2xl border border-gray-200 shadow-sm mt-6">
+      <div class="border-b border-gray-200 px-6 py-5">
+        <h2 class="text-2xl font-semibold text-primary">Account Settings</h2>
+      </div>
 
-        <div class="border-b border-gray-200 px-6 py-5">
+      <div class="p-6">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Left -->
 
-            <h2 class="text-2xl font-semibold text-primary">
-                Account Settings
-            </h2>
+          <div class="space-y-5">
+            <div>
+              <label class="block text-sm font-medium mb-2"> Username </label>
 
-        </div>
-
-        <div class="p-6">
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-
-                <!-- Left -->
-
-                <div class="space-y-5">
-
-                    <div>
-
-                        <label class="block text-sm font-medium mb-2">
-                            Username
-                        </label>
-
-                        <input value="sjenkins_lab" class="w-full rounded-lg border border-gray-300 px-4 py-3">
-
-                    </div>
-
-                    <div>
-
-                        <label class="block text-sm font-medium mb-2">
-                            Last Login (Read-only)
-                        </label>
-
-                        <input readonly value="2024-05-15 08:34 AM from 192.168.1.45"
-                            class="w-full rounded-lg bg-gray-100 border px-4 py-3">
-
-                    </div>
-
-                </div>
-
-                <!-- Right -->
-
-                <div>
-
-                    <div class="mb-6">
-
-                        <label class="block text-sm font-medium mb-2">
-                            Role (Read-only)
-                        </label>
-
-                        <input readonly value="Lab Technician Tier II"
-                            class="w-full rounded-lg bg-gray-100 border px-4 py-3">
-
-                    </div>
-
-                    <div class="space-y-5">
-
-                        <div class="flex justify-between items-center">
-
-                            <span class="font-medium">
-                                Allow System Login
-                            </span>
-
-                            <input type="checkbox" checked class="accent-secondary w-5 h-5">
-
-                        </div>
-
-                        <div class="flex justify-between items-center">
-
-                            <span class="font-medium">
-                                Receive Critical Notifications
-                            </span>
-
-                            <input type="checkbox" checked class="accent-secondary w-5 h-5">
-
-                        </div>
-
-                        <div class="flex justify-between items-center">
-
-                            <span class="font-medium">
-                                Account Active
-                            </span>
-
-                            <input type="checkbox" checked class="accent-secondary w-5 h-5">
-
-                        </div>
-
-                    </div>
-
-                </div>
-
+              <input
+                type="text"
+                formControlName="username"
+                class="w-full rounded-lg border border-gray-300 px-4 py-3"
+              />
             </div>
+          </div>
 
+          <!-- Right -->
+
+          <div>
+            <div class="space-y-5">
+              <div class="flex justify-between items-center">
+                <span class="font-medium"> Allow System Login </span>
+
+                <input
+                  type="checkbox"
+                  formControlName="allowLogin"
+                  class="accent-secondary w-5 h-5"
+                />
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="font-medium"> Receive Critical Notifications </span>
+
+                <input
+                  type="checkbox"
+                  formControlName="receiveNotifications"
+                  class="accent-secondary w-5 h-5"
+                />
+              </div>
+
+              <div class="flex justify-between items-center">
+                <span class="font-medium"> Account Active </span>
+
+                <input
+                  type="checkbox"
+                  formControlName="accountActive"
+                  class="accent-secondary w-5 h-5"
+                />
+              </div>
+            </div>
+          </div>
         </div>
-
+      </div>
     </div>
+
+    <!-- Buttons -->
+
+    <div class="mt-8 flex justify-end gap-4">
+      <button
+        type="button"
+        routerLink="./all-lab-technicians"
+        class="px-8 py-3 rounded-xl border border-gray-300 hover:bg-gray-100"
+      >
+        Cancel
+      </button>
+
+      <button type="submit" class="px-8 py-3 rounded-xl bg-primary text-white hover:opacity-90">
+        Save Changes
+      </button>
+    </div>
+  </div>
+</form>

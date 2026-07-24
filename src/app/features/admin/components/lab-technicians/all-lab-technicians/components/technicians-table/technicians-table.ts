@@ -1,30 +1,31 @@
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  inject
+} from '@angular/core';
+
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import {
   faPhone,
   faEnvelope,
-  faEllipsisVertical,
   faPenToSquare,
   faPlus,
   faTrash
 } from '@fortawesome/free-solid-svg-icons';
-import { Pagination } from '../pagination/pagination';
-import { RouterLink } from '@angular/router';
 
-interface Technician {
-  id: number;
-  employeeId: string;
-  image: string;
-  fullName: string;
-  laboratory: string;
-  location: string;
-  phone: string;
-  email: string;
-  shift: string;
-  status: 'Active' | 'Inactive' | 'Vacation';
-}
+import { Pagination } from '../pagination/pagination';
+
+import { AdminService } from '../../../../../../../core/services/admin-service';
+
+import { ILabTechnician } from '../../../../../../../shared/interfaces/Admin/ILabTechnician';
+
+import { IGetLabTechnicians } from '../../../../../../../shared/interfaces/Admin/IGetLabTechnicians';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-technicians-table',
@@ -38,102 +39,284 @@ interface Technician {
   templateUrl: './technicians-table.html',
   styleUrl: './technicians-table.css'
 })
-export class TechniciansTable {
+export class TechniciansTable
+  implements OnChanges {
+
+  private readonly adminService =
+    inject(AdminService);
+
+  @Input()
+  filters: any = {};
 
   faPhone = faPhone;
-faEnvelope = faEnvelope;
+  faEnvelope = faEnvelope;
+  faPlus = faPlus;
+  faPenToSquare = faPenToSquare;
+  faTrash = faTrash;
 
-faPlus = faPlus;
-faPenToSquare = faPenToSquare;
-faTrash = faTrash;
+  technicians:
+    ILabTechnician[] = [];
 
-  technicians: Technician[] = [
+  currentPage = 1;
 
-    {
-      id: 1,
-      employeeId: 'EMP-1001',
-      image: 'https://i.pravatar.cc/100?img=12',
-      fullName: 'Ahmed Mohamed',
-      laboratory: 'Central Laboratory',
-      location: 'Building A',
-      phone: '+20 100 123 4567',
-      email: 'ahmed@hospital.com',
-      shift: 'Morning',
-      status: 'Active'
-    },
+  totalPages = 1;
 
-    {
-      id: 2,
-      employeeId: 'EMP-1002',
-      image: 'https://i.pravatar.cc/100?img=32',
-      fullName: 'Sara Ali',
-      laboratory: 'Blood Bank',
-      location: 'Building B',
-      phone: '+20 101 987 6543',
-      email: 'sara@hospital.com',
-      shift: 'Evening',
-      status: 'Active'
-    },
+  totalCount = 0;
 
-    {
-      id: 3,
-      employeeId: 'EMP-1003',
-      image: 'https://i.pravatar.cc/100?img=24',
-      fullName: 'Omar Hassan',
-      laboratory: 'Microbiology',
-      location: 'Building C',
-      phone: '+20 102 333 2222',
-      email: 'omar@hospital.com',
-      shift: 'Night',
-      status: 'Inactive'
-    },
+  firstItemIndex = 0;
 
-    {
-      id: 4,
-      employeeId: 'EMP-1004',
-      image: 'https://i.pravatar.cc/100?img=44',
-      fullName: 'Mona Samir',
-      laboratory: 'Pathology',
-      location: 'Building A',
-      phone: '+20 103 777 8888',
-      email: 'mona@hospital.com',
-      shift: 'Morning',
-      status: 'Vacation'
-    },
+  lastItemIndex = 0;
 
-    {
-      id: 5,
-      employeeId: 'EMP-1005',
-      image: 'https://i.pravatar.cc/100?img=15',
-      fullName: 'Mohamed Adel',
-      laboratory: 'Clinical Chemistry',
-      location: 'Building D',
-      phone: '+20 105 222 3333',
-      email: 'mohamed@hospital.com',
-      shift: 'Morning',
-      status: 'Active'
+  request:
+    IGetLabTechnicians = {
+
+      search: '',
+
+      laboratory: '',
+
+      employmentStatus:
+        undefined,
+
+      workShift:
+        undefined,
+
+      joiningDate: '',
+
+      pageNumber: 1,
+
+      pageSize: 10
+
+    };
+
+  ngOnChanges(
+    changes: SimpleChanges
+  ): void {
+
+    if (
+      changes['filters']
+    ) {
+
+      this.request = {
+
+        ...this.request,
+
+        search:
+          this.filters?.search ?? '',
+
+        laboratory:
+          this.filters?.laboratory ?? '',
+
+        employmentStatus:
+          this.filters?.employmentStatus,
+
+        workShift:
+          this.filters?.workShift,
+
+        joiningDate:
+          this.filters?.joiningDate ?? '',
+
+        pageNumber: 1
+
+      };
+
+      this.loadTechnicians();
+    }
+  }
+
+  loadTechnicians(): void {
+
+    this.adminService
+      .getAllLabTechnicians(
+        this.request
+      )
+      .subscribe({
+
+        next: (
+          response
+        ) => {
+
+          this.technicians =
+            response.items ?? [];
+
+          this.currentPage =
+            response.pageNumber;
+
+          this.totalPages =
+            response.totalPages;
+
+          this.totalCount =
+            response.totalCount;
+
+          this.firstItemIndex =
+            response.firstItemIndex;
+
+          this.lastItemIndex =
+            response.lastItemIndex;
+
+          console.log(
+            'Lab Technicians:',
+            response
+          );
+        },
+
+        error: (
+          error
+        ) => {
+
+          console.error(
+            'Failed to load laboratory technician data:',
+            error
+          );
+        }
+
+      });
+  }
+
+  deleteLabTechnician(nationalId: string): void {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: 'You will not be able to recover this technician!',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, delete it!',
+      cancelButtonText: 'No, keep it'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.adminService.deletLabTechnician(nationalId).subscribe({
+          next: (res) => {
+            Swal.fire('Deleted!', 'The technician has been deleted.', 'success').then(() => {
+              this.loadTechnicians();
+            });
+
+          },
+          error: (error) => {
+            Swal.fire('Error!', 'Failed to delete the technician.', 'error').then(() => { });
+          }
+        });
+      } else {
+        Swal.fire('Cancelled', 'The technician is safe :)', 'info');
+      }
+    })
+  }
+
+  onPageChange(
+    page: number
+  ): void {
+
+    if (
+      page < 1 ||
+      page > this.totalPages
+    ) {
+      return;
     }
 
-  ];
+    this.request = {
 
-  getStatusClass(status: string): string {
+      ...this.request,
+
+      pageNumber: page
+
+    };
+
+    this.loadTechnicians();
+  }
+
+  getStatusClass(
+    status: number | undefined
+  ): string {
 
     switch (status) {
 
-      case 'Active':
+      case 1:
         return 'active';
 
-      case 'Inactive':
+      case 2:
         return 'inactive';
 
-      case 'Vacation':
-        return 'vacation';
-
       default:
-        return '';
-
+        return 'vacation';
     }
-
   }
 
+  getStatusName(
+    status: number | undefined
+  ): string {
+
+    switch (status) {
+
+      case 1:
+        return 'Active';
+
+      case 2:
+        return 'Inactive';
+
+      default:
+        return 'Unknown';
+    }
+  }
+
+  getShiftName(
+    shift: number | undefined
+  ): string {
+
+    switch (shift) {
+
+      case 1:
+        return 'Morning';
+
+      case 2:
+        return 'Evening';
+
+      case 3:
+        return 'Night';
+
+      default:
+        return '-';
+    }
+  }
+
+  getFullName(
+    technician: ILabTechnician
+  ): string {
+
+    return [
+
+      technician.firstName,
+
+      technician.lastName
+
+    ]
+
+      .filter(
+        name => !!name
+      )
+
+      .join(' ');
+  }
+
+  getImageUrl(
+    photoUrl:
+      string |
+      null |
+      undefined
+  ): string {
+
+    if (
+      !photoUrl
+    ) {
+
+      return '/images/blank-profile.png';
+    }
+
+    if (
+      photoUrl.startsWith(
+        'http'
+      )
+    ) {
+
+      return photoUrl;
+    }
+
+    return `https://smartmedicalsystem.runasp.net${photoUrl}`;
+  }
 }
