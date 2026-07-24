@@ -2,7 +2,7 @@
   <!-- Header -->
   <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between mb-6">
     <div>
-      <h1 class="text-2xl sm:text-3xl font-bold text-primary">Laboratories</h1>
+      <h1 class="text-2xl sm:text-3xl font-bold text-primary tracking-tight">Laboratories</h1>
       <p class="text-sm text-gray-500 mt-1">
         Manage all hospital laboratories and testing facilities.
       </p>
@@ -11,9 +11,10 @@
     <div class="flex gap-3 shrink-0">
       <button
         class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition"
+        (click)="refresh()"
       >
-        <mat-icon class="w-4 h-4 text-gray-500">ios_share</mat-icon>
-        Export
+        <mat-icon class="w-4 h-4 text-gray-500">refresh</mat-icon>
+        Refresh
       </button>
       <button
         class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90 transition"
@@ -25,37 +26,42 @@
     </div>
   </div>
 
-  <!-- Toolbar: Search -->
-  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-    <div class="relative w-full sm:w-72">
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3 mb-6">
+      <mat-icon class="text-xl text-red-600 mt-0.5">error</mat-icon>
+      <div>
+        <p class="text-sm text-red-800 font-medium">Error</p>
+        <p class="text-sm text-red-700">{{ errorMessage }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Search & Filters -->
+  <div
+    class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4 flex flex-wrap items-center gap-4"
+  >
+    <!-- Search -->
+    <div class="flex-1 min-w-[200px] relative">
       <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"
         >search</mat-icon
       >
       <input
-        class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
-        placeholder="Search laboratory name, code, or technician..."
-        [(ngModel)]="searchQuery"
-        (input)="applyFilter()"
+        class="w-full pl-10 pr-4 py-2 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
+        placeholder="Search laboratories..."
+        [(ngModel)]="searchTerm"
+        (keyup.enter)="applyFilters()"
       />
-    </div>
-  </div>
-
-  <!-- Filters Card -->
-  <div
-    class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-4 flex flex-wrap items-center gap-4"
-  >
-    <div class="flex items-center gap-2 text-gray-500">
-      <mat-icon class="w-4 h-4">filter_list</mat-icon>
-      <span class="text-sm font-semibold">Filters:</span>
     </div>
 
     <!-- Status Filter -->
-    <div class="flex flex-col gap-1">
-      <label class="text-[10px] font-bold uppercase text-gray-400">Status</label>
+    <div class="flex items-center gap-2">
+      <mat-icon class="text-gray-400 w-4 h-4">filter_list</mat-icon>
+      <span class="text-sm text-gray-500 font-medium">Status:</span>
       <select
-        class="px-3 py-1.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white"
+        class="px-3 py-2 rounded-xl border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white"
         [(ngModel)]="statusFilter"
-        (change)="applyFilter()"
+        (change)="applyFilters()"
       >
         @for (status of statuses; track status) {
           <option [value]="status">{{ status === 'all' ? 'All Statuses' : status }}</option>
@@ -63,26 +69,9 @@
       </select>
     </div>
 
-    <!-- Department Filter -->
-    <div class="flex flex-col gap-1">
-      <label class="text-[10px] font-bold uppercase text-gray-400">Department</label>
-      <select
-        class="px-3 py-1.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white"
-        [(ngModel)]="departmentFilter"
-        (change)="applyFilter()"
-      >
-        @for (dept of departments; track dept) {
-          <option [value]="dept">{{ dept === 'all' ? 'All Departments' : dept }}</option>
-        }
-      </select>
-    </div>
-
-    <!-- Clear All -->
-    @if (searchQuery || statusFilter !== 'all' || departmentFilter !== 'all') {
-      <button
-        class="text-sm text-primary font-medium hover:underline ml-auto"
-        (click)="clearFilters()"
-      >
+    <!-- Clear Filters -->
+    @if (searchTerm || statusFilter !== 'all') {
+      <button class="text-sm text-primary font-medium hover:underline" (click)="clearFilters()">
         Clear All
       </button>
     }
@@ -92,127 +81,164 @@
   <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
     <div class="flex items-center justify-between p-4 border-b border-gray-100">
       <h2 class="text-base font-semibold text-gray-800 flex items-center gap-2">
-        <mat-icon [style.color]="'var(--color-primary)'">science</mat-icon>
+        <mat-icon class="text-primary">science</mat-icon>
         All Laboratories
       </h2>
-      <span class="text-sm text-gray-500">{{ totalItems }} Laboratories</span>
+      <span class="text-sm text-gray-500">{{ totalCount }} Laboratories</span>
     </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="flex items-center justify-center py-12">
+        <span class="ml-3 text-gray-500">Loading laboratories...</span>
+      </div>
+    }
 
     <!-- Table -->
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm min-w-225">
-        <thead>
-          <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
-            <th class="text-left font-semibold px-4 py-3">Laboratory Name</th>
-            <th class="text-left font-semibold px-4 py-3">Department</th>
-            <th class="text-left font-semibold px-4 py-3">Head Technician</th>
-            <th class="text-center font-semibold px-4 py-3">Tests/mo</th>
-            <th class="text-center font-semibold px-4 py-3">Staff</th>
-            <th class="text-left font-semibold px-4 py-3">Status</th>
-            <th class="text-left font-semibold px-4 py-3">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (lab of paginatedLaboratories; track lab.labId) {
-            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
-              <td class="px-4 py-4">
-                <div class="flex items-center gap-3">
-                  <div
-                    class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
-                  >
-                    <mat-icon>{{ getIconForLab(lab.department) }}</mat-icon>
-                  </div>
-                  <div>
-                    <span class="font-semibold text-gray-800">{{ lab.name }}</span>
-                    <p class="text-xs text-gray-400 font-mono">{{ lab.code }}</p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-4 text-gray-600">{{ lab.department }}</td>
-              <td class="px-4 py-4">
-                <div class="flex items-center gap-2">
-                  <div
-                    class="w-7 h-7 rounded-full bg-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-600"
-                  >
-                    {{ lab.headTechnicianInitials }}
-                  </div>
-                  <span class="text-gray-800 font-medium">{{ lab.headTechnician }}</span>
-                </div>
-              </td>
-              <td class="px-4 py-4 text-center text-gray-600">
-                {{ lab.testsPerMonth | number }}
-              </td>
-              <td class="px-4 py-4 text-center">
-                <span
-                  class="px-2 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600"
-                >
-                  {{ lab.staffCount }}
-                </span>
-              </td>
-              <td class="px-4 py-4">
-                <span
-                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-                  [ngClass]="getStatusClass(lab.status)"
-                >
-                  <span
-                    class="w-1.5 h-1.5 rounded-full"
-                    [ngClass]="getStatusDotClass(lab.status)"
-                  ></span>
-                  {{ lab.status }}
-                </span>
-              </td>
-              <td class="px-4 py-4">
-                <div class="flex items-center gap-1">
-                  <button
-                    class="text-gray-400 hover:text-primary p-1 transition-colors"
-                    title="View"
-                    [routerLink]="['/admin/dashboard/laboratories/laboratory-details', lab.labId]"
-                  >
-                    <mat-icon class="text-[18px]">visibility</mat-icon>
-                  </button>
-                  <button
-                    class="text-gray-400 hover:text-primary p-1 transition-colors"
-                    title="Edit"
-                    [routerLink]="['/admin/dashboard/laboratories/edit-laboratories', lab.labId]"
-                  >
-                    <mat-icon class="text-[18px]">edit</mat-icon>
-                  </button>
-                  <button
-                    class="text-gray-400 hover:text-red-500 p-1 transition-colors"
-                    title="Delete"
-                  >
-                    <mat-icon class="text-[18px]">delete</mat-icon>
-                  </button>
-                </div>
-              </td>
+    @if (!isLoading && laboratories.length > 0) {
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+              <th class="text-left font-semibold px-4 py-3">Laboratory Name</th>
+              <th class="text-left font-semibold px-4 py-3">Location</th>
+              <th class="text-left font-semibold px-4 py-3">Phone</th>
+              <th class="text-left font-semibold px-4 py-3">Department</th>
+              <th class="text-left font-semibold px-4 py-3">Head Technician</th>
+              <th class="text-left font-semibold px-4 py-3">Tests</th>
+              <th class="text-left font-semibold px-4 py-3">Status</th>
+              <th class="text-left font-semibold px-4 py-3">Actions</th>
             </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            @for (lab of laboratories; track lab.id) {
+              <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+                <!-- Laboratory Name -->
+                <td class="px-4 py-4">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary"
+                    >
+                      <mat-icon>{{ getIconForLab(lab.name) }}</mat-icon>
+                    </div>
+                    <div>
+                      <span class="font-semibold text-gray-800">{{ lab.name }}</span>
+                      @if (lab.code) {
+                        <p class="text-xs text-gray-400 font-mono">{{ lab.code }}</p>
+                      }
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Location -->
+                <td class="px-4 py-4 text-gray-600">
+                  {{ lab.location }}
+                </td>
+
+                <!-- Phone -->
+                <td class="px-4 py-4 text-gray-600">
+                  {{ lab.phone }}
+                </td>
+
+                <!-- Department -->
+                <td class="px-4 py-4 text-gray-600">
+                  {{ lab.departmentName || '—' }}
+                </td>
+
+                <!-- Head Technician -->
+                <td class="px-4 py-4 text-gray-800 font-medium">
+                  {{ lab.headTechnicianName || 'Not Assigned' }}
+                </td>
+
+                <!-- Tests Count -->
+                <td class="px-4 py-4">
+                  <span
+                    class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600"
+                  >
+                    {{ lab.testCount }}
+                  </span>
+                </td>
+
+                <!-- Status -->
+                <td class="px-4 py-4">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                    [ngClass]="getStatusClass(lab.status)"
+                  >
+                    <span
+                      class="w-1.5 h-1.5 rounded-full"
+                      [ngClass]="getStatusDotClass(lab.status)"
+                    ></span>
+                    {{ lab.status }}
+                  </span>
+                </td>
+
+                <!-- Actions -->
+                <td class="px-4 py-4">
+                  <div class="flex items-center gap-1">
+                    <button
+                      class="text-gray-400 hover:text-primary p-1 transition-colors"
+                      title="View Details"
+                      [routerLink]="['/admin/dashboard/laboratories/laboratory-details', lab.id]"
+                    >
+                      <mat-icon class="text-[18px]">visibility</mat-icon>
+                    </button>
+                    <button
+                      class="text-gray-400 hover:text-primary p-1 transition-colors"
+                      title="Edit"
+                      [routerLink]="['/admin/dashboard/laboratories/edit-laboratories', lab.id]"
+                    >
+                      <mat-icon class="text-[18px]">edit</mat-icon>
+                    </button>
+                    <button
+                      class="text-gray-400 hover:text-red-500 p-1 transition-colors"
+                      title="Delete"
+                      (click)="deleteLaboratory(lab.id, lab.name)"
+                    >
+                      <mat-icon class="text-[18px]">delete</mat-icon>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
 
     <!-- Empty State -->
-    @if (totalItems === 0) {
+    @if (!isLoading && laboratories.length === 0) {
       <div class="p-8 text-center">
-        <mat-icon class="text-5xl text-gray-300 w-full h-auto">search_off</mat-icon>
-        <p class="text-gray-500 mt-2">No laboratories found matching your criteria.</p>
+        <mat-icon class="text-5xl text-gray-300 w-full h-auto">science</mat-icon>
+        <p class="text-gray-500 mt-2">No laboratories found.</p>
+        @if (searchTerm || statusFilter !== 'all') {
+          <p class="text-sm text-gray-400">Try adjusting your search or filters.</p>
+        }
+        <button
+          class="mt-4 px-4 py-2 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90 transition"
+          routerLink="/admin/dashboard/laboratories/add-laboratories"
+        >
+          <mat-icon class="w-4 h-4 text-white mr-2">add</mat-icon>
+          Add New Laboratory
+        </button>
       </div>
     }
 
     <!-- Pagination -->
-    @if (totalItems > 0) {
+    @if (!isLoading && laboratories.length > 0) {
       <div
         class="px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3"
       >
         <span class="text-sm text-gray-500">
-          Showing {{ startIndex }} to {{ endIndex }} of {{ totalItems }} laboratories
+          Showing {{ (pageNumber - 1) * pageSize + 1 }} to
+          {{ Math.min(pageNumber * pageSize, totalCount) }} of {{ totalCount }} laboratories
         </span>
 
         <div class="flex items-center gap-1">
           <button
             class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             (click)="goToPage(1)"
-            [disabled]="currentPage === 1"
+            [disabled]="pageNumber === 1"
           >
             <mat-icon class="text-[18px]">first_page</mat-icon>
           </button>
@@ -220,27 +246,31 @@
           <button
             class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             (click)="previousPage()"
-            [disabled]="currentPage === 1"
+            [disabled]="pageNumber === 1"
           >
             <mat-icon class="text-[18px]">chevron_left</mat-icon>
           </button>
 
           @for (page of getPageNumbers(); track page) {
-            <button
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-colors"
-              [class]="
-                page === currentPage ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'
-              "
-              (click)="goToPage(page)"
-            >
-              {{ page }}
-            </button>
+            @if (page === -1) {
+              <span class="px-2 text-gray-400">…</span>
+            } @else {
+              <button
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-medium transition-colors"
+                [class]="
+                  page === pageNumber ? 'bg-primary text-white' : 'text-gray-600 hover:bg-gray-100'
+                "
+                (click)="goToPage(page)"
+              >
+                {{ page }}
+              </button>
+            }
           }
 
           <button
             class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             (click)="nextPage()"
-            [disabled]="currentPage === totalPages"
+            [disabled]="pageNumber === totalPages"
           >
             <mat-icon class="text-[18px]">chevron_right</mat-icon>
           </button>
@@ -248,7 +278,7 @@
           <button
             class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             (click)="goToPage(totalPages)"
-            [disabled]="currentPage === totalPages"
+            [disabled]="pageNumber === totalPages"
           >
             <mat-icon class="text-[18px]">last_page</mat-icon>
           </button>

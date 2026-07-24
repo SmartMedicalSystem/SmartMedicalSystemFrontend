@@ -1,85 +1,138 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-
-interface Doctor {
-  doctorId: number;
-  name: string;
-  specialization: string;
-  licenseNumber: string;
-}
-
-interface Department {
-  departmentId: number;
-  name: string;
-  floorNumber: number | null;
-  headDoctorId: number | null;
-  headDoctorName: string;
-  phoneExt: string;
-  doctorCount: number;
-  createdAt: Date;
-  status: 'Active' | 'Inactive' | 'Maintenance';
-  doctors: Doctor[];
-}
+import { DepartmentService } from '../../../../../core/services/department-service';
+import { DepartmentDetails as DeptDetails } from '../../../../../shared/interfaces/Department/DepartmentDetails';
+import { DoctorAtDepartment } from '../../../../../shared/interfaces/Department/DoctorAtDepartment ';
 
 @Component({
   selector: 'app-department-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, FormsModule, MatIconModule],
   templateUrl: './department-details.html',
   styleUrls: ['./department-details.css'],
 })
 export class DepartmentDetails implements OnInit {
-  departmentId: string | null = null;
+  departmentId: number | null = null;
+  department: DeptDetails = {
+    id: 0,
+    name: '',
+    floorNumber: null,
+    headDoctor: '',
+    headDoctorId: null,
 
-  // Mock Department Data
-  department: Department = {
-    departmentId: 1,
-    name: 'Cardiology Unit',
-    floorNumber: 3,
-    headDoctorId: 1,
-    headDoctorName: 'Dr. Elena Rodriguez',
-    phoneExt: '101',
-    doctorCount: 24,
-    createdAt: new Date('2022-01-12'),
     status: 'Active',
-    doctors: [
-      {
-        doctorId: 1,
-        name: 'Dr. Elena Rodriguez',
-        specialization: 'Interventional Cardiology',
-        licenseNumber: 'LIC-001',
-      },
-      {
-        doctorId: 2,
-        name: 'Dr. James Wilson',
-        specialization: 'Cardiac Electrophysiology',
-        licenseNumber: 'LIC-002',
-      },
-      {
-        doctorId: 3,
-        name: 'Dr. Maria Santos',
-        specialization: 'Heart Failure',
-        licenseNumber: 'LIC-003',
-      },
-      {
-        doctorId: 4,
-        name: 'Dr. Robert Brown',
-        specialization: 'Preventive Cardiology',
-        licenseNumber: 'LIC-004',
-      },
-    ],
+    doctorCount: 0,
+    createdAt: new Date(),
+    doctors: [],
   };
 
-  constructor(private route: ActivatedRoute) {}
+  // Doctors Pagination
+  doctors: DoctorAtDepartment[] = [];
+  doctorPageNumber: number = 1;
+  doctorPageSize: number = 5;
+  totalDoctorCount: number = 0;
+  totalDoctorPages: number = 0;
+  doctorSearchTerm: string = '';
 
-  ngOnInit() {
-    this.departmentId = this.route.snapshot.paramMap.get('id');
-    console.log('Viewing department ID:', this.departmentId);
-    // TODO: Fetch department by ID from API
+  isLoading = true;
+  isLoadingDoctors = false;
+  errorMessage: string | null = null;
+
+  // Math for template
+  Math = Math;
+
+  constructor(
+    private route: ActivatedRoute,
+    private departmentService: DepartmentService,
+    private cdr: ChangeDetectorRef,
+  ) {}
+
+  ngOnInit(): void {
+    this.departmentId = Number(this.route.snapshot.paramMap.get('id'));
+    if (this.departmentId) {
+      this.loadDepartment();
+      this.loadDoctors();
+    }
   }
 
+  // ============================================================
+  // Load Department
+  // ============================================================
+  loadDepartment(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    this.departmentService.getDepartmentById(this.departmentId!).subscribe({
+      next: (response) => {
+        this.department = response;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = 'Failed to load department details.';
+        console.error('Error loading department:', err);
+      },
+    });
+  }
+
+  // ============================================================
+  // Load Doctors with Pagination (using DoctorService)
+  // ============================================================
+  loadDoctors(): void {
+    if (!this.departmentId) return;
+    this.isLoadingDoctors = true;
+
+    this.departmentService
+      .getDepartmentDoctors(
+        this.departmentId,
+        this.doctorPageNumber,
+        this.doctorPageSize,
+        this.doctorSearchTerm || undefined,
+      )
+      .subscribe({
+        next: (response) => {
+          this.doctors = response.items || [];
+          this.totalDoctorCount = response.totalCount || 0;
+          this.totalDoctorPages = response.totalPages || 0;
+          this.isLoadingDoctors = false;
+          this.cdr.markForCheck(); // ✅ يجبر Angular يعمل re-render
+        },
+        error: (err) => {
+          this.isLoadingDoctors = false;
+          this.cdr.markForCheck();
+          console.error('Error loading doctors:', err);
+        },
+      });
+  }
+
+  // ============================================================
+  // Doctor Pagination
+  // ============================================================
+  changeDoctorPage(page: number): void {
+    if (page < 1 || page > this.totalDoctorPages || this.isLoadingDoctors) {
+      return;
+    }
+    this.doctorPageNumber = page;
+    this.loadDoctors();
+  }
+
+  searchDoctors(): void {
+    this.doctorPageNumber = 1;
+    this.loadDoctors();
+  }
+
+  clearDoctorSearch(): void {
+    this.doctorSearchTerm = '';
+    this.doctorPageNumber = 1;
+    this.loadDoctors();
+  }
+
+  // ============================================================
+  // Status Helpers
+  // ============================================================
   getStatusClass(status: string): string {
     switch (status) {
       case 'Active':

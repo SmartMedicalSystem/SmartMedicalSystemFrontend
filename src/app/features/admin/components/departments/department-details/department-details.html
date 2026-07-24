@@ -1,4 +1,4 @@
-<div class="w-full p-4 sm:p-6 font-sans max-w-225 mx-auto">
+<div class="w-full p-4 sm:p-6 font-sans max-w-[900px] mx-auto">
   <!-- Header -->
   <div class="flex items-center justify-between flex-wrap mb-6">
     <h1 class="mb-5 sm:mb-0 text-3xl font-bold text-primary tracking-tight">Department Details</h1>
@@ -12,7 +12,7 @@
       </button>
       <button
         class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium shadow-sm hover:opacity-90 transition-all duration-200"
-        [routerLink]="['/admin/dashboard/departments/edit-departments', department.departmentId]"
+        [routerLink]="['/admin/dashboard/departments/edit-departments', department.id]"
       >
         <mat-icon class="w-5 h-5 text-white">edit</mat-icon>
         Edit Department
@@ -20,166 +20,266 @@
     </div>
   </div>
 
-  <!-- Info Banner -->
-  <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-6">
-    <div class="hidden sm:block"><mat-icon class="text-xl text-blue-600">info</mat-icon></div>
-    <p class="text-sm text-blue-800">Viewing department details. This information is read-only.</p>
-  </div>
-
-  <!-- Summary Card -->
-  <div
-    class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6"
-  >
-    <div class="flex items-center gap-3 flex-wrap">
-      <div
-        class="hidden sm:flex w-12 h-12 rounded-xl bg-primary/10 items-center justify-center text-primary"
-      >
-        <mat-icon class="text-[28px] w-6 h-6">domain</mat-icon>
-      </div>
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3 mb-6">
+      <mat-icon class="text-xl text-red-600 mt-0.5">error</mat-icon>
       <div>
-        <h2 class="text-lg font-bold text-gray-800">{{ department.name }}</h2>
-        <div class="flex items-center gap-3 text-xs text-gray-500">
-          <span>ID: DEPT-{{ department.departmentId | number: '3.0-0' }}</span>
-          <span>•</span>
-          <span>{{ department.doctorCount }} Doctors</span>
-          <span>•</span>
-          <span>Created: {{ department.createdAt | date: 'MMM d, y' }}</span>
-        </div>
+        <p class="text-sm text-red-800 font-medium">Error</p>
+        <p class="text-sm text-red-700">{{ errorMessage }}</p>
       </div>
     </div>
-    <div class="ml-auto">
-      <span
-        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-        [ngClass]="getStatusClass(department.status)"
+  }
+
+  <!-- Content -->
+  @if (!isLoading && !errorMessage) {
+    <div>
+      <!-- Info Banner -->
+      <div
+        class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-6"
       >
-        <span
-          class="w-1.5 h-1.5 rounded-full"
-          [ngClass]="getStatusDotClass(department.status)"
-        ></span>
-        {{ department.status }}
-      </span>
-    </div>
-  </div>
-
-  <!-- Details Grid -->
-  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
-    <div class="p-6 space-y-6">
-      <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-        <mat-icon [style.color]="'var(--color-primary)'">info</mat-icon>
-        General Information
-      </h3>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Department Name -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Department Name</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">{{ department.name }}</p>
+        <div class="hidden sm:block">
+          <mat-icon class="text-xl text-blue-600">info</mat-icon>
         </div>
+        <p class="text-sm text-blue-800">
+          Viewing department details. This information is read-only.
+        </p>
+      </div>
 
-        <!-- Department ID -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Department ID</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1 font-mono">
-            DEPT-{{ department.departmentId | number: '3.0-0' }}
-          </p>
+      <!-- Summary Card -->
+      <div
+        class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6"
+      >
+        <div class="flex items-center gap-3 flex-wrap">
+          <div
+            class="hidden sm:flex w-12 h-12 rounded-xl bg-primary/10 items-center justify-center text-primary"
+          >
+            <mat-icon class="text-[28px] w-6 h-6">domain</mat-icon>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">{{ department.name }}</h2>
+            <div class="flex items-center gap-3 text-xs text-gray-500">
+              <span>ID: DEPT-{{ department.id | number: '3.0-0' }}</span>
+              <span>•</span>
+              <span>{{ department.doctorCount }} Doctors</span>
+              <span>•</span>
+              <span>Created: {{ department.createdAt | date: 'MMM d, y' }}</span>
+            </div>
+          </div>
         </div>
-
-        <!-- Floor Number -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Floor Number</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ department.floorNumber ?? 'Not Assigned' }}
-          </p>
-        </div>
-
-        <!-- Phone Extension -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Phone Extension</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ department.phoneExt || 'Not Assigned' }}
-          </p>
-        </div>
-
-        <!-- Head Doctor -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Head Doctor</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">{{ department.headDoctorName }}</p>
-        </div>
-
-        <!-- Status -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Status</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
+        <div class="ml-auto">
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+            [ngClass]="getStatusClass(department.status)"
+          >
             <span
-              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-              [ngClass]="getStatusClass(department.status)"
+              class="w-1.5 h-1.5 rounded-full"
+              [ngClass]="getStatusDotClass(department.status)"
+            ></span>
+            {{ department.status }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Details Grid -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+        <div class="p-6 space-y-6">
+          <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <mat-icon class="text-primary">info</mat-icon>
+            General Information
+          </h3>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Department Name -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                Department Name
+              </p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">{{ department.name }}</p>
+            </div>
+
+            <!-- Department ID -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                Department ID
+              </p>
+              <p class="text-sm font-semibold text-gray-800 mt-1 font-mono">
+                DEPT-{{ department.id | number: '3.0-0' }}
+              </p>
+            </div>
+
+            <!-- Floor Number -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Floor Number</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{
+                  department.floorNumber !== null
+                    ? 'Floor ' + department.floorNumber
+                    : 'Not Assigned'
+                }}
+              </p>
+            </div>
+
+            <!-- Head Doctor -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Head Doctor</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ department.headDoctor || 'Not Assigned' }}
+              </p>
+            </div>
+
+            <!-- Status -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Status</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                <span
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+                  [ngClass]="getStatusClass(department.status)"
+                >
+                  <span
+                    class="w-1.5 h-1.5 rounded-full"
+                    [ngClass]="getStatusDotClass(department.status)"
+                  ></span>
+                  {{ department.status }}
+                </span>
+              </p>
+            </div>
+
+            <!-- Created At -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Created Date</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ department.createdAt | date: 'MMM d, y' }}
+              </p>
+            </div>
+
+            <!-- Doctors Count -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                Total Doctors
+              </p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ department.doctorCount }} Practitioners
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Doctors List -->
+      <!-- Doctors List -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+            <mat-icon class="text-primary">medical_services</mat-icon>
+            Doctors in this Department
+          </h3>
+          <span class="text-sm text-gray-500">{{ totalDoctorCount }} Doctors</span>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4 border-b border-gray-100">
+          <div class="flex gap-2">
+            <div class="flex-1 relative">
+              <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4"
+                >search</mat-icon
+              >
+              <input
+                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
+                placeholder="Search doctors..."
+                [(ngModel)]="doctorSearchTerm"
+                (keyup.enter)="searchDoctors()"
+              />
+            </div>
+            <button
+              type="button"
+              class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 transition"
+              (click)="searchDoctors()"
             >
-              <span
-                class="w-1.5 h-1.5 rounded-full"
-                [ngClass]="getStatusDotClass(department.status)"
-              ></span>
-              {{ department.status }}
-            </span>
-          </p>
+              Search
+            </button>
+            @if (doctorSearchTerm) {
+              <button
+                type="button"
+                class="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition"
+                (click)="clearDoctorSearch()"
+              >
+                Clear
+              </button>
+            }
+          </div>
         </div>
 
-        <!-- Created At -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Created Date</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ department.createdAt | date: 'MMM d, y' }}
-          </p>
-        </div>
-
-        <!-- Doctors Count -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Doctors</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ department.doctorCount }} Practitioners
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Doctors List -->
-  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
-      <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
-        <mat-icon [style.color]="'var(--color-primary)'">medical_services</mat-icon>
-        Doctors in this Department
-      </h3>
-      <span class="text-sm text-gray-500">{{ department.doctors.length }} Doctors</span>
-    </div>
-
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
-            <th class="text-left font-semibold px-4 py-3">#</th>
-            <th class="text-left font-semibold px-4 py-3">Doctor Name</th>
-            <th class="text-left font-semibold px-4 py-3">Specialization</th>
-            <th class="text-left font-semibold px-4 py-3">License Number</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (doctor of department.doctors; track doctor.doctorId) {
-            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
-              <td class="px-4 py-3 text-gray-400">#{{ doctor.doctorId }}</td>
-              <td class="px-4 py-3 font-medium text-gray-800">{{ doctor.name }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ doctor.specialization }}</td>
-              <td class="px-4 py-3 text-gray-500 font-mono">{{ doctor.licenseNumber }}</td>
-            </tr>
+        <!-- Doctors Table -->
+        <div class="overflow-x-auto">
+          @if (!isLoadingDoctors && doctors.length > 0) {
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+                  <th class="text-left font-semibold px-4 py-3">#</th>
+                  <th class="text-left font-semibold px-4 py-3">Doctor Name</th>
+                  <th class="text-left font-semibold px-4 py-3">Specialization</th>
+                  <th class="text-left font-semibold px-4 py-3">License Number</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (doctor of doctors; track doctor.id) {
+                  <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+                    <td class="px-4 py-3 text-gray-400">#{{ doctor.id }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-800">{{ doctor.name }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ doctor.specialization }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
           }
-        </tbody>
-      </table>
-    </div>
 
-    @if (department.doctors.length === 0) {
-      <div class="p-8 text-center">
-        <mat-icon class="text-4xl text-gray-300 w-full h-auto">medical_services</mat-icon>
-        <p class="text-gray-500 mt-2">No doctors assigned to this department yet.</p>
+          @if (!isLoadingDoctors && doctors.length === 0) {
+            <div class="p-8 text-center">
+              <mat-icon class="text-4xl text-gray-300 w-full h-auto">medical_services</mat-icon>
+              <p class="text-gray-500 mt-2">No doctors found in this department.</p>
+              @if (doctorSearchTerm) {
+                <p class="text-sm text-gray-400">Try adjusting your search.</p>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Pagination -->
+        @if (totalDoctorCount > 0) {
+          <div
+            class="px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3"
+          >
+            <span class="text-sm text-gray-500">
+              Showing {{ (doctorPageNumber - 1) * doctorPageSize + 1 }} to
+              {{ Math.min(doctorPageNumber * doctorPageSize, totalDoctorCount) }} of
+              {{ totalDoctorCount }} doctors
+            </span>
+
+            <div class="flex items-center gap-1">
+              <button
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="changeDoctorPage(doctorPageNumber - 1)"
+                [disabled]="doctorPageNumber === 1 || isLoadingDoctors"
+              >
+                <mat-icon class="text-[18px]">chevron_left</mat-icon>
+              </button>
+
+              <span class="text-sm text-gray-500"
+                >{{ doctorPageNumber }} / {{ totalDoctorPages }}</span
+              >
+
+              <button
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="changeDoctorPage(doctorPageNumber + 1)"
+                [disabled]="doctorPageNumber === totalDoctorPages || isLoadingDoctors"
+              >
+                <mat-icon class="text-[18px]">chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
       </div>
-    }
-  </div>
+    </div>
+  }
 </div>

@@ -1,96 +1,189 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
+import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
+import { LaboratoryDetails as LabDetails } from '../../../../../shared/interfaces/Laboratory/LaboratoryDetails';
 
-interface LabTest {
-  testId: number;
-  testType: string;
-  patientName: string;
-  status: 'pending' | 'done';
-  testDate: Date;
-}
-
-interface Laboratory {
-  labId: number;
-  name: string;
-  location: string;
-  phone: string;
-  headTechnicianId: number | null;
-  headTechnicianName: string;
-  departmentId: number | null;
-  departmentName: string;
-  status: 'Active' | 'Inactive' | 'Maintenance';
-  totalTests: number;
-  staffCount: number;
-  createdAt: Date;
-  tests: LabTest[];
-}
-
+import { TechnicianDetails } from '../../../../../shared/interfaces/Laboratory/TechnicianDetails';
+import { LaboratoryService } from '../../../../../core/services/laboratory-service';
+import { LabTestDetails } from '../../../../../shared/interfaces/Laboratory/LabTestDetails';
 @Component({
   selector: 'app-laboratory-details',
   standalone: true,
-  imports: [CommonModule, RouterModule, MatIconModule],
+  imports: [CommonModule, RouterModule, FormsModule, MatIconModule],
   templateUrl: './laboratory-details.html',
   styleUrls: ['./laboratory-details.css'],
 })
 export class LaboratoryDetails implements OnInit {
-  labId: string | null = null;
-
-  // Mock Laboratory Data
-  laboratory: Laboratory = {
-    labId: 1,
-    name: 'North Wing Pathology',
-    location: 'Building A, Wing 4',
-    phone: '+1-555-0101',
-    headTechnicianId: 1,
-    headTechnicianName: 'Sarah Johnson',
-    departmentId: 1,
-    departmentName: 'Hematology',
+  laboratoryId: number | null = null;
+  laboratory: LabDetails = {
+    id: 0,
+    name: '',
+    location: '',
+    phone: '',
+    code: null,
+    specialty: null,
     status: 'Active',
-    totalTests: 1420,
-    staffCount: 12,
-    createdAt: new Date('2021-06-15'),
-    tests: [
-      {
-        testId: 101,
-        testType: 'CBC',
-        patientName: 'John Doe',
-        status: 'done',
-        testDate: new Date('2024-07-04'),
-      },
-      {
-        testId: 102,
-        testType: 'Lipid Panel',
-        patientName: 'Maria Santos',
-        status: 'pending',
-        testDate: new Date('2024-07-05'),
-      },
-      {
-        testId: 103,
-        testType: 'Liver Function',
-        patientName: 'Robert Brown',
-        status: 'done',
-        testDate: new Date('2024-07-03'),
-      },
-      {
-        testId: 104,
-        testType: 'Urinalysis',
-        patientName: 'Elena Rodriguez',
-        status: 'pending',
-        testDate: new Date('2024-07-05'),
-      },
-    ],
+    headTechnicianId: null,
+    headTechnicianName: null,
+    departmentId: null,
+    departmentName: null,
+    testCount: 0,
+    technicianCount: 0,
+    createdAt: new Date(),
   };
 
-  constructor(private route: ActivatedRoute) {}
+  Math = Math;
 
-  ngOnInit() {
-    this.labId = this.route.snapshot.paramMap.get('id');
-    console.log('Viewing laboratory ID:', this.labId);
-    // TODO: Fetch laboratory by ID from API
+  // ============================================================
+  // UI State
+  // ============================================================
+  isLoading = true;
+  errorMessage: string | null = null;
+
+  // ============================================================
+  // Constructor
+  // ============================================================
+  constructor(
+    private route: ActivatedRoute,
+    private laboratoryService: LaboratoryService,
+  ) {}
+
+  // ============================================================
+  // OnInit
+  // ============================================================
+  ngOnInit(): void {
+    this.laboratoryId = Number(this.route.snapshot.paramMap.get('id'));
+    if (this.laboratoryId) {
+      this.loadLaboratory();
+      this.loadTechnicians();
+      this.loadTests();
+    }
   }
 
+  // ============================================================
+  // Load Laboratory
+  // ============================================================
+  loadLaboratory(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    this.laboratoryService.getLaboratoryById(this.laboratoryId!).subscribe({
+      next: (response) => {
+        this.laboratory = response;
+        this.isLoading = false;
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = 'Failed to load laboratory details.';
+        console.error('Error loading laboratory:', err);
+      },
+    });
+  }
+  // ============================================================
+  // Technicians Pagination
+  // ============================================================
+  technicians: TechnicianDetails[] = [];
+  techPageNumber: number = 1;
+  techPageSize: number = 5;
+  totalTechCount: number = 0;
+  totalTechPages: number = 0;
+  techSearchTerm: string = '';
+  isLoadingTechnicians = false;
+
+  loadTechnicians(): void {
+    if (!this.laboratoryId) return;
+
+    this.isLoadingTechnicians = true;
+
+    this.laboratoryService
+      .getTechniciansByLaboratory(
+        this.laboratoryId,
+        this.techPageNumber,
+        this.techPageSize,
+        this.techSearchTerm || undefined,
+      )
+      .subscribe({
+        next: (response) => {
+          this.technicians = response.items || [];
+          this.totalTechCount = response.totalCount || 0;
+          this.totalTechPages = response.totalPages || 0;
+          this.isLoadingTechnicians = false;
+        },
+        error: (err) => {
+          this.isLoadingTechnicians = false;
+          console.error('Error loading technicians:', err);
+        },
+      });
+  }
+  // ============================================================
+  // Technician Pagination
+  // ============================================================
+  changeTechPage(page: number): void {
+    if (page < 1 || page > this.totalTechPages || this.isLoadingTechnicians) return;
+    this.techPageNumber = page;
+    this.loadTechnicians();
+  }
+
+  searchTechnicians(): void {
+    this.techPageNumber = 1;
+    this.loadTechnicians();
+  }
+
+  // ============================================================
+  // Tests Data
+  // ============================================================
+  tests: LabTestDetails[] = [];
+  testPageNumber: number = 1;
+  testPageSize: number = 5;
+  totalTestCount: number = 0;
+  totalTestPages: number = 0;
+  testSearchTerm: string = '';
+  isLoadingTests = false;
+  // ============================================================
+  // Load Tests (من LabTestsController)
+  // ============================================================
+  loadTests(): void {
+    if (!this.laboratoryId) return;
+
+    this.isLoadingTests = true;
+    this.laboratoryService
+      .getLabTestsByLaboratory(
+        this.laboratoryId,
+        this.testPageNumber,
+        this.testPageSize,
+        this.testSearchTerm || undefined,
+      )
+      .subscribe({
+        next: (response) => {
+          this.tests = response.items || [];
+          this.totalTestCount = response.totalCount || 0;
+          this.totalTestPages = response.totalPages || 0;
+          this.isLoadingTests = false;
+        },
+        error: (err) => {
+          this.isLoadingTests = false;
+          console.error('Error loading tests:', err);
+        },
+      });
+  }
+  // ============================================================
+  // Test Pagination
+  // ============================================================
+  changeTestPage(page: number): void {
+    if (page < 1 || page > this.totalTestPages || this.isLoadingTests) return;
+    this.testPageNumber = page;
+    this.loadTests();
+  }
+
+  searchTests(): void {
+    this.testPageNumber = 1;
+    this.loadTests();
+  }
+  // ============================================================
+  // Status Helpers
+  // ============================================================
   getStatusClass(status: string): string {
     switch (status) {
       case 'Active':
@@ -118,6 +211,16 @@ export class LaboratoryDetails implements OnInit {
   }
 
   getTestStatusClass(status: string): string {
-    return status === 'done' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-600';
+    switch (status?.toLowerCase()) {
+      case 'pending':
+        return 'bg-amber-100 text-amber-700';
+      case 'completed':
+      case 'done':
+        return 'bg-green-100 text-green-700';
+      case 'in progress':
+        return 'bg-blue-100 text-blue-700';
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
   }
 }

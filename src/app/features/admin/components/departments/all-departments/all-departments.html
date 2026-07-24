@@ -19,7 +19,7 @@
 
       <button
         class="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 text-sm font-medium hover:bg-gray-50 transition"
-        (click)="applyFilter()"
+        (click)="refresh()"
       >
         <mat-icon class="w-4 h-4 text-gray-500">refresh</mat-icon>
         Refresh
@@ -119,7 +119,7 @@
           </tr>
         </thead>
         <tbody>
-          @for (dept of paginatedDepartments; track dept.departmentId) {
+          @for (dept of paginatedDepartments; track dept.id) {
             <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
               <td class="px-4 py-4">
                 <div class="flex items-center gap-3">
@@ -170,26 +170,21 @@
                   <button
                     class="text-gray-400 hover:text-primary p-1 transition-colors"
                     title="View"
-                    [routerLink]="[
-                      '/admin/dashboard/departments/department-details',
-                      dept.departmentId,
-                    ]"
+                    [routerLink]="['/admin/dashboard/departments/department-details', dept.id]"
                   >
                     <mat-icon class="text-[18px]">visibility</mat-icon>
                   </button>
                   <button
                     class="text-gray-400 hover:text-primary p-1 transition-colors"
                     title="Edit"
-                    [routerLink]="[
-                      '/admin/dashboard/departments/edit-departments',
-                      dept.departmentId,
-                    ]"
+                    [routerLink]="['/admin/dashboard/departments/edit-departments', dept.id]"
                   >
                     <mat-icon class="text-[18px]">edit</mat-icon>
                   </button>
                   <button
                     class="text-gray-400 hover:text-red-500 p-1 transition-colors"
                     title="Delete"
+                    (click)="deleteDepartment(dept.id)"
                   >
                     <mat-icon class="text-[18px]">delete</mat-icon>
                   </button>

@@ -5,7 +5,7 @@ import { adminGuard } from '../../core/guards/admin-guard';
 export const adminRoutes: Routes = [
   {
     path: 'admin',
-    // canActivate: [authGuard, adminGuard],
+    canActivate: [authGuard, adminGuard],
     children: [
       {
         path: '',
@@ -140,14 +140,14 @@ export const adminRoutes: Routes = [
                 path: 'edit-laboratories/:id', // :id
                 loadComponent: () =>
                   import('./components/laboratories/edit-laboratories/edit-laboratories').then(
-                    (m) => m.EditLaboratories,
+                    (m) => m.EditLaboratory,
                   ),
               },
               {
                 path: 'add-laboratories',
                 loadComponent: () =>
-                  import('./components/laboratories/add-laboratories/add-laboratories').then(
-                    (m) => m.AddLaboratories,
+                  import('./components/laboratories/add-laboratories/add-laboratory').then(
+                    (m) => m.AddLaboratory,
                   ),
               },
               {

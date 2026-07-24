@@ -1,5 +1,5 @@
-<div class="w-full p-4 sm:p-6 font-sans max-w-225 mx-auto">
-  <!-- Breadcrumb & Header -->
+<div class="w-full p-4 sm:p-6 font-sans max-w-[900px] mx-auto">
+  <!-- Header -->
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-3xl font-bold text-primary tracking-tight">Edit Laboratory</h1>
     <button
@@ -11,178 +11,361 @@
     </button>
   </div>
 
-  <!-- Info Banner -->
-  <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-6">
-    <div class="hidden sm:block"><mat-icon class="text-xl text-blue-600">info</mat-icon></div>
-    <p class="text-sm text-blue-800">
-      You are editing an existing laboratory. Any changes will immediately affect test processing
-      and staff assignments.
-    </p>
-  </div>
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex items-center justify-center py-12">
+      <span class="ml-3 text-gray-500">Loading laboratory...</span>
+    </div>
+  }
 
-  <!-- Summary Card -->
-  <div
-    class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6"
-  >
-    <div class="flex items-center gap-3">
-      <div
-        class="hidden sm:flex w-12 h-12 rounded-xl bg-primary/10 items-center justify-center text-primary"
-      >
-        <mat-icon class="text-[28px] w-6 h-6">science</mat-icon>
-      </div>
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3 mb-6">
+      <mat-icon class="text-xl text-red-600 mt-0.5">error</mat-icon>
       <div>
-        <h2 class="text-sm mb-1 sm:mb-0 sm:text-lg font-bold text-gray-800">{{ lab.name }}</h2>
-        <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-          <span>ID: LAB-{{ lab.labId | number: '3.0-0' }}</span>
-          <span>•</span>
-          <span>{{ lab.totalTests }} Tests</span>
-          <span>•</span>
-          <span>{{ lab.staffCount }} Staff</span>
-          <span>•</span>
-          <span>Created: {{ lab.createdAt | date: 'MMM d, y' }}</span>
+        <p class="text-sm text-red-800 font-medium">Error</p>
+        <p class="text-sm text-red-700">{{ errorMessage }}</p>
+      </div>
+    </div>
+  }
+
+  <!-- Content -->
+  @if (!isLoading) {
+    <div>
+      <!-- Info Banner -->
+      <div
+        class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-6"
+      >
+        <mat-icon class="text-xl text-blue-600">info</mat-icon>
+        <p class="text-sm text-blue-800">
+          You are editing an existing laboratory. Any changes will immediately affect test
+          processing and staff assignments.
+        </p>
+      </div>
+
+      <!-- Summary Card -->
+      <div
+        class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary"
+          >
+            <mat-icon class="text-[28px] w-6 h-6">science</mat-icon>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">{{ summary.name }}</h2>
+            <div class="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
+              <span>ID: LAB-{{ summary.id | number: '3.0-0' }}</span>
+              <span>•</span>
+              <span>{{ summary.testCount }} Tests</span>
+              <span>•</span>
+              <span>{{ summary.technicianCount }} Technicians</span>
+              <span>•</span>
+              <span>Created: {{ summary.createdAt | date: 'MMM d, y' }}</span>
+              <span>•</span>
+              <span
+                class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-semibold"
+                [ngClass]="getStatusClass(summary.status)"
+              >
+                <span
+                  class="w-1.5 h-1.5 rounded-full"
+                  [ngClass]="getStatusDotClass(summary.status)"
+                ></span>
+                {{ summary.status }}
+              </span>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <div class="ml-auto">
-      <span
-        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-        [ngClass]="
-          lab.status === 'Active'
-            ? 'bg-green-100 text-green-700'
-            : lab.status === 'Maintenance'
-              ? 'bg-amber-100 text-amber-700'
-              : 'bg-gray-100 text-gray-600'
-        "
+
+      <!-- Form -->
+      <form
+        (ngSubmit)="onSubmit()"
+        #editForm="ngForm"
+        class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
       >
-        <span
-          class="w-1.5 h-1.5 rounded-full"
-          [ngClass]="
-            lab.status === 'Active'
-              ? 'bg-green-600'
-              : lab.status === 'Maintenance'
-                ? 'bg-amber-600'
-                : 'bg-gray-400'
-          "
-        ></span>
-        {{ lab.status }}
-      </span>
+        <div class="p-6 space-y-6">
+          <!-- Laboratory Name -->
+          <div class="space-y-1">
+            <label class="text-sm font-medium text-gray-700">
+              Laboratory Name <span class="text-red-500">*</span>
+            </label>
+            <input
+              class="w-full px-4 py-2.5 rounded-lg border transition-all text-sm outline-none"
+              [class.border-red-500]="isFieldInvalid('name')"
+              [class.border-gray-200]="!isFieldInvalid('name')"
+              placeholder="e.g. North Wing Pathology"
+              [(ngModel)]="laboratory.name"
+              name="name"
+              (blur)="validateField('name')"
+              required
+            />
+            @if (getFieldError('name')) {
+              <p class="text-xs text-red-500">{{ getFieldError('name') }}</p>
+            }
+          </div>
+
+          <!-- Location -->
+          <div class="space-y-1">
+            <label class="text-sm font-medium text-gray-700">
+              Location <span class="text-red-500">*</span>
+            </label>
+            <input
+              class="w-full px-4 py-2.5 rounded-lg border transition-all text-sm outline-none"
+              [class.border-red-500]="isFieldInvalid('location')"
+              [class.border-gray-200]="!isFieldInvalid('location')"
+              placeholder="e.g. Building A, Wing 4"
+              [(ngModel)]="laboratory.location"
+              name="location"
+              (blur)="validateField('location')"
+              required
+            />
+            @if (getFieldError('location')) {
+              <p class="text-xs text-red-500">{{ getFieldError('location') }}</p>
+            }
+            @if (!getFieldError('location')) {
+              <p class="text-xs text-gray-400">
+                The physical location of the laboratory within the facility.
+              </p>
+            }
+          </div>
+
+          <!-- Phone -->
+          <div class="space-y-1">
+            <label class="text-sm font-medium text-gray-700">
+              Phone <span class="text-red-500">*</span>
+            </label>
+            <input
+              class="w-full px-4 py-2.5 rounded-lg border transition-all text-sm outline-none"
+              [class.border-red-500]="isFieldInvalid('phone')"
+              [class.border-gray-200]="!isFieldInvalid('phone')"
+              placeholder="e.g. 01012345678"
+              type="tel"
+              [(ngModel)]="laboratory.phone"
+              name="phone"
+              (blur)="validateField('phone')"
+              required
+            />
+            @if (getFieldError('phone')) {
+              <p class="text-xs text-red-500">{{ getFieldError('phone') }}</p>
+            }
+            @if (!getFieldError('phone')) {
+              <p class="text-xs text-gray-400">Egyptian phone number (e.g., 01012345678).</p>
+            }
+          </div>
+
+          <!-- Code -->
+          <div class="space-y-1">
+            <label class="text-sm font-medium text-gray-700">Laboratory Code</label>
+            <input
+              class="w-full px-4 py-2.5 rounded-lg border transition-all text-sm outline-none"
+              [class.border-red-500]="isFieldInvalid('code')"
+              [class.border-gray-200]="!isFieldInvalid('code')"
+              placeholder="e.g. LAB-001"
+              [(ngModel)]="laboratory.code"
+              name="code"
+              (blur)="validateField('code')"
+            />
+            @if (getFieldError('code')) {
+              <p class="text-xs text-red-500">{{ getFieldError('code') }}</p>
+            }
+            @if (!getFieldError('code')) {
+              <p class="text-xs text-gray-400">
+                Unique identifier for the laboratory (letters, numbers, hyphens, underscores).
+              </p>
+            }
+          </div>
+
+          <!-- Specialty -->
+          <div class="space-y-1">
+            <label class="text-sm font-medium text-gray-700">Specialty</label>
+            <input
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
+              placeholder="e.g. Hematology, Microbiology, Biochemistry"
+              [(ngModel)]="laboratory.specialty"
+              name="specialty"
+            />
+            <p class="text-xs text-gray-400">
+              The primary specialty or focus area of the laboratory.
+            </p>
+          </div>
+
+          <!-- Department -->
+          <div class="space-y-1">
+            <label class="text-sm font-medium text-gray-700">Department</label>
+            <div class="relative">
+              <select
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white appearance-none pr-10"
+                style="
+                  background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2224%22 height%3D%2224%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%239ca3af%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
+                  background-position: right 12px center;
+                  background-repeat: no-repeat;
+                  background-size: 20px;
+                "
+                [(ngModel)]="laboratory.departmentId"
+                name="departmentId"
+              >
+                <option [ngValue]="null">Select a department...</option>
+                @if (isLoadingDepartments) {
+                  <option disabled>Loading departments...</option>
+                } @else {
+                  @for (dept of departments; track dept.id) {
+                    <option [ngValue]="dept.id">{{ dept.name }}</option>
+                  }
+                }
+              </select>
+            </div>
+
+            <!-- Department Pagination -->
+            @if (departments.length > 0 && totalDeptPages > 1) {
+              <div class="flex items-center justify-between mt-2">
+                <p class="text-xs text-gray-400">
+                  Showing {{ (deptPageNumber - 1) * deptPageSize + 1 }} to
+                  {{ Math.min(deptPageNumber * deptPageSize, totalDeptCount) }} of
+                  {{ totalDeptCount }} departments
+                </p>
+                <div class="flex items-center gap-1">
+                  <button
+                    type="button"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    (click)="changeDeptPage(deptPageNumber - 1)"
+                    [disabled]="deptPageNumber === 1 || isLoadingDepartments"
+                  >
+                    <mat-icon class="text-[18px] w-4 h-4">chevron_left</mat-icon>
+                  </button>
+                  <span class="text-xs text-gray-500"
+                    >{{ deptPageNumber }} / {{ totalDeptPages }}</span
+                  >
+                  <button
+                    type="button"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    (click)="changeDeptPage(deptPageNumber + 1)"
+                    [disabled]="deptPageNumber === totalDeptPages || isLoadingDepartments"
+                  >
+                    <mat-icon class="text-[18px] w-4 h-4">chevron_right</mat-icon>
+                  </button>
+                </div>
+              </div>
+            }
+            <p class="text-xs text-gray-400">The department this laboratory belongs to.</p>
+          </div>
+
+          <!-- Head Technician -->
+          <div class="space-y-1">
+            <label class="text-sm font-medium text-gray-700">Head Technician</label>
+            <div class="relative">
+              <select
+                class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white appearance-none pr-10"
+                style="
+                  background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2224%22 height%3D%2224%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%239ca3af%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
+                  background-position: right 12px center;
+                  background-repeat: no-repeat;
+                  background-size: 20px;
+                "
+                [(ngModel)]="laboratory.headTechnicianId"
+                name="headTechnicianId"
+              >
+                <option [ngValue]="null">Select a technician...</option>
+                @if (isLoadingTechnicians) {
+                  <option disabled>Loading technicians...</option>
+                } @else {
+                  @for (tech of technicians; track tech.id) {
+                    <option [ngValue]="tech.id">
+                      {{ tech.firstName }} {{ tech.lastName }}- {{ tech.labType }}
+                    </option>
+                  }
+                }
+              </select>
+            </div>
+
+            <!-- Technician Pagination -->
+            @if (technicians.length > 0 && totalTechPages > 1) {
+              <div class="flex items-center justify-between mt-2">
+                <p class="text-xs text-gray-400">
+                  Showing {{ (techPageNumber - 1) * techPageSize + 1 }} to
+                  {{ Math.min(techPageNumber * techPageSize, totalTechCount) }} of
+                  {{ totalTechCount }} technicians
+                </p>
+                <div class="flex items-center gap-1">
+                  <button
+                    type="button"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    (click)="changeTechPage(techPageNumber - 1)"
+                    [disabled]="techPageNumber === 1 || isLoadingTechnicians"
+                  >
+                    <mat-icon class="text-[18px] w-4 h-4">chevron_left</mat-icon>
+                  </button>
+                  <span class="text-xs text-gray-500"
+                    >{{ techPageNumber }} / {{ totalTechPages }}</span
+                  >
+                  <button
+                    type="button"
+                    class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    (click)="changeTechPage(techPageNumber + 1)"
+                    [disabled]="techPageNumber === totalTechPages || isLoadingTechnicians"
+                  >
+                    <mat-icon class="text-[18px] w-4 h-4">chevron_right</mat-icon>
+                  </button>
+                </div>
+              </div>
+            }
+            <p class="text-xs text-gray-400">The technician who leads this laboratory.</p>
+          </div>
+
+          <!-- Status -->
+          <div class="space-y-1">
+            <label class="text-sm font-medium text-gray-600">Status</label>
+            <select
+              class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white appearance-none"
+              style="
+                background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2224%22 height%3D%2224%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%239ca3af%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
+                background-position: right 12px center;
+                background-repeat: no-repeat;
+                background-size: 20px;
+              "
+              [(ngModel)]="laboratory.status"
+              name="status"
+            >
+              @for (status of statuses; track status) {
+                <option [value]="status">{{ status }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div
+          class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-end gap-3"
+        >
+          <button
+            type="button"
+            class="w-full sm:w-auto px-6 py-2.5 text-sm text-gray-600 font-medium hover:text-primary transition"
+            routerLink="/admin/dashboard/laboratories/all-laboratories"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="w-full sm:w-auto px-6 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
+            (click)="onReset()"
+          >
+            <mat-icon class="w-4 h-4 text-gray-500">restart_alt</mat-icon>
+            Reset Changes
+          </button>
+          <button
+            type="submit"
+            class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
+            [disabled]="!isFormValid() || isSaving"
+          >
+            @if (isSaving) {
+            } @else {
+              <mat-icon class="w-4 h-4 text-white">save</mat-icon>
+            }
+            {{ isSaving ? 'Saving...' : 'Save Changes' }}
+          </button>
+        </div>
+      </form>
     </div>
-  </div>
-
-  <!-- Form -->
-  <form
-    (ngSubmit)="onSubmit()"
-    #editForm="ngForm"
-    class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
-  >
-    <div class="p-6 space-y-6">
-      <!-- Laboratory Name -->
-      <div class="space-y-1">
-        <label class="text-sm font-medium text-gray-700"
-          >Laboratory Name <span class="text-red-500">*</span></label
-        >
-        <input
-          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
-          placeholder="e.g. North Wing Pathology"
-          [(ngModel)]="lab.name"
-          name="name"
-          required
-        />
-      </div>
-
-      <!-- Department -->
-      <div class="space-y-1">
-        <label class="text-sm font-medium text-gray-700">Department</label>
-        <select
-          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white appearance-none"
-          style="
-            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2224%22 height%3D%2224%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%239ca3af%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
-            background-position: right 12px center;
-            background-repeat: no-repeat;
-            background-size: 20px;
-          "
-          [(ngModel)]="lab.departmentId"
-          name="departmentId"
-        >
-          <option [value]="null">Select a department...</option>
-          @for (dept of departments; track dept.departmentId) {
-            <option [value]="dept.departmentId">{{ dept.name }}</option>
-          }
-        </select>
-        <p class="text-xs text-gray-400">The department this laboratory belongs to.</p>
-      </div>
-
-      <!-- Head Technician -->
-      <div class="space-y-1">
-        <label class="text-sm font-medium text-gray-700">Head Technician</label>
-        <select
-          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white appearance-none"
-          style="
-            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2224%22 height%3D%2224%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%239ca3af%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
-            background-position: right 12px center;
-            background-repeat: no-repeat;
-            background-size: 20px;
-          "
-          [(ngModel)]="lab.headTechnicianId"
-          name="headTechnicianId"
-        >
-          <option [value]="null">Select a technician...</option>
-          @for (tech of technicians; track tech.technicianId) {
-            <option [value]="tech.technicianId">{{ tech.name }}</option>
-          }
-        </select>
-        <p class="text-xs text-gray-400">The technician who leads this laboratory.</p>
-      </div>
-
-      <!-- Status -->
-      <div class="space-y-1">
-        <label class="text-sm font-medium text-gray-700">Status</label>
-        <select
-          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white appearance-none"
-          style="
-            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2224%22 height%3D%2224%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%239ca3af%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
-            background-position: right 12px center;
-            background-repeat: no-repeat;
-            background-size: 20px;
-          "
-          [(ngModel)]="lab.status"
-          name="status"
-        >
-          @for (status of statuses; track status) {
-            <option [value]="status">{{ status }}</option>
-          }
-        </select>
-        <p class="text-xs text-gray-400">Current operational status of the laboratory.</p>
-      </div>
-    </div>
-
-    <!-- Form Actions -->
-    <div
-      class="px-6 py-4 border-t border-gray-100 bg-gray-50/50 flex flex-col sm:flex-row items-center justify-end gap-3"
-    >
-      <button
-        type="button"
-        class="w-full sm:w-auto px-6 py-2.5 text-sm text-gray-600 font-medium hover:text-primary transition"
-        routerLink="/admin/dashboard/laboratories/all-laboratories"
-      >
-        Cancel
-      </button>
-      <button
-        type="button"
-        class="w-full sm:w-auto px-6 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
-        (click)="onReset()"
-      >
-        <mat-icon class="w-4 h-4 text-gray-500">restart_alt</mat-icon>
-        Reset Changes
-      </button>
-      <button
-        type="submit"
-        class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
-        [disabled]="!editForm.form.valid"
-      >
-        <mat-icon class="w-4 h-4 text-white">save</mat-icon>
-        Save Changes
-      </button>
-    </div>
-  </form>
+  }
 </div>
