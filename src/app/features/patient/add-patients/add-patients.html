@@ -126,19 +126,34 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-      <div class="flex flex-col gap-1">
-        <input type="text" formControlName="mobileNumber" placeholder="Mobile Number *"
-          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-          [class.border-gray-200]="!isInvalid('mobileNumber')"
-          [class.focus:ring-primary/40]="!isInvalid('mobileNumber')"
-          [class.border-tertiary]="isInvalid('mobileNumber')"
-          [class.focus:ring-tertiary/30]="isInvalid('mobileNumber')" />
-        @if (isInvalid('mobileNumber')) {
-          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-            <span>⚠️</span> {{ errorMessage('mobileNumber', 'Mobile Number') }}
-          </p>
-        }
-      </div>
+  <div class="flex flex-col gap-1">
+    <input type="text" formControlName="mobileNumber" placeholder="Mobile Number *"
+      class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+      [class.border-gray-200]="!isInvalid('mobileNumber')"
+      [class.focus:ring-primary/40]="!isInvalid('mobileNumber')"
+      [class.border-tertiary]="isInvalid('mobileNumber')"
+      [class.focus:ring-tertiary/30]="isInvalid('mobileNumber')" />
+    @if (isInvalid('mobileNumber')) {
+      <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+        <span>⚠️</span> {{ errorMessage('mobileNumber', 'Mobile Number') }}
+      </p>
+    }
+  </div>
+
+  <div class="flex flex-col gap-1">
+    <input type="email" formControlName="email" placeholder="Email *"
+      class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+      [class.border-gray-200]="!isInvalid('email')"
+      [class.focus:ring-primary/40]="!isInvalid('email')"
+      [class.border-tertiary]="isInvalid('email')"
+      [class.focus:ring-tertiary/30]="isInvalid('email')" />
+    @if (isInvalid('email')) {
+      <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+        <span>⚠️</span> {{ errorMessage('email', 'Email') }}
+      </p>
+    }
+  </div>
+
 
     
     </div>
@@ -198,15 +213,13 @@
       </div>
 
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-primary">Assigned Doctor</label>
-        <select formControlName="assignedDoctor"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
-          <option value="" disabled selected>Select doctor</option>
-          <option>Dr. Sarah Chen</option>
-          <option>Dr. Julian Vance</option>
-          <option>Dr. Amanda Lee</option>
-        </select>
-      </div>
+  <label class="text-xs font-medium text-primary">Assigned Doctor</label>
+  <input
+    type="text"
+    formControlName="assignedDoctor"
+    placeholder="Enter doctor name"
+    class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+</div>
     </div>
 
     <!-- ===================== Actions ===================== -->

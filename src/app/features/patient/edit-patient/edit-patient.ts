@@ -1,8 +1,27 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientsService } from '../../../core/services/patient-service';
+import { UpdatePatientDto } from '../../../shared/interfaces/Patient.model';
+
+const NATIONAL_ID_PATTERN = /^\d{14}$/;
+
+function notInFutureValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+
+  const inputDate = new Date(control.value);
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+
+  return inputDate > today ? { futureDate: true } : null;
+}
 
 @Component({
   selector: 'app-edit-patient',
@@ -12,20 +31,22 @@ import { PatientsService } from '../../../core/services/patient-service';
   styleUrl: './edit-patient.css',
 })
 export class EditPatient implements OnInit {
-
   private fb = inject(FormBuilder);
   private patientService = inject(PatientsService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-  patientId = 0;
+
+ patientId!: number;
+  submitted = signal(false);
+
 
   patient = signal({
     name: '',
     patientId: '',
     nationalId: '',
     status: 'Active',
-    registeredDate: ''
+    registeredDate: '',
   });
 
   modifiedFields = signal<Set<string>>(new Set());
@@ -33,18 +54,19 @@ export class EditPatient implements OnInit {
   form = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    nationalId: [0, Validators.required],
-    dateOfBirth: ['', Validators.required],
-    gender: [0, Validators.required],
-    mobileNumber: [0, Validators.required],
+    nationalId: [{ value: '', disabled: true }, [Validators.required, Validators.pattern(NATIONAL_ID_PATTERN)]],
+    dateOfBirth: ['', [Validators.required, notInFutureValidator]],
+    gender: [null as number | null, Validators.required],
+    mobileNumber: ['', Validators.required],
     address: [''],
-    bloodType: [1, Validators.required],
+    bloodType: [null as number | null, Validators.required],
+    email: ['', [Validators.required, Validators.email]],
 
     // UI Only
     patientNumber: [{ value: '', disabled: true }],
     registrationDate: [{ value: '', disabled: true }],
     assignedDepartment: [''],
-    primaryPhysician: ['']
+    primaryPhysician: [''],
   });
 
   originalValue = this.form.getRawValue();
@@ -65,20 +87,21 @@ export class EditPatient implements OnInit {
           patientId: patient.id.toString(),
           nationalId: patient.nationalId.toString(),
           status: 'Active',
-          registeredDate: ''
+          registeredDate: '',
         });
 
         this.form.patchValue({
           firstName: patient.firstName,
           lastName: patient.lastName,
-          nationalId: patient.nationalId,
+          nationalId: patient.nationalId.toString(),
           dateOfBirth: patient.dateOfBirth.substring(0, 10),
           gender: patient.gender,
-          mobileNumber: patient.mobileNumber,
+          mobileNumber: patient.mobileNumber.toString(),
           address: patient.address,
+          email: patient.email,
           bloodType: patient.bloodType,
           patientNumber: patient.id.toString(),
-          registrationDate: ''
+          registrationDate: '',
         });
 
         this.originalValue = this.form.getRawValue();
@@ -86,8 +109,27 @@ export class EditPatient implements OnInit {
       error: (err) => {
         console.error(err);
         alert('Failed to load patient');
-      }
+      },
     });
+  
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return !!control && control.invalid && (control.touched || this.submitted());
+  }
+
+  errorMessage(controlName: string, label: string): string {
+    const control = this.form.get(controlName);
+    if (!control || !control.errors) return '';
+
+    if (control.hasError('required')) return `${label} is required`;
+    if (control.hasError('futureDate')) return `${label} cannot be in the future`;
+    if (control.hasError('pattern')) {
+      if (controlName === 'nationalId') return 'National ID must be exactly 14 digits';
+      return `${label} is invalid`;
+    }
+    return '';
   }
 
   isModified(controlName: string): boolean {
@@ -136,7 +178,9 @@ export class EditPatient implements OnInit {
     this.onSaveChanges();
   }
 
-  onSaveChanges() {
+   onSaveChanges() {
+    this.submitted.set(true);
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
@@ -144,18 +188,19 @@ export class EditPatient implements OnInit {
 
     const value = this.form.getRawValue();
 
-    const dto = {
+    const dto: UpdatePatientDto = {
       firstName: value.firstName!,
       lastName: value.lastName!,
-      nationalId: Number(value.nationalId),
+      nationalId: value.nationalId!,
+      email: value.email!,
       dateOfBirth: value.dateOfBirth!,
       gender: Number(value.gender),
       mobileNumber: Number(value.mobileNumber),
       address: value.address ?? '',
-      bloodType: Number(value.bloodType)
+      bloodType: Number(value.bloodType),
     };
 
-    this.patientService.updatePatient(this.patientId, dto).subscribe({
+    this.patientService.updatePatientById(this.patientId, dto).subscribe({
       next: () => {
         alert('Patient updated successfully');
         this.originalValue = this.form.getRawValue();
@@ -165,7 +210,7 @@ export class EditPatient implements OnInit {
       error: (err) => {
         console.error(err);
         alert(err.error?.message ?? 'Failed to update patient');
-      }
+      },
     });
   }
 

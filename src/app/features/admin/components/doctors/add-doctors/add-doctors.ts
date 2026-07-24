@@ -8,7 +8,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CreateDoctorDto, DoctorService } from '../../../../../core/services/doctor-service';
+import { CreateDoctorDto } from '../../../../../shared/interfaces/Doctor.model';
+import {  DoctorService } from '../../../../../core/services/doctor-service';
 
 // مطابق لـ Guard.ValidatePhone في الباك: 010/011/012/015 + 8 أرقام
 const EGYPT_PHONE_PATTERN = /^(010|011|012|015)\d{8}$/;
