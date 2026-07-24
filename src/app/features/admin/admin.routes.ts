@@ -67,12 +67,12 @@ export const adminRoutes: Routes = [
                   import('./components/doctors/all-doctors/all-doctors').then((m) => m.AllDoctors),
               },
               {
-                path: 'edit-doctors', // :id
-                loadComponent: () =>
-                  import('./components/doctors/edit-doctors/edit-doctors').then(
-                    (m) => m.EditDoctors,
-                  ),
-              },
+  path: 'edit-doctors/:id',
+  loadComponent: () =>
+    import('./components/doctors/edit-doctors/edit-doctors').then(
+      (m) => m.EditDoctors
+    ),
+  },
               {
                 path: 'add-doctors',
                 loadComponent: () =>

@@ -101,7 +101,7 @@ export class AddPatients {
 
       lastName: value.lastName!,
 
-      nationalId: Number(value.nationalId),
+      nationalId: value.nationalId!,
 
       dateOfBirth: value.dateOfBirth!,
 

@@ -6,13 +6,12 @@ export interface Doctor {
   id: number;
   name: string;
   specialization: string;
-  contact: string;
   dateOfBirth: string;
   email: string;
-  mobileNumber: number;
+  mobileNumber: string;
   address: string;
   gender: number;
-  nationalId: number;
+  nationalId: string;
   departmentId: number;
   departmentName: string;
 }
@@ -32,26 +31,25 @@ export interface DoctorResponse {
 export interface CreateDoctorDto {
   name: string;
   specialization: string;
-  contact: string;
   dateOfBirth: string;
   email: string;
-  mobileNumber: number;
+  mobileNumber: string;
+  password: string;
   address: string;
   gender: number;
-  nationalId: number;
+  nationalId: string;
   departmentId: number;
 }
 
 export interface UpdateDoctorDto {
   name: string;
   specialization: string;
-  contact: string;
   dateOfBirth: string;
   email: string;
-  mobileNumber: number;
+  mobileNumber: string;
   address: string;
   gender: number;
-  nationalId: number;
+  nationalId: string;
   departmentId: number;
 }
 
@@ -59,67 +57,51 @@ export interface UpdateDoctorDto {
   providedIn: 'root',
 })
 export class DoctorService {
-
   private apiUrl = 'https://localhost:7099/api/Doctors';
 
   constructor(private http: HttpClient) {}
 
   // ================= GET ALL =================
-
-  getAllDoctors(
-    pageNumber: number = 1,
-    pageSize: number = 10
-  ): Observable<DoctorResponse> {
-
+  getAllDoctors(pageNumber: number = 1, pageSize: number = 10): Observable<DoctorResponse> {
     return this.http.get<DoctorResponse>(
       `${this.apiUrl}?pageNumber=${pageNumber}&pageSize=${pageSize}`
     );
-
   }
 
-  // ================= GET BY ID =================
-
-  getDoctorById(id: number): Observable<Doctor> {
-
-    return this.http.get<Doctor>(
-      `${this.apiUrl}/${id}`
+  // ================= GET BY DEPARTMENT =================
+  getDoctorsByDepartment(
+    departmentId: number,
+    pageNumber: number = 1,
+    pageSize: number = 10
+  ): Observable<DoctorResponse> {
+    return this.http.get<DoctorResponse>(
+      `${this.apiUrl}/by-department/${departmentId}?pageNumber=${pageNumber}&pageSize=${pageSize}`
     );
+  }
 
+  // ================= GET BY SSN (nationalId) =================
+  // مفيش GetById(int) في الباك، بس GetBySSN(string ssn)
+  getDoctorBySSN(ssn: string): Observable<Doctor> {
+    return this.http.get<Doctor>(`${this.apiUrl}/${ssn}`);
   }
 
   // ================= CREATE =================
-
   addDoctor(dto: CreateDoctorDto): Observable<Doctor> {
-
-    return this.http.post<Doctor>(
-      this.apiUrl,
-      dto
-    );
-
+    return this.http.post<Doctor>(`${this.apiUrl}/create`, dto);
   }
 
-  // ================= UPDATE =================
+ // ================= GET BY ID =================
+getDoctorById(id: number): Observable<Doctor> {
+  return this.http.get<Doctor>(`${this.apiUrl}/by-id/${id}`);
+}
 
-  updateDoctor(
-    id: number,
-    dto: UpdateDoctorDto
-  ): Observable<Doctor> {
+// ================= UPDATE (بالـ id) =================
+updateDoctor(id: number, dto: UpdateDoctorDto): Observable<Doctor> {
+  return this.http.put<Doctor>(`${this.apiUrl}/by-id/${id}`, dto);
+}
 
-    return this.http.put<Doctor>(
-      `${this.apiUrl}/${id}`,
-      dto
-    );
-
-  }
-
-  // ================= DELETE =================
-
+  // ================= DELETE (بالـ id) =================
   deleteDoctor(id: number): Observable<void> {
-
-    return this.http.delete<void>(
-      `${this.apiUrl}/${id}`
-    );
-
-  }
-
+  return this.http.delete<void>(`${this.apiUrl}/by-id/${id}`);
+}
 }

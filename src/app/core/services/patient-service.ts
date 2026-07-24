@@ -18,7 +18,7 @@ export interface Patient {
 export interface CreatePatientDto {
   firstName: string;
   lastName: string;
-  nationalId: number;
+  nationalId: string;
   dateOfBirth: string;
   gender: number;
   mobileNumber: number;

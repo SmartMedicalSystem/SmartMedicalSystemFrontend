@@ -95,19 +95,19 @@
       </div>
 
       <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-primary">Blood Group</label>
-        <select formControlName="bloodGroup"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
-          <option value="" disabled selected>Select blood group</option>
-          <option>O+</option>
-          <option>O-</option>
-          <option>A+</option>
-          <option>A-</option>
-          <option>B+</option>
-          <option>B-</option>
-          <option>AB+</option>
-          <option>AB-</option>
-        </select>
+      <label class="text-xs font-medium text-primary">Blood Group</label>
+<select formControlName="bloodType"
+  class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
+  <option [ngValue]="null" disabled selected>Select blood group</option>
+  <option [ngValue]="7">O+</option>
+  <option [ngValue]="8">O-</option>
+  <option [ngValue]="1">A+</option>
+  <option [ngValue]="2">A-</option>
+  <option [ngValue]="3">B+</option>
+  <option [ngValue]="4">B-</option>
+  <option [ngValue]="5">AB+</option>
+  <option [ngValue]="6">AB-</option>
+</select>
       </div>
     </div>
 

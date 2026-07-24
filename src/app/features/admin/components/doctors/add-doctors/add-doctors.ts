@@ -1,8 +1,31 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
+import { Router } from '@angular/router';
+import { CreateDoctorDto, DoctorService } from '../../../../../core/services/doctor-service';
 
-import { Doctor, DoctorService } from '../../../../../core/services/doctor-service';
+// مطابق لـ Guard.ValidatePhone في الباك: 010/011/012/015 + 8 أرقام
+const EGYPT_PHONE_PATTERN = /^(010|011|012|015)\d{8}$/;
+
+// رقم قومي مصري: 14 رقم بالظبط
+const NATIONAL_ID_PATTERN = /^\d{14}$/;
+
+function notInFutureValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+
+  const inputDate = new Date(control.value);
+  const today = new Date();
+  today.setHours(23, 59, 59, 999); // نسمح بتاريخ النهاردة نفسه
+
+  return inputDate > today ? { futureDate: true } : null;
+}
+
 @Component({
   selector: 'app-add-doctors',
   standalone: true,
@@ -13,32 +36,33 @@ import { Doctor, DoctorService } from '../../../../../core/services/doctor-servi
 export class AddDoctors {
   private fb = inject(FormBuilder);
   private doctorService = inject(DoctorService);
+  private router = inject(Router);
 
   submitted = signal(false);
-  photoPreview = signal<string |null>(null);
+  photoPreview = signal<string | null>(null);
 
   employeeId = signal('EMP-2024-0482');
   temporaryPassword = signal('kX9!pL42_mQ');
 
   form = this.fb.group({
     // Personal Information
-    firstName: ['', Validators.required],
-    lastName: ['', Validators.required],
-    gender: [0, Validators.required],
-    dateOfBirth: ['', Validators.required],
-    nationalId: ['', Validators.required],
+    firstName: ['', [Validators.required, Validators.maxLength(100)]],
+    lastName: ['', [Validators.required, Validators.maxLength(100)]],
+    gender: [null as number | null, Validators.required],
+    dateOfBirth: ['', [Validators.required, notInFutureValidator]],
+    nationalId: ['', [Validators.required, Validators.pattern(NATIONAL_ID_PATTERN)]],
 
     // Professional Information
-    department: ['', Validators.required], // DepartmentId
-    specialization: ['', Validators.required],
+    department: [null as number | null, Validators.required],
+    specialization: ['', [Validators.required, Validators.maxLength(100)]],
     joiningDate: [''],
 
     // Contact Information
-    mobileNumber: ['', Validators.required],
-    personalEmail: ['', [Validators.required, Validators.email]],
-    residentialAddress: [''],
+    mobileNumber: ['', [Validators.required, Validators.pattern(EGYPT_PHONE_PATTERN)]],
+    personalEmail: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
+    residentialAddress: ['', Validators.maxLength(250)],
 
-    // Contact
+    // Contact (محلي بس، مش بيتبعت للباك)
     contact: ['Clinic 101', Validators.required],
   });
 
@@ -61,13 +85,36 @@ export class AddDoctors {
 
   isInvalid(controlName: string): boolean {
     const control = this.form.get(controlName);
-
     return !!control && control.invalid && (control.touched || this.submitted());
+  }
+
+  errorMessage(controlName: string, label: string): string {
+    const control = this.form.get(controlName);
+    if (!control || !control.errors) return '';
+
+    
+if (control.hasError('required')) return `${label} is required`;
+if (control.hasError('email')) return `Invalid email address`;
+if (control.hasError('maxlength')) {
+  const max = control.getError('maxlength').requiredLength;
+  return `${label} exceeds the maximum length (${max} characters)`;
+}
+if (control.hasError('futureDate')) return `${label} cannot be in the future`;
+if (control.hasError('pattern')) {
+  if (controlName === 'mobileNumber') {
+    return 'Mobile number must start with 010, 011, 012, or 015 followed by 8 digits';
+  }
+  if (controlName === 'nationalId') {
+    return 'National ID must be exactly 14 digits';
+  }
+  return `${label} is invalid`;
+}
+    return '';
   }
 
   onClearForm() {
     this.form.reset({
-      gender: 0,
+      gender: null,
       contact: 'Clinic 101',
     });
 
@@ -97,25 +144,16 @@ export class AddDoctors {
 
     const value = this.form.getRawValue();
 
-    const doctor = {
-      name: `${value.firstName} ${value.lastName}`,
-
+    const doctor: CreateDoctorDto = {
+      name: `${value.firstName} ${value.lastName}`.trim(),
       specialization: value.specialization!,
-
-      contact: value.contact!,
-
       dateOfBirth: value.dateOfBirth!,
-
       email: value.personalEmail!,
-
-      mobileNumber: Number(value.mobileNumber),
-
+      mobileNumber: value.mobileNumber!,
+      password: this.temporaryPassword(),
       address: value.residentialAddress ?? '',
-
       gender: Number(value.gender),
-
-      nationalId: Number(value.nationalId),
-
+      nationalId: value.nationalId!,
       departmentId: Number(value.department),
     };
 
@@ -127,12 +165,13 @@ export class AddDoctors {
 
         if (addAnother) {
           this.onClearForm();
+        } else {
+          this.router.navigate(['/admin/dashboard/doctors/all-doctors']);
         }
       },
 
       error: (err) => {
         console.error(err);
-
         alert(err.error?.message ?? 'Failed to create doctor');
       },
     });

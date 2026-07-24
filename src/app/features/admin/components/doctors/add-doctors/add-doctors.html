@@ -26,18 +26,23 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-gray-500">First Name</label>
-          <input
-            type="text"
-            formControlName="firstName"
-            placeholder="e.g. John"
-            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-            [class.border-gray-200]="!isInvalid('firstName')"
-            [class.focus:ring-primary/40]="!isInvalid('firstName')"
-            [class.border-tertiary]="isInvalid('firstName')"
-            [class.focus:ring-tertiary/30]="isInvalid('firstName')"
-          />
-        </div>
+  <label class="text-xs font-medium text-gray-500">First Name</label>
+  <input
+    type="text"
+    formControlName="firstName"
+    placeholder="e.g. John"
+    class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+    [class.border-gray-200]="!isInvalid('firstName')"
+    [class.focus:ring-primary/40]="!isInvalid('firstName')"
+    [class.border-tertiary]="isInvalid('firstName')"
+    [class.focus:ring-tertiary/30]="isInvalid('firstName')"
+  />
+  @if (isInvalid('firstName')) {
+    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+      <span>⚠️</span> {{ errorMessage('firstName', 'First Name') }}
+    </p>
+  }
+</div>
 
         <div class="flex flex-col gap-1">
           <label class="text-xs font-medium text-gray-500">Last Name</label>
@@ -51,6 +56,11 @@
             [class.border-tertiary]="isInvalid('lastName')"
             [class.focus:ring-tertiary/30]="isInvalid('lastName')"
           />
+          @if (isInvalid('lastName')) {
+  <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+    <span>⚠️</span> {{ errorMessage('lastName', 'Last Name') }}
+  </p>
+}
         </div>
 
         <div class="flex flex-col gap-1">
@@ -68,13 +78,22 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
         <div class="flex flex-col gap-1">
-          <label class="text-xs font-medium text-gray-500">Date of Birth</label>
-          <input
-            type="date"
-            formControlName="dateOfBirth"
-            class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
-          />
-        </div>
+  <label class="text-xs font-medium text-gray-500">Date of Birth</label>
+  <input
+    type="date"
+    formControlName="dateOfBirth"
+    class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+    [class.border-gray-200]="!isInvalid('dateOfBirth')"
+    [class.focus:ring-primary/40]="!isInvalid('dateOfBirth')"
+    [class.border-tertiary]="isInvalid('dateOfBirth')"
+    [class.focus:ring-tertiary/30]="isInvalid('dateOfBirth')"
+  />
+  @if (isInvalid('dateOfBirth')) {
+    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+      <span>⚠️</span> {{ errorMessage('dateOfBirth', 'Date of Birth') }}
+    </p>
+  }
+</div>
 
         <div class="flex flex-col gap-1">
           <label class="text-xs font-medium text-gray-500">National ID / SSN</label>
@@ -88,6 +107,11 @@
             [class.border-tertiary]="isInvalid('nationalId')"
             [class.focus:ring-tertiary/30]="isInvalid('nationalId')"
           />
+          @if (isInvalid('nationalId')) {
+  <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+    <span>⚠️</span> {{ errorMessage('nationalId', 'National ID / SSN') }}
+  </p>
+}
         </div>
         <div class="flex flex-col gap-1">
   <label class="text-xs font-medium text-gray-500">
@@ -125,17 +149,25 @@
         <div class="flex flex-col gap-1">
           <label class="text-xs font-medium text-gray-500">Department</label>
           <div class="relative">
-           <select
+          <select
   formControlName="department"
-  class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+  class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+  [class.border-gray-200]="!isInvalid('department')"
+  [class.focus:ring-primary/40]="!isInvalid('department')"
+  [class.border-tertiary]="isInvalid('department')"
+  [class.focus:ring-tertiary/30]="isInvalid('department')"
 >
-  <option [ngValue]="null">Select Department</option>
-
+  <option [ngValue]="null" disabled>Select Department</option>
   <option [value]="1">Cardiology</option>
   <option [value]="2">Neurology</option>
   <option [value]="3">Pediatrics</option>
   <option [value]="4">Oncology</option>
 </select>
+@if (isInvalid('department')) {
+  <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+    <span>⚠️</span> {{ errorMessage('department', 'Department') }}
+  </p>
+}
             <svg
               xmlns="http://www.w3.org/2000/svg"
               class="w-4 h-4 absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"
@@ -174,6 +206,11 @@
               <circle cx="11" cy="11" r="7" />
               <path stroke-linecap="round" d="M21 21l-4.3-4.3" />
             </svg>
+            @if (isInvalid('specialization')) {
+  <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+    <span>⚠️</span> {{ errorMessage('specialization', 'Specialization') }}
+  </p>
+}
           </div>
         </div>
       </div>
@@ -236,6 +273,11 @@
             [class.border-tertiary]="isInvalid('mobileNumber')"
             [class.focus:ring-tertiary/30]="isInvalid('mobileNumber')"
           />
+          @if (isInvalid('mobileNumber')) {
+  <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+    <span>⚠️</span> {{ errorMessage('mobileNumber', 'Mobile Number') }}
+  </p>
+}
         </div>
 
         <div class="flex flex-col gap-1">
@@ -250,6 +292,11 @@
             [class.border-tertiary]="isInvalid('personalEmail')"
             [class.focus:ring-tertiary/30]="isInvalid('personalEmail')"
           />
+          @if (isInvalid('personalEmail')) {
+  <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+    <span>⚠️</span> {{ errorMessage('personalEmail', 'Personal Email') }}
+  </p>
+}
         </div>
       </div>
 
