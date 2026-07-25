@@ -8,10 +8,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-
+import { UpdateDoctorDto } from '../../../../../shared/interfaces/Doctor.model';
 import {
-  DoctorService,
-  UpdateDoctorDto,
+  DoctorService
 } from '../../../../../core/services/doctor-service';
 
 // Matches Guard.ValidatePhone in the backend: 010/011/012/015 + 8 digits

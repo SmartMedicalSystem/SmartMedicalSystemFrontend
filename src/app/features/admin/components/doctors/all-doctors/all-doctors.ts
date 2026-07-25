@@ -2,9 +2,9 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-
+import { Doctor } from '../../../../../shared/interfaces/Doctor.model';
 import {
-  Doctor,
+
   DoctorService,
 } from '../../../../../core/services/doctor-service';
 
