@@ -48,7 +48,7 @@ export class DepartmentDetails implements OnInit {
     private route: ActivatedRoute,
     private departmentService: DepartmentService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.departmentId = Number(this.route.snapshot.paramMap.get('id'));

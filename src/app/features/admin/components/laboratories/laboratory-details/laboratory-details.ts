@@ -48,7 +48,7 @@ export class LaboratoryDetails implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private laboratoryService: LaboratoryService,
-  ) {}
+  ) { }
 
   // ============================================================
   // OnInit

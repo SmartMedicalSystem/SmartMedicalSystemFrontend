@@ -1,15 +1,9 @@
 // core/services/confirmation.service.ts
 import { Injectable } from '@angular/core';
 import Swal, { SweetAlertIcon } from 'sweetalert2';
+import { ConfirmOptions } from '../../shared/interfaces/Confirmation/confirm-options';
 
-interface ConfirmOptions {
-  title?: string;
-  text?: string;
-  icon?: SweetAlertIcon;
-  confirmButtonText?: string;
-  cancelButtonText?: string;
-  confirmButtonColor?: string;
-}
+
 
 @Injectable({ providedIn: 'root' })
 export class ConfirmationService {

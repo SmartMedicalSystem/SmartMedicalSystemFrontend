@@ -41,7 +41,7 @@ export class AllLaboratories implements OnInit {
   // Math for template
   Math = Math;
 
-  constructor(private laboratoryService: LaboratoryService) {}
+  constructor(private laboratoryService: LaboratoryService) { }
 
   ngOnInit(): void {
     this.loadLaboratories();
