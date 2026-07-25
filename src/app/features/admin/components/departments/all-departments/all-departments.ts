@@ -1,10 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { DepartmentService } from '../../../../../core/services/department-service';
 import { Department } from '../../../../../shared/interfaces/Department/Department';
+import Swal from 'sweetalert2';
+import { ConfirmationService } from '../../../../../core/services/Confirmation-service';
 
 @Component({
   selector: 'app-all-departments',
@@ -19,7 +21,7 @@ export class AllDepartments implements OnInit {
   // ==========================
   // Data
   // ==========================
-
+  confirmationService = inject(ConfirmationService);
   departments: Department[] = [];
 
   searchQuery = '';
@@ -169,18 +171,18 @@ export class AllDepartments implements OnInit {
   // ==========================
   // Delete
   // ==========================
-
-  deleteDepartment(id: number): void {
-    const confirmed = confirm('Are you sure you want to delete this department?');
-
+  async deleteDepartment(id: number, name: string): Promise<void> {
+    const confirmed = await this.confirmationService.confirmDelete(name);
     if (!confirmed) return;
 
     this.departmentService.deleteDepartment(id).subscribe({
       next: () => {
         this.loadDepartments();
+        this.confirmationService.showSuccess('Deleted!', `${name} has been successfully removed.`);
       },
       error: (err) => {
         console.error('Delete failed', err);
+        this.confirmationService.showError('Error!', `An error occurred while deleting ${name}`);
       },
     });
   }

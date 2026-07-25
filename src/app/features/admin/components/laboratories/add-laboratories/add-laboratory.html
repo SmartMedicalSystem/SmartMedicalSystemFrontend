@@ -238,9 +238,7 @@
               <option disabled>Loading technicians...</option>
             } @else {
               @for (tech of technicians; track tech.id) {
-                <option [value]="tech.id">
-                  {{ tech.firstName }} {{ tech.lastName }}- {{ tech.labType }}
-                </option>
+                <option [value]="tech.id">{{ tech.name }} {{ tech.laboratoryName }}</option>
               }
             }
           </select>
@@ -324,7 +322,6 @@
         [disabled]="!isFormValid() || isLoading"
       >
         @if (isLoading) {
-          <span class="inline-block animate-spin">⏳</span>
         } @else {
           <mat-icon class="w-4 h-4 text-white">add</mat-icon>
         }

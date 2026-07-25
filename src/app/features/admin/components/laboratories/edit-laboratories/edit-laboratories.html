@@ -272,7 +272,8 @@
                 } @else {
                   @for (tech of technicians; track tech.id) {
                     <option [ngValue]="tech.id">
-                      {{ tech.firstName }} {{ tech.lastName }}- {{ tech.labType }}
+                      {{ tech.name }}-
+                      {{ tech.laboratoryName || 'No Laboratory' }}
                     </option>
                   }
                 }

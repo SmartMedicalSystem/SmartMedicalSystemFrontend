@@ -23,7 +23,6 @@
   <!-- Loading State -->
   @if (isLoading) {
     <div class="flex items-center justify-center py-12">
-      <span class="inline-block animate-spin text-2xl text-primary">⏳</span>
       <span class="ml-3 text-gray-500">Loading laboratory details...</span>
     </div>
   }
@@ -254,7 +253,6 @@
         <div class="overflow-x-auto">
           @if (isLoadingTests) {
             <div class="flex items-center justify-center py-8">
-              <span class="inline-block animate-spin text-xl text-primary">⏳</span>
               <span class="ml-3 text-gray-500">Loading tests...</span>
             </div>
           }
@@ -263,10 +261,9 @@
             <table class="w-full text-sm">
               <thead>
                 <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
-                  <th class="text-left font-semibold px-4 py-3">#</th>
+                  <th class="text-left font-semibold px-4 py-3">id</th>
                   <th class="text-left font-semibold px-4 py-3">Test Name</th>
                   <th class="text-left font-semibold px-4 py-3">Description</th>
-                  <th class="text-left font-semibold px-4 py-3">Created</th>
                 </tr>
               </thead>
               <tbody>
@@ -275,7 +272,6 @@
                     <td class="px-4 py-3 text-gray-400">#{{ test.id }}</td>
                     <td class="px-4 py-3 font-medium text-gray-800">{{ test.testName }}</td>
                     <td class="px-4 py-3 text-gray-600">{{ test.description || '—' }}</td>
-                    <td class="px-4 py-3 text-gray-500">{{ test.createdAt | date: 'MMM d, y' }}</td>
                   </tr>
                 }
               </tbody>
@@ -371,7 +367,6 @@
         <div class="overflow-x-auto">
           @if (isLoadingTechnicians) {
             <div class="flex items-center justify-center py-8">
-              <span class="inline-block animate-spin text-xl text-primary">⏳</span>
               <span class="ml-3 text-gray-500">Loading technicians...</span>
             </div>
           }
@@ -380,7 +375,7 @@
             <table class="w-full text-sm">
               <thead>
                 <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
-                  <th class="text-left font-semibold px-4 py-3">#</th>
+                  <th class="text-left font-semibold px-4 py-3">id</th>
                   <th class="text-left font-semibold px-4 py-3">Name</th>
                   <th class="text-left font-semibold px-4 py-3">Contact</th>
                   <th class="text-left font-semibold px-4 py-3">Job Title</th>

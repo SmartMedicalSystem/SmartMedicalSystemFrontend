@@ -13,8 +13,11 @@ import { DoctorAtDepartment } from '../../shared/interfaces/Department/DoctorAtD
   providedIn: 'root',
 })
 export class DepartmentService {
-  private apiUrl = 'https://localhost:7099/api/Departments';
-  private doctorsUrl = 'https://localhost:7099/api/Doctors';
+  private apiUrl = 'https://smartmedicalsystem.runasp.net/api/Departments';
+  private doctorsUrl = 'https://smartmedicalsystem.runasp.net/api/Doctors';
+
+  // private apiUrl = 'https://localhost:7099/api/Departments';
+  // private doctorsUrl = 'https://localhost:7099/api/Doctors';
 
   constructor(
     private http: HttpClient,
@@ -106,7 +109,10 @@ export class DepartmentService {
       .set('pageNumber', pageNumber.toString())
       .set('pageSize', pageSize.toString());
 
-    return this.http.get<PaginatedResult<DoctorForSelect>>(`${this.doctorsUrl}`, { params });
+    return this.http.get<PaginatedResult<DoctorForSelect>>(
+      `${this.doctorsUrl}/available-for-new-department`,
+      { params },
+    );
   }
 
   // Get department doctors with pagination (using DoctorsController)

@@ -49,8 +49,6 @@ export const adminRoutes: Routes = [
                   import('../patient/add-patients/add-patients').then((m) => m.AddPatients),
               },
             ],
-
-
           },
           {
             path: 'doctors',
@@ -141,8 +139,8 @@ export const adminRoutes: Routes = [
               {
                 path: 'add-laboratories',
                 loadComponent: () =>
-                  import('./components/laboratories/add-laboratories/add-laboratories').then(
-                    (m) => m.AddLaboratories,
+                  import('./components/laboratories/add-laboratories/add-laboratory').then(
+                    (m) => m.AddLaboratory,
                   ),
               },
               {
@@ -150,6 +148,13 @@ export const adminRoutes: Routes = [
                 loadComponent: () =>
                   import('./components/laboratories/laboratory-details/laboratory-details').then(
                     (l) => l.LaboratoryDetails,
+                  ),
+              },
+              {
+                path: 'edit-laboratories/:id',
+                loadComponent: () =>
+                  import('./components/laboratories/edit-laboratories/edit-laboratories').then(
+                    (l) => l.EditLaboratory,
                   ),
               },
             ],

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { Laboratory } from '../../../../../shared/interfaces/Laboratory/Laboratory';
 import { LaboratoryService } from '../../../../../core/services/laboratory-service';
+import { ConfirmationService } from '../../../../../core/services/Confirmation-service';
 
 @Component({
   selector: 'app-all-laboratories',
@@ -23,7 +24,7 @@ export class AllLaboratories implements OnInit {
   pageNumber: number = 1;
   pageSize: number = 10;
   totalPages: number = 1;
-
+  confirmationService = inject(ConfirmationService);
   // ============================================================
   // Search & Filters
   // ============================================================
@@ -147,18 +148,20 @@ export class AllLaboratories implements OnInit {
   // ============================================================
   // Delete
   // ============================================================
-  deleteLaboratory(id: number, name: string): void {
-    if (confirm(`Are you sure you want to delete laboratory "${name}"?`)) {
-      this.laboratoryService.deleteLaboratory(id).subscribe({
-        next: () => {
-          this.loadLaboratories();
-        },
-        error: (err) => {
-          this.errorMessage = 'Failed to delete laboratory. Please try again.';
-          console.error('Error deleting laboratory:', err);
-        },
-      });
-    }
+  async deleteLaboratory(id: number, name: string): Promise<void> {
+    const confirmed = await this.confirmationService.confirmDelete(name);
+    if (!confirmed) return;
+
+    this.laboratoryService.deleteLaboratory(id).subscribe({
+      next: () => {
+        this.loadLaboratories();
+        this.confirmationService.showSuccess('Deleted!', `${name} has been successfully removed.`);
+      },
+      error: (err) => {
+        console.error('Delete failed', err);
+        this.confirmationService.showError('Error!', `An error occurred while deleting ${name}`);
+      },
+    });
   }
 
   // ============================================================

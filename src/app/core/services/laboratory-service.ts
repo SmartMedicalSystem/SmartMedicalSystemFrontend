@@ -14,10 +14,15 @@ import { LaboratoryDetails } from '../../shared/interfaces/Laboratory/Laboratory
   providedIn: 'root',
 })
 export class LaboratoryService {
-  private apiUrl = 'https://localhost:7099/api/Laboratories';
-  private departmentsUrl = 'https://localhost:7099/api/Departments';
-  private techniciansUrl = 'https://localhost:7099/api/LabTechnicians';
-  private labTestUrl = 'https://localhost:7099/api/LabTests';
+  private apiUrl = 'https://smartmedicalsystem.runasp.net/api/Laboratories';
+  private departmentsUrl = 'https://smartmedicalsystem.runasp.net/api/Departments';
+  private techniciansUrl = 'https://smartmedicalsystem.runasp.net/api/LabTechnicians';
+  private labTestUrl = 'https://smartmedicalsystem.runasp.net/api/LabTests';
+
+  // private apiUrl = 'https://localhost:7099/api/Laboratories';
+  // private departmentsUrl = 'https://localhost:7099/api/Departments';
+  // private techniciansUrl = 'https://localhost:7099/api/LabTechnicians';
+  // private labTestUrl = 'https://localhost:7099/api/LabTests';
 
   constructor(private http: HttpClient) {}
 
@@ -134,9 +139,12 @@ export class LaboratoryService {
       params = params.set('searchTerm', searchTerm);
     }
 
-    return this.http.get<PaginatedResult<TechnicianForSelect>>(`${this.techniciansUrl}`, {
-      params,
-    });
+    return this.http.get<PaginatedResult<TechnicianForSelect>>(
+      `${this.techniciansUrl}/available-for-new-laboratory`,
+      {
+        params,
+      },
+    );
   }
 
   getTechniciansForEdit(
