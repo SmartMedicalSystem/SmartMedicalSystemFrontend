@@ -1,9 +1,7 @@
-<div class="w-full p-4 sm:p-6 font-sans max-w-225 mx-auto">
+<div class="w-full font-sans max-w-[900px] mx-auto">
   <!-- Header -->
-  <div class="flex items-center justify-between mb-6 flex-wrap">
-    <h1 class="mb-5 sm:mb-0 text-xl sm:text-3xl font-bold text-primary tracking-tight">
-      Laboratory Details
-    </h1>
+  <div class="flex items-center justify-between flex-wrap mb-6">
+    <h1 class="mb-5 sm:mb-0 text-3xl font-bold text-primary tracking-tight">Laboratory Details</h1>
     <div class="flex gap-3">
       <button
         class="flex items-center gap-2 px-5 py-2.5 rounded-lg border border-gray-300 bg-white text-gray-700 text-sm font-medium shadow-sm hover:bg-gray-50 transition-all duration-200"
@@ -14,7 +12,7 @@
       </button>
       <button
         class="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-primary text-white text-sm font-medium shadow-sm hover:opacity-90 transition-all duration-200"
-        [routerLink]="['/admin/dashboard/laboratories/edit-laboratories', laboratory.labId]"
+        [routerLink]="['/admin/dashboard/laboratories/edit-laboratories', laboratory.id]"
       >
         <mat-icon class="w-5 h-5 text-white">edit</mat-icon>
         Edit Laboratory
@@ -22,197 +20,426 @@
     </div>
   </div>
 
-  <!-- Info Banner -->
-  <div class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-6">
-    <div class="hidden sm:block"><mat-icon class="text-xl text-blue-600">info</mat-icon></div>
-    <p class="text-sm text-blue-800">Viewing laboratory details. This information is read-only.</p>
-  </div>
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="flex items-center justify-center py-12">
+      <span class="ml-3 text-gray-500">Loading laboratory details...</span>
+    </div>
+  }
 
-  <!-- Summary Card -->
-  <div
-    class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6"
-  >
-    <div class="flex items-center gap-3">
-      <div
-        class="hidden w-12 h-12 rounded-xl bg-primary/10 sm:flex items-center justify-center text-primary"
-      >
-        <mat-icon class="text-[28px] w-6 h-6">science</mat-icon>
-      </div>
+  <!-- Error Message -->
+  @if (errorMessage) {
+    <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3 mb-6">
+      <mat-icon class="text-xl text-red-600 mt-0.5">error</mat-icon>
       <div>
-        <h2 class="text-lg font-bold text-gray-800">{{ laboratory.name }}</h2>
-        <div class="flex items-center gap-3 text-xs text-gray-500">
-          <span>ID: LAB-{{ laboratory.labId | number: '3.0-0' }}</span>
-          <span>•</span>
-          <span>{{ laboratory.totalTests }} Tests</span>
-          <span>•</span>
-          <span>{{ laboratory.staffCount }} Staff</span>
-          <span>•</span>
-          <span>Created: {{ laboratory.createdAt | date: 'MMM d, y' }}</span>
-        </div>
+        <p class="text-sm text-red-800 font-medium">Error</p>
+        <p class="text-sm text-red-700">{{ errorMessage }}</p>
       </div>
     </div>
-    <div class="ml-auto">
-      <span
-        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-        [ngClass]="getStatusClass(laboratory.status)"
+  }
+
+  <!-- Content -->
+  @if (!isLoading && !errorMessage) {
+    <div>
+      <!-- Info Banner -->
+      <div
+        class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 flex items-center gap-3 mb-6"
       >
-        <span
-          class="w-1.5 h-1.5 rounded-full"
-          [ngClass]="getStatusDotClass(laboratory.status)"
-        ></span>
-        {{ laboratory.status }}
-      </span>
-    </div>
-  </div>
-
-  <!-- Details Grid -->
-  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
-    <div class="p-6 space-y-6">
-      <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
-        <mat-icon [style.color]="'var(--color-primary)'">info</mat-icon>
-        General Information
-      </h3>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Laboratory Name -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Laboratory Name</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">{{ laboratory.name }}</p>
+        <div class="hidden sm:block">
+          <mat-icon class="text-xl text-blue-600">info</mat-icon>
         </div>
+        <p class="text-sm text-blue-800">
+          Viewing laboratory details. This information is read-only.
+        </p>
+      </div>
 
-        <!-- Laboratory ID -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Laboratory ID</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1 font-mono">
-            LAB-{{ laboratory.labId | number: '3.0-0' }}
-          </p>
+      <!-- Summary Card -->
+      <div
+        class="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 mb-6 flex flex-wrap items-center gap-6"
+      >
+        <div class="flex items-center gap-3 flex-wrap">
+          <div
+            class="hidden sm:flex w-12 h-12 rounded-xl bg-primary/10 items-center justify-center text-primary"
+          >
+            <mat-icon class="text-[28px] w-6 h-6">science</mat-icon>
+          </div>
+          <div>
+            <h2 class="text-lg font-bold text-gray-800">{{ laboratory.name }}</h2>
+            <div class="flex items-center gap-3 text-xs text-gray-500 flex-wrap">
+              <span>ID: LAB-{{ laboratory.id | number: '3.0-0' }}</span>
+              <span>•</span>
+              <span>{{ laboratory.testCount }} Tests</span>
+              <span>•</span>
+              <span>{{ laboratory.technicianCount }} Technicians</span>
+              <span>•</span>
+              <span>Created: {{ laboratory.createdAt | date: 'MMM d, y' }}</span>
+            </div>
+          </div>
         </div>
-
-        <!-- Location -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Location</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ laboratory.location || 'Not Assigned' }}
-          </p>
-        </div>
-
-        <!-- Phone -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Phone</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ laboratory.phone || 'Not Assigned' }}
-          </p>
-        </div>
-
-        <!-- Department -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Department</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ laboratory.departmentName || 'Not Assigned' }}
-          </p>
-        </div>
-
-        <!-- Head Technician -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Head Technician</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ laboratory.headTechnicianName || 'Not Assigned' }}
-          </p>
-        </div>
-
-        <!-- Status -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Status</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
+        <div class="ml-auto">
+          <span
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
+            [ngClass]="getStatusClass(laboratory.status)"
+          >
             <span
-              class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-              [ngClass]="getStatusClass(laboratory.status)"
-            >
-              <span
-                class="w-1.5 h-1.5 rounded-full"
-                [ngClass]="getStatusDotClass(laboratory.status)"
-              ></span>
-              {{ laboratory.status }}
-            </span>
-          </p>
-        </div>
-
-        <!-- Created At -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Created Date</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ laboratory.createdAt | date: 'MMM d, y' }}
-          </p>
-        </div>
-
-        <!-- Total Tests -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Tests</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">{{ laboratory.totalTests }} Tests</p>
-        </div>
-
-        <!-- Staff Count -->
-        <div>
-          <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Staff Count</p>
-          <p class="text-sm font-semibold text-gray-800 mt-1">
-            {{ laboratory.staffCount }} Technicians
-          </p>
+              class="w-1.5 h-1.5 rounded-full"
+              [ngClass]="getStatusDotClass(laboratory.status)"
+            ></span>
+            {{ laboratory.status }}
+          </span>
         </div>
       </div>
-    </div>
-  </div>
 
-  <!-- Tests List -->
-  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-    <div class="p-4 border-b border-gray-100 flex items-center justify-between">
-      <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
-        <mat-icon [style.color]="'var(--color-primary)'">biotech</mat-icon>
-        Recent Tests in this Laboratory
-      </h3>
-      <span class="text-sm text-gray-500">{{ laboratory.tests.length }} Tests</span>
-    </div>
+      <!-- Details Grid -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+        <div class="p-6 space-y-6">
+          <h3 class="text-lg font-semibold text-gray-800 flex items-center gap-2">
+            <mat-icon class="text-primary">info</mat-icon>
+            General Information
+          </h3>
 
-    <div class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
-            <th class="text-left font-semibold px-4 py-3">#</th>
-            <th class="text-left font-semibold px-4 py-3">Test Type</th>
-            <th class="text-left font-semibold px-4 py-3">Patient</th>
-            <th class="text-left font-semibold px-4 py-3">Status</th>
-            <th class="text-left font-semibold px-4 py-3">Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (test of laboratory.tests; track test.testId) {
-            <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
-              <td class="px-4 py-3 text-gray-400">#{{ test.testId }}</td>
-              <td class="px-4 py-3 font-medium text-gray-800">{{ test.testType }}</td>
-              <td class="px-4 py-3 text-gray-600">{{ test.patientName }}</td>
-              <td class="px-4 py-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Laboratory Name -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                Laboratory Name
+              </p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">{{ laboratory.name }}</p>
+            </div>
+
+            <!-- Laboratory ID -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                Laboratory ID
+              </p>
+              <p class="text-sm font-semibold text-gray-800 mt-1 font-mono">
+                LAB-{{ laboratory.id | number: '3.0-0' }}
+              </p>
+            </div>
+
+            <!-- Location -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Location</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">{{ laboratory.location }}</p>
+            </div>
+
+            <!-- Phone -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Phone</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">{{ laboratory.phone }}</p>
+            </div>
+
+            <!-- Code -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Code</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1 font-mono">
+                {{ laboratory.code || 'Not Assigned' }}
+              </p>
+            </div>
+
+            <!-- Specialty -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Specialty</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ laboratory.specialty || 'Not Assigned' }}
+              </p>
+            </div>
+
+            <!-- Department -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Department</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ laboratory.departmentName || 'Not Assigned' }}
+              </p>
+            </div>
+
+            <!-- Head Technician -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                Head Technician
+              </p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ laboratory.headTechnicianName || 'Not Assigned' }}
+              </p>
+            </div>
+
+            <!-- Status -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Status</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
                 <span
                   class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold"
-                  [ngClass]="getTestStatusClass(test.status)"
+                  [ngClass]="getStatusClass(laboratory.status)"
                 >
                   <span
                     class="w-1.5 h-1.5 rounded-full"
-                    [ngClass]="test.status === 'done' ? 'bg-green-600' : 'bg-amber-600'"
+                    [ngClass]="getStatusDotClass(laboratory.status)"
                   ></span>
-                  {{ test.status === 'done' ? 'Completed' : 'Pending' }}
+                  {{ laboratory.status }}
                 </span>
-              </td>
-              <td class="px-4 py-3 text-gray-500">{{ test.testDate | date: 'MMM d, y' }}</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+              </p>
+            </div>
 
-    @if (laboratory.tests.length === 0) {
-      <div class="p-8 text-center">
-        <mat-icon class="text-4xl text-gray-300 w-full h-auto">biotech</mat-icon>
-        <p class="text-gray-500 mt-2">No tests found in this laboratory yet.</p>
+            <!-- Created At -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Created Date</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ laboratory.createdAt | date: 'MMM d, y' }}
+              </p>
+            </div>
+
+            <!-- Test Count -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">Total Tests</p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ laboratory.testCount }} Tests
+              </p>
+            </div>
+
+            <!-- Technician Count -->
+            <div>
+              <p class="text-xs text-gray-400 font-medium uppercase tracking-wider">
+                Total Technicians
+              </p>
+              <p class="text-sm font-semibold text-gray-800 mt-1">
+                {{ laboratory.technicianCount }} Technicians
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
-    }
-  </div>
+
+      <!-- Lab Tests List -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden mb-6">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+            <mat-icon class="text-primary">biotech</mat-icon>
+            Lab Tests in this Laboratory
+          </h3>
+          <span class="text-sm text-gray-500">{{ totalTestCount }} Tests</span>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4 border-b border-gray-100">
+          <div class="flex gap-2">
+            <div class="flex-1 relative">
+              <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                >search</mat-icon
+              >
+              <input
+                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
+                placeholder="Search tests..."
+                [(ngModel)]="testSearchTerm"
+                (keyup.enter)="searchTests()"
+              />
+            </div>
+            <button
+              class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 transition"
+              (click)="searchTests()"
+            >
+              Search
+            </button>
+            @if (testSearchTerm) {
+              <button
+                class="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition"
+                (click)="testSearchTerm = ''; searchTests()"
+              >
+                Clear
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          @if (isLoadingTests) {
+            <div class="flex items-center justify-center py-8">
+              <span class="ml-3 text-gray-500">Loading tests...</span>
+            </div>
+          }
+
+          @if (!isLoadingTests && tests.length > 0) {
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+                  <th class="text-left font-semibold px-4 py-3">id</th>
+                  <th class="text-left font-semibold px-4 py-3">Test Name</th>
+                  <th class="text-left font-semibold px-4 py-3">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (test of tests; track test.id) {
+                  <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+                    <td class="px-4 py-3 text-gray-400">#{{ test.id }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-800">{{ test.testName }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ test.description || '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+
+          @if (!isLoadingTests && tests.length === 0) {
+            <div class="p-8 text-center">
+              <mat-icon class="text-4xl text-gray-300 w-full h-auto">biotech</mat-icon>
+              <p class="text-gray-500 mt-2">No lab tests found in this laboratory.</p>
+              @if (testSearchTerm) {
+                <p class="text-sm text-gray-400">Try adjusting your search.</p>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Test Pagination -->
+        @if (totalTestCount > 0 && totalTestPages > 1) {
+          <div
+            class="px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3"
+          >
+            <span class="text-sm text-gray-500">
+              Showing {{ (testPageNumber - 1) * testPageSize + 1 }} to
+              {{ Math.min(testPageNumber * testPageSize, totalTestCount) }} of
+              {{ totalTestCount }} tests
+            </span>
+
+            <div class="flex items-center gap-1">
+              <button
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="changeTestPage(testPageNumber - 1)"
+                [disabled]="testPageNumber === 1 || isLoadingTests"
+              >
+                <mat-icon class="text-[18px]">chevron_left</mat-icon>
+              </button>
+
+              <span class="text-sm text-gray-500">{{ testPageNumber }} / {{ totalTestPages }}</span>
+
+              <button
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="changeTestPage(testPageNumber + 1)"
+                [disabled]="testPageNumber === totalTestPages || isLoadingTests"
+              >
+                <mat-icon class="text-[18px]">chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Technicians List -->
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+        <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+          <h3 class="text-base font-semibold text-gray-800 flex items-center gap-2">
+            <mat-icon class="text-primary">engineering</mat-icon>
+            Technicians in this Laboratory
+          </h3>
+          <span class="text-sm text-gray-500">{{ totalTechCount }} Technicians</span>
+        </div>
+
+        <!-- Search -->
+        <div class="p-4 border-b border-gray-100">
+          <div class="flex gap-2">
+            <div class="flex-1 relative">
+              <mat-icon class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                >search</mat-icon
+              >
+              <input
+                class="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
+                placeholder="Search technicians..."
+                [(ngModel)]="techSearchTerm"
+                (keyup.enter)="searchTechnicians()"
+              />
+            </div>
+            <button
+              class="px-4 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:opacity-90 transition"
+              (click)="searchTechnicians()"
+            >
+              Search
+            </button>
+            @if (techSearchTerm) {
+              <button
+                class="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 text-sm font-medium hover:bg-gray-50 transition"
+                (click)="techSearchTerm = ''; searchTechnicians()"
+              >
+                Clear
+              </button>
+            }
+          </div>
+        </div>
+
+        <div class="overflow-x-auto">
+          @if (isLoadingTechnicians) {
+            <div class="flex items-center justify-center py-8">
+              <span class="ml-3 text-gray-500">Loading technicians...</span>
+            </div>
+          }
+
+          @if (!isLoadingTechnicians && technicians.length > 0) {
+            <table class="w-full text-sm">
+              <thead>
+                <tr class="bg-gray-50 text-gray-500 text-xs uppercase tracking-wide">
+                  <th class="text-left font-semibold px-4 py-3">id</th>
+                  <th class="text-left font-semibold px-4 py-3">Name</th>
+                  <th class="text-left font-semibold px-4 py-3">Contact</th>
+                  <th class="text-left font-semibold px-4 py-3">Job Title</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (tech of technicians; track tech.id) {
+                  <tr class="border-b border-gray-50 last:border-0 hover:bg-gray-50/60 transition">
+                    <td class="px-4 py-3 text-gray-400">#{{ tech.id }}</td>
+                    <td class="px-4 py-3 font-medium text-gray-800">
+                      {{ tech.firstName }} {{ tech.lastName }}
+                    </td>
+                    <td class="px-4 py-3 text-gray-600">{{ tech.phoneNumber }}</td>
+                    <td class="px-4 py-3 text-gray-600">{{ tech.jobTitle || '—' }}</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          }
+
+          @if (!isLoadingTechnicians && technicians.length === 0) {
+            <div class="p-8 text-center">
+              <mat-icon class="text-4xl text-gray-300 w-full h-auto">engineering</mat-icon>
+              <p class="text-gray-500 mt-2">No technicians assigned to this laboratory.</p>
+              @if (techSearchTerm) {
+                <p class="text-sm text-gray-400">Try adjusting your search.</p>
+              }
+            </div>
+          }
+        </div>
+
+        <!-- Technicians Pagination -->
+        @if (totalTechCount > 0 && totalTechPages > 1) {
+          <div
+            class="px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3"
+          >
+            <span class="text-sm text-gray-500">
+              Showing {{ (techPageNumber - 1) * techPageSize + 1 }} to
+              {{ Math.min(techPageNumber * techPageSize, totalTechCount) }} of
+              {{ totalTechCount }} technicians
+            </span>
+
+            <div class="flex items-center gap-1">
+              <button
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="changeTechPage(techPageNumber - 1)"
+                [disabled]="techPageNumber === 1 || isLoadingTechnicians"
+              >
+                <mat-icon class="text-[18px]">chevron_left</mat-icon>
+              </button>
+
+              <span class="text-sm text-gray-500">{{ techPageNumber }} / {{ totalTechPages }}</span>
+
+              <button
+                class="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="changeTechPage(techPageNumber + 1)"
+                [disabled]="techPageNumber === totalTechPages || isLoadingTechnicians"
+              >
+                <mat-icon class="text-[18px]">chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  }
 </div>

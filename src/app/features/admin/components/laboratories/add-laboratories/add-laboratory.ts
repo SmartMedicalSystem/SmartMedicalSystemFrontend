@@ -1,68 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, Router, ActivatedRoute } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { UpdateLaboratoryDto } from '../../../../../shared/interfaces/Laboratory/UpdateLaboratoryDto';
+import { CreateLaboratoryDto } from '../../../../../shared/interfaces/Laboratory/CreateLaboratoryDto';
 import { LaboratoryService } from '../../../../../core/services/laboratory-service';
 import { TechnicianForSelect } from '../../../../../shared/interfaces/Laboratory/TechnicianForSelect';
 
 @Component({
-  selector: 'app-edit-laboratory',
+  selector: 'app-add-laboratory',
   standalone: true,
   imports: [CommonModule, RouterModule, FormsModule, MatIconModule],
-  templateUrl: './edit-laboratories.html',
-  styleUrls: ['./edit-laboratories.css'],
+  templateUrl: './add-laboratory.html',
+  styleUrls: ['./add-laboratory.css'],
 })
-export class EditLaboratory implements OnInit {
-  laboratoryId: number | null = null;
-
+export class AddLaboratory implements OnInit {
   // ============================================================
   // Data for selects
   // ============================================================
   departments: { id: number; name: string }[] = [];
   technicians: TechnicianForSelect[] = [];
   statuses = ['Active', 'Inactive', 'Maintenance', 'Closed'];
-
-  // ============================================================
-  // Form Data
-  // ============================================================
-  laboratory: UpdateLaboratoryDto = {
-    name: '',
-    location: '',
-    phone: '',
-    code: '',
-    specialty: '',
-    status: 'Active',
-    headTechnicianId: null,
-    departmentId: null,
-  };
-
-  // ============================================================
-  // Original Data (for reset)
-  // ============================================================
-  originalLaboratory: UpdateLaboratoryDto = {
-    name: '',
-    location: '',
-    phone: '',
-    code: '',
-    specialty: '',
-    status: 'Active',
-    headTechnicianId: null,
-    departmentId: null,
-  };
-
-  // ============================================================
-  // Summary Data
-  // ============================================================
-  summary = {
-    id: 0,
-    name: '',
-    testCount: 0,
-    technicianCount: 0,
-    createdAt: new Date(),
-    status: 'Active' as 'Active' | 'Inactive' | 'Maintenance' | 'Closed',
-  };
 
   // ============================================================
   // Departments Pagination
@@ -83,76 +41,38 @@ export class EditLaboratory implements OnInit {
   techSearchTerm: string = '';
 
   // ============================================================
+  // Form Data
+  // ============================================================
+  laboratory: CreateLaboratoryDto = {
+    name: '',
+    location: '',
+    phone: '',
+    code: '',
+    specialty: '',
+    status: 'Active',
+    headTechnicianId: null,
+    departmentId: null,
+  };
+
+  // ============================================================
   // UI State
   // ============================================================
   isLoading = false;
   isLoadingDepartments = false;
   isLoadingTechnicians = false;
-  isSaving = false;
   errorMessage: string | null = null;
-
-  // ============================================================
-  // Validation State
-  // ============================================================
-  fieldErrors: { [key: string]: string } = {};
 
   // Math for template
   Math = Math;
 
   constructor(
-    private route: ActivatedRoute,
-    private router: Router,
     private laboratoryService: LaboratoryService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.laboratoryId = Number(this.route.snapshot.paramMap.get('id'));
-    if (this.laboratoryId) {
-      this.loadLaboratory();
-      this.loadDepartments();
-      this.loadTechnicians();
-    }
-  }
-
-  // ============================================================
-  // Load Laboratory
-  // ============================================================
-  loadLaboratory(): void {
-    this.isLoading = true;
-    this.errorMessage = null;
-
-    this.laboratoryService.getLaboratoryById(this.laboratoryId!).subscribe({
-      next: (response) => {
-        this.laboratory = {
-          name: response.name,
-          location: response.location,
-          phone: response.phone,
-          code: response.code || '',
-          specialty: response.specialty || '',
-          status: response.status,
-          headTechnicianId: response.headTechnicianId,
-          departmentId: response.departmentId,
-        };
-
-        this.originalLaboratory = { ...this.laboratory };
-
-        this.summary = {
-          id: response.id,
-          name: response.name,
-          testCount: response.testCount,
-          technicianCount: response.technicianCount,
-          createdAt: response.createdAt,
-          status: response.status,
-        };
-
-        this.isLoading = false;
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.errorMessage = 'Failed to load laboratory.';
-        console.error('Error loading laboratory:', err);
-      },
-    });
+    this.loadDepartments();
+    this.loadTechnicians();
   }
 
   // ============================================================
@@ -182,17 +102,29 @@ export class EditLaboratory implements OnInit {
   }
 
   // ============================================================
-  // Load Technicians with Pagination
+  // Change Department Page
+  // ============================================================
+  changeDeptPage(page: number): void {
+    if (page < 1 || page > this.totalDeptPages || this.isLoadingDepartments) return;
+    this.deptPageNumber = page;
+    this.loadDepartments();
+  }
 
+  searchDepartments(): void {
+    this.deptPageNumber = 1;
+    this.loadDepartments();
+  }
+
+  // ============================================================
+  // Load Technicians with Pagination
   // ============================================================
   loadTechnicians(): void {
     this.isLoadingTechnicians = true;
     this.laboratoryService
-      .getTechniciansForEdit(
-        this.laboratoryId!,
+      .getTechniciansForSelect(
         this.techPageNumber,
         this.techPageSize,
-        this.techSearchTerm,
+        this.techSearchTerm || undefined,
       )
       .subscribe({
         next: (response) => {
@@ -210,23 +142,27 @@ export class EditLaboratory implements OnInit {
   }
 
   // ============================================================
-  // Pagination Controls
+  // Change Technician Page
   // ============================================================
-  changeDeptPage(page: number): void {
-    if (page < 1 || page > this.totalDeptPages || this.isLoadingDepartments) return;
-    this.deptPageNumber = page;
-    this.loadDepartments();
-  }
-
   changeTechPage(page: number): void {
     if (page < 1 || page > this.totalTechPages || this.isLoadingTechnicians) return;
     this.techPageNumber = page;
     this.loadTechnicians();
   }
 
+  searchTechnicians(): void {
+    this.techPageNumber = 1;
+    this.loadTechnicians();
+  } // ============================================================
+  // Validation State
   // ============================================================
-  // Validation
+  fieldErrors: { [key: string]: string } = {};
+  isSubmitting = false;
+
   // ============================================================
+  // Validation Methods
+  // ============================================================
+
   validateField(fieldName: string): void {
     switch (fieldName) {
       case 'name':
@@ -266,10 +202,27 @@ export class EditLaboratory implements OnInit {
           delete this.fieldErrors['code'];
         }
         break;
+      case 'specialty':
+        if (this.laboratory.specialty && this.laboratory.specialty.trim().length > 0) {
+          if (this.laboratory.specialty.trim().length < 2) {
+            this.fieldErrors['specialty'] = 'Specialty must be at least 2 characters.';
+          } else if (this.laboratory.specialty.length > 100) {
+            this.fieldErrors['specialty'] = 'Specialty must not exceed 100 characters.';
+          } else if (!/^[a-zA-Z\u0600-\u06FF\s,\-&]+$/.test(this.laboratory.specialty)) {
+            this.fieldErrors['specialty'] =
+              'Specialty can only contain letters, spaces, commas, and hyphens.';
+          } else {
+            delete this.fieldErrors['specialty'];
+          }
+        } else {
+          delete this.fieldErrors['specialty'];
+        }
+        break;
     }
   }
 
   isValidPhone(phone: string): boolean {
+    // Egyptian phone numbers: 010, 011, 012, 015 + 8 digits = 11 digits total
     const phoneRegex = /^(010|011|012|015)[0-9]{8}$/;
     return phoneRegex.test(phone);
   }
@@ -279,6 +232,7 @@ export class EditLaboratory implements OnInit {
     this.validateField('location');
     this.validateField('phone');
     this.validateField('code');
+    this.validateField('specialty');
     return Object.keys(this.fieldErrors).length === 0;
   }
 
@@ -296,13 +250,19 @@ export class EditLaboratory implements OnInit {
     if (!this.laboratory.phone?.trim()) return false;
     if (!this.isValidPhone(this.laboratory.phone)) return false;
     if (this.laboratory.code && !/^[A-Z0-9\-_]+$/.test(this.laboratory.code)) return false;
+    if (this.laboratory.specialty && this.laboratory.specialty.trim().length > 0) {
+      if (this.laboratory.specialty.trim().length < 2) return false;
+      if (this.laboratory.specialty.length > 100) return false;
+      if (!/^[a-zA-Z\u0600-\u06FF\s,\-&]+$/.test(this.laboratory.specialty)) return false;
+    }
     return true;
   }
 
   // ============================================================
-  // Submit
+  // Submit (مع الـ Validation)
   // ============================================================
   onSubmit(): void {
+    // Validate all fields
     if (!this.validateAllFields()) {
       this.errorMessage = 'Please fix all validation errors before submitting.';
       return;
@@ -313,49 +273,47 @@ export class EditLaboratory implements OnInit {
       return;
     }
 
-    this.isSaving = true;
+    this.isSubmitting = true;
     this.errorMessage = null;
 
-    this.laboratoryService
-      .isLaboratoryNameUnique(this.laboratory.name, this.laboratoryId!)
-      .subscribe({
-        next: (isUnique) => {
-          if (!isUnique) {
-            this.errorMessage = `A laboratory named '${this.laboratory.name}' already exists.`;
-            this.isSaving = false;
-            return;
-          }
+    this.laboratoryService.isLaboratoryNameUnique(this.laboratory.name).subscribe({
+      next: (isUnique) => {
+        if (!isUnique) {
+          this.errorMessage = `A laboratory named '${this.laboratory.name}' already exists.`;
+          this.isSubmitting = false;
+          return;
+        }
 
-          this.laboratoryService.updateLaboratory(this.laboratoryId!, this.laboratory).subscribe({
+        this.laboratoryService.createLaboratory(this.laboratory).subscribe({
+          next: () => {
+            this.isSubmitting = false;
+            this.router.navigate(['/admin/dashboard/laboratories/all-laboratories']);
+          },
+          error: (err) => {
+            this.isSubmitting = false;
+            this.handleApiError(err);
+          },
+        });
+      },
+      error: (err) => {
+        this.isSubmitting = false;
+        if (err.status === 403) {
+          this.laboratoryService.createLaboratory(this.laboratory).subscribe({
             next: () => {
-              this.isSaving = false;
+              this.isSubmitting = false;
               this.router.navigate(['/admin/dashboard/laboratories/all-laboratories']);
             },
-            error: (err) => {
-              this.isSaving = false;
-              this.handleApiError(err);
+            error: (createErr) => {
+              this.isSubmitting = false;
+              this.handleApiError(createErr);
             },
           });
-        },
-        error: (err) => {
-          this.isSaving = false;
-          if (err.status === 403) {
-            this.laboratoryService.updateLaboratory(this.laboratoryId!, this.laboratory).subscribe({
-              next: () => {
-                this.isSaving = false;
-                this.router.navigate(['/admin/dashboard/laboratories/all-laboratories']);
-              },
-              error: (updateErr) => {
-                this.isSaving = false;
-                this.handleApiError(updateErr);
-              },
-            });
-            return;
-          }
-          this.errorMessage = 'Failed to validate laboratory name.';
-          console.error('Error checking name uniqueness:', err);
-        },
-      });
+          return;
+        }
+        this.errorMessage = 'Failed to validate laboratory name.';
+        console.error('Error checking name uniqueness:', err);
+      },
+    });
   }
 
   // ============================================================
@@ -377,37 +335,16 @@ export class EditLaboratory implements OnInit {
   // Reset
   // ============================================================
   onReset(): void {
-    this.laboratory = { ...this.originalLaboratory };
-    this.fieldErrors = {};
+    this.laboratory = {
+      name: '',
+      location: '',
+      phone: '',
+      code: '',
+      specialty: '',
+      status: 'Active',
+      headTechnicianId: null,
+      departmentId: null,
+    };
     this.errorMessage = null;
-  }
-
-  // ============================================================
-  // Status Helpers
-  // ============================================================
-  getStatusClass(status: string): string {
-    switch (status) {
-      case 'Active':
-        return 'bg-green-100 text-green-700';
-      case 'Inactive':
-        return 'bg-gray-100 text-gray-600';
-      case 'Maintenance':
-        return 'bg-amber-100 text-amber-700';
-      default:
-        return 'bg-gray-100 text-gray-600';
-    }
-  }
-
-  getStatusDotClass(status: string): string {
-    switch (status) {
-      case 'Active':
-        return 'bg-green-600';
-      case 'Inactive':
-        return 'bg-gray-400';
-      case 'Maintenance':
-        return 'bg-amber-600';
-      default:
-        return 'bg-gray-400';
-    }
   }
 }

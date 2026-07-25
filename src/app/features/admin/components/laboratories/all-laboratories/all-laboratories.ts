@@ -1,21 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 
-export interface Laboratory {
-  labId: number;
-  name: string;
-  code: string;
-  department: string;
-  headTechnician: string;
-  headTechnicianInitials: string;
-  testsPerMonth: number;
-  staffCount: number;
-  status: 'Active' | 'Maintenance' | 'Inactive' | 'Closed';
-  createdAt: Date;
-}
+import { Laboratory } from '../../../../../shared/interfaces/Laboratory/Laboratory';
+import { LaboratoryService } from '../../../../../core/services/laboratory-service';
+import { ConfirmationService } from '../../../../../core/services/Confirmation-service';
 
 @Component({
   selector: 'app-all-laboratories',
@@ -24,151 +15,166 @@ export interface Laboratory {
   templateUrl: './all-laboratories.html',
   styleUrls: ['./all-laboratories.css'],
 })
-export class AllLaboratories {
-  // Mock Data
-  allLaboratories: Laboratory[] = [
-    {
-      labId: 1,
-      name: 'Central Hematology Lab',
-      code: 'HEM-001',
-      department: 'Hematology',
-      headTechnician: 'Sarah Miller',
-      headTechnicianInitials: 'SM',
-      testsPerMonth: 12450,
-      staffCount: 24,
-      status: 'Active',
-      createdAt: new Date('2021-06-15'),
-    },
-    {
-      labId: 2,
-      name: 'Molecular Diagnostics',
-      code: 'MOL-042',
-      department: 'Genetics',
-      headTechnician: 'James Kovic',
-      headTechnicianInitials: 'JK',
-      testsPerMonth: 4200,
-      staffCount: 12,
-      status: 'Maintenance',
-      createdAt: new Date('2022-08-20'),
-    },
-    {
-      labId: 3,
-      name: 'Clinical Bio-Analysis',
-      code: 'BIO-219',
-      department: 'Biochemistry',
-      headTechnician: 'Anita Lee',
-      headTechnicianInitials: 'AL',
-      testsPerMonth: 18900,
-      staffCount: 38,
-      status: 'Active',
-      createdAt: new Date('2021-09-25'),
-    },
-    {
-      labId: 4,
-      name: 'Transfusion Center',
-      code: 'TRS-009',
-      department: 'Hematology',
-      headTechnician: 'Robert Dean',
-      headTechnicianInitials: 'RD',
-      testsPerMonth: 3100,
-      staffCount: 9,
-      status: 'Inactive',
-      createdAt: new Date('2022-11-01'),
-    },
-    {
-      labId: 5,
-      name: 'Virology Unit B',
-      code: 'VIR-551',
-      department: 'Microbiology',
-      headTechnician: 'Tessa Hu',
-      headTechnicianInitials: 'TH',
-      testsPerMonth: 0,
-      staffCount: 0,
-      status: 'Closed',
-      createdAt: new Date('2023-01-10'),
-    },
-  ];
-
-  laboratories: Laboratory[] = [...this.allLaboratories];
-
+export class AllLaboratories implements OnInit {
+  // ============================================================
+  // Data
+  // ============================================================
+  laboratories: Laboratory[] = [];
+  totalCount: number = 0;
+  pageNumber: number = 1;
+  pageSize: number = 10;
+  totalPages: number = 1;
+  confirmationService = inject(ConfirmationService);
+  // ============================================================
   // Search & Filters
-  searchQuery: string = '';
+  // ============================================================
+  searchTerm: string = '';
   statusFilter: string = 'all';
-  departmentFilter: string = 'all';
+  statuses = ['all', 'Active', 'Inactive', 'Maintenance', 'Closed'];
 
-  statuses = ['all', 'Active', 'Maintenance', 'Inactive', 'Closed'];
-  departments = ['all', 'Hematology', 'Genetics', 'Biochemistry', 'Microbiology'];
+  // ============================================================
+  // UI State
+  // ============================================================
+  isLoading = false;
+  errorMessage: string | null = null;
 
-  // Pagination
-  currentPage: number = 1;
-  pageSize: number = 5;
-  totalItems: number = this.allLaboratories.length;
+  // Math for template
+  Math = Math;
 
-  get totalPages(): number {
-    return Math.ceil(this.totalItems / this.pageSize);
+  constructor(private laboratoryService: LaboratoryService) { }
+
+  ngOnInit(): void {
+    this.loadLaboratories();
   }
 
-  get startIndex(): number {
-    return (this.currentPage - 1) * this.pageSize + 1;
+  // ============================================================
+  // Load Laboratories
+  // ============================================================
+  loadLaboratories(): void {
+    this.isLoading = true;
+    this.errorMessage = null;
+
+    const status = this.statusFilter === 'all' ? undefined : this.statusFilter;
+
+    this.laboratoryService
+      .getAllLaboratories(this.pageNumber, this.pageSize, this.searchTerm || undefined, status)
+      .subscribe({
+        next: (result) => {
+          this.laboratories = result.items || [];
+          this.totalCount = result.totalCount || 0;
+          this.pageNumber = result.pageNumber || 1;
+          this.pageSize = result.pageSize || 10;
+          this.totalPages = result.totalPages || 1;
+          this.isLoading = false;
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = 'Failed to load laboratories. Please try again.';
+          console.error('Error loading laboratories:', err);
+        },
+      });
   }
 
-  get endIndex(): number {
-    return Math.min(this.currentPage * this.pageSize, this.totalItems);
+  // ============================================================
+  // Search & Filter
+  // ============================================================
+  applyFilters(): void {
+    this.pageNumber = 1;
+    this.loadLaboratories();
   }
 
-  get paginatedLaboratories(): Laboratory[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    return this.laboratories.slice(start, end);
-  }
-
-  applyFilter() {
-    let filtered = [...this.allLaboratories];
-
-    // Search
-    if (this.searchQuery.trim()) {
-      const query = this.searchQuery.toLowerCase();
-      filtered = filtered.filter(
-        (lab) =>
-          lab.name.toLowerCase().includes(query) ||
-          lab.code.toLowerCase().includes(query) ||
-          lab.headTechnician.toLowerCase().includes(query) ||
-          lab.department.toLowerCase().includes(query),
-      );
-    }
-
-    // Status Filter
-    if (this.statusFilter !== 'all') {
-      filtered = filtered.filter((lab) => lab.status === this.statusFilter);
-    }
-
-    // Department Filter
-    if (this.departmentFilter !== 'all') {
-      filtered = filtered.filter((lab) => lab.department === this.departmentFilter);
-    }
-
-    this.laboratories = filtered;
-    this.totalItems = filtered.length;
-    this.currentPage = 1;
-  }
-
-  clearFilters() {
-    this.searchQuery = '';
+  clearFilters(): void {
+    this.searchTerm = '';
     this.statusFilter = 'all';
-    this.departmentFilter = 'all';
-    this.applyFilter();
+    this.applyFilters();
   }
 
+  // ============================================================
+  // Pagination
+  // ============================================================
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages || page === this.pageNumber) {
+      return;
+    }
+    this.pageNumber = page;
+    this.loadLaboratories();
+  }
+
+  previousPage(): void {
+    if (this.pageNumber > 1) {
+      this.goToPage(this.pageNumber - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.pageNumber < this.totalPages) {
+      this.goToPage(this.pageNumber + 1);
+    }
+  }
+
+  getPageNumbers(): number[] {
+    const pages: number[] = [];
+    const total = this.totalPages;
+    const current = this.pageNumber;
+
+    if (total <= 7) {
+      for (let i = 1; i <= total; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+      if (current > 3) {
+        pages.push(-1); // ...
+      }
+      for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+        pages.push(i);
+      }
+      if (current < total - 2) {
+        pages.push(-1); // ...
+      }
+      pages.push(total);
+    }
+
+    return pages;
+  }
+
+  // ============================================================
+  // Refresh
+  // ============================================================
+  refresh(): void {
+    this.loadLaboratories();
+  }
+
+  // ============================================================
+  // Delete
+  // ============================================================
+  async deleteLaboratory(id: number, name: string): Promise<void> {
+    const confirmed = await this.confirmationService.confirmDelete(name);
+    if (!confirmed) return;
+
+    this.laboratoryService.deleteLaboratory(id).subscribe({
+      next: () => {
+        this.loadLaboratories();
+        this.confirmationService.showSuccess('Deleted!', `${name} has been successfully removed.`);
+      },
+      error: (err) => {
+        console.error('Delete failed', err);
+        this.confirmationService.showError('Error!', `An error occurred while deleting ${name}`);
+      },
+    });
+  }
+
+  // ============================================================
+  // Status Helpers
+  // ============================================================
   getStatusClass(status: string): string {
     switch (status) {
       case 'Active':
         return 'bg-green-100 text-green-700';
-      case 'Maintenance':
-        return 'bg-amber-100 text-amber-700';
       case 'Inactive':
         return 'bg-gray-100 text-gray-600';
-      case 'Closed':
-        return 'bg-red-100 text-red-700';
+      case 'Maintenance':
+        return 'bg-amber-100 text-amber-700';
       default:
         return 'bg-gray-100 text-gray-600';
     }
@@ -178,46 +184,36 @@ export class AllLaboratories {
     switch (status) {
       case 'Active':
         return 'bg-green-600';
-      case 'Maintenance':
-        return 'bg-amber-600';
       case 'Inactive':
         return 'bg-gray-400';
-      case 'Closed':
-        return 'bg-red-600';
+      case 'Maintenance':
+        return 'bg-amber-600';
       default:
         return 'bg-gray-400';
     }
   }
 
   getIconForLab(name: string): string {
+    // Return different icons based on lab name or type
     const icons: { [key: string]: string } = {
+      Pathology: 'science',
       Hematology: 'bloodtype',
       Genetics: 'dna',
       Biochemistry: 'science',
       Microbiology: 'coronavirus',
+      Molecular: 'dna',
+      Virology: 'coronavirus',
+      Chemistry: 'science',
+      Immunology: 'vaccines',
+      Urgency: 'emergency',
+      Research: 'biotech',
     };
-    return icons[name] || 'biotech';
-  }
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) {
-      this.currentPage = page;
+    for (const [key, icon] of Object.entries(icons)) {
+      if (name.toLowerCase().includes(key.toLowerCase())) {
+        return icon;
+      }
     }
-  }
-
-  previousPage() {
-    if (this.currentPage > 1) this.currentPage--;
-  }
-
-  nextPage() {
-    if (this.currentPage < this.totalPages) this.currentPage++;
-  }
-
-  getPageNumbers(): number[] {
-    const pages: number[] = [];
-    for (let i = 1; i <= this.totalPages; i++) {
-      pages.push(i);
-    }
-    return pages;
+    return 'biotech';
   }
 }

@@ -1,4 +1,4 @@
-<div class="w-full p-4 sm:p-6 font-sans max-w-225 mx-auto">
+<div class="w-full font-sans max-w-[900px] mx-auto">
   <!-- Breadcrumb & Header -->
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-lg sm:text-3xl font-bold text-primary tracking-tight">Add New Department</h1>
@@ -10,6 +10,17 @@
       Back to Departments
     </button>
   </div>
+
+  <!-- Global Error Message -->
+  @if (errorMessage) {
+    <div class="bg-red-50 border border-red-200 rounded-xl px-4 py-3 flex items-start gap-3 mb-6">
+      <mat-icon class="text-xl text-red-600 mt-0.5">error</mat-icon>
+      <div>
+        <p class="text-sm text-red-800 font-medium">Error</p>
+        <p class="text-sm text-red-700">{{ errorMessage }}</p>
+      </div>
+    </div>
+  }
 
   <!-- Info Card -->
   <div class="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center gap-4 mb-6">
@@ -29,60 +40,146 @@
 
   <!-- Form -->
   <form
-    (ngSubmit)="onSubmit()"
+    (ngSubmit)="onSubmit(departmentForm)"
     #departmentForm="ngForm"
     class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
   >
     <div class="p-6 space-y-6">
-      <!-- Department Name -->
+      <!-- Department Name (Required) -->
       <div class="space-y-1">
-        <label class="text-sm font-medium text-gray-700"
-          >Department Name <span class="text-red-500">*</span></label
-        >
+        <label class="text-sm font-medium text-gray-700">
+          Department Name <span class="text-red-500">*</span>
+        </label>
         <input
-          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
+          class="w-full px-4 py-2.5 rounded-lg border transition-all text-sm outline-none"
+          [class.border-red-500]="
+            nameModel.invalid && (nameModel.touched || departmentForm.submitted)
+          "
+          [class.border-gray-200]="
+            !(nameModel.invalid && (nameModel.touched || departmentForm.submitted))
+          "
           placeholder="e.g. Cardiology Unit"
           [(ngModel)]="department.name"
           name="name"
+          #nameModel="ngModel"
           required
+          minlength="3"
         />
+        @if (nameModel.invalid && (nameModel.touched || departmentForm.submitted)) {
+          @if (nameModel.errors?.['required']) {
+            <p class="text-xs text-red-500">Department name is required.</p>
+          } @else if (nameModel.errors?.['minlength']) {
+            <p class="text-xs text-red-500">
+              Department name must be at least
+              {{ nameModel.errors?.['minlength'].requiredLength }} characters.
+            </p>
+          }
+        }
       </div>
 
-      <!-- Floor Number -->
+      <!-- Floor Number (Optional - Must be within range) -->
       <div class="space-y-1">
         <label class="text-sm font-medium text-gray-700">Floor Number</label>
         <input
-          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
+          class="w-full px-4 py-2.5 rounded-lg border transition-all text-sm outline-none"
+          [class.border-red-500]="
+            floorNumberModel.invalid && (floorNumberModel.touched || departmentForm.submitted)
+          "
+          [class.border-gray-200]="
+            !(floorNumberModel.invalid && (floorNumberModel.touched || departmentForm.submitted))
+          "
           placeholder="e.g. 3"
           type="number"
           [(ngModel)]="department.floorNumber"
           name="floorNumber"
+          #floorNumberModel="ngModel"
+          [min]="MIN_FLOOR"
+          [max]="MAX_FLOOR"
         />
-        <p class="text-xs text-gray-400">The floor where the department is located.</p>
+        @if (floorNumberModel.invalid && (floorNumberModel.touched || departmentForm.submitted)) {
+          @if (floorNumberModel.errors?.['min']) {
+            <p class="text-xs text-red-500">Floor number cannot be negative.</p>
+          } @else if (floorNumberModel.errors?.['max']) {
+            <p class="text-xs text-red-500">Floor number can't exceed {{ MAX_FLOOR }}.</p>
+          }
+        } @else {
+          <p class="text-xs text-gray-400">The floor where the department is located.</p>
+        }
       </div>
 
-      <!-- Head Doctor -->
+      <!-- Head Doctor (Optional - Warning only) -->
       <div class="space-y-1">
         <label class="text-sm font-medium text-gray-700">Head Doctor</label>
-        <select
-          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white appearance-none"
-          style="
-            background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2224%22 height%3D%2224%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%239ca3af%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
-            background-position: right 12px center;
-            background-repeat: no-repeat;
-            background-size: 20px;
-          "
-          [(ngModel)]="department.headDoctorId"
-          name="headDoctorId"
-        >
-          <option [value]="null">Select a doctor...</option>
-          @for (doctor of doctors; track doctor.doctorId) {
-            <option [value]="doctor.doctorId">{{ doctor.name }}</option>
+        <div class="relative">
+          <select
+            class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none bg-white appearance-none pr-10"
+            style="
+              background-image: url('data:image/svg+xml;charset=UTF-8,%3Csvg xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22 width%3D%2224%22 height%3D%2224%22 viewBox%3D%220 0 24 24%22 fill%3D%22none%22 stroke%3D%22%239ca3af%22 stroke-width%3D%222%22 stroke-linecap%3D%22round%22 stroke-linejoin%3D%22round%22%3E%3Cpolyline points%3D%226 9 12 15 18 9%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E');
+              background-position: right 12px center;
+              background-repeat: no-repeat;
+              background-size: 20px;
+            "
+            [(ngModel)]="department.headDoctorId"
+            name="headDoctorId"
+            (ngModelChange)="onHeadDoctorChange($event)"
+          >
+            <option [value]="null">Select a doctor...</option>
+            @if (isLoadingDoctors) {
+              <option disabled>Loading doctors...</option>
+            } @else {
+              @for (doctor of doctors; track doctor.id) {
+                <option [value]="doctor.id">{{ doctor.name }} - {{ doctor.specialization }}</option>
+              }
+            }
+          </select>
+        </div>
+
+        @if (doctors.length > 0 && totalDoctorPages > 1) {
+          <div class="flex items-center justify-between mt-2">
+            <p class="text-xs text-gray-400">
+              Showing {{ (doctorPageNumber - 1) * doctorPageSize + 1 }} to
+              {{ Math.min(doctorPageNumber * doctorPageSize, totalDoctorCount) }} of
+              {{ totalDoctorCount }} doctors
+            </p>
+            <div class="flex items-center gap-1">
+              <button
+                type="button"
+                class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="changeDoctorPage(doctorPageNumber - 1)"
+                [disabled]="doctorPageNumber === 1 || isLoadingDoctors"
+              >
+                <mat-icon class="text-[18px] w-4 h-4">chevron_left</mat-icon>
+              </button>
+              <span class="text-xs text-gray-500"
+                >{{ doctorPageNumber }} / {{ totalDoctorPages }}</span
+              >
+              <button
+                type="button"
+                class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-400 hover:text-primary hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                (click)="changeDoctorPage(doctorPageNumber + 1)"
+                [disabled]="doctorPageNumber === totalDoctorPages || isLoadingDoctors"
+              >
+                <mat-icon class="text-[18px] w-4 h-4">chevron_right</mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+
+        <p class="text-xs text-gray-400">
+          @if (isLoadingDoctors) {
+            Loading doctors...
+          } @else if (doctors.length === 0) {
+            No doctors available. You can add a head doctor later.
+          } @else {
+            The doctor who leads this department.
           }
-        </select>
-        <p class="text-xs text-gray-400">The doctor who leads this department.</p>
+        </p>
+        @if (department.headDoctorId === null) {
+          <p class="text-xs text-yellow-600">No head doctor assigned. You can assign one later.</p>
+        }
       </div>
 
+      <!-- Status (Default: Active) -->
       <div class="space-y-1">
         <label class="text-sm font-medium text-gray-600">Department Status</label>
         <select
@@ -101,18 +198,6 @@
           }
         </select>
       </div>
-
-      <!-- Phone Extension -->
-      <div class="space-y-1">
-        <label class="text-sm font-medium text-gray-700">Phone Extension</label>
-        <input
-          class="w-full px-4 py-2.5 rounded-lg border border-gray-200 focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm outline-none"
-          placeholder="e.g. 101"
-          [(ngModel)]="department.phoneExt"
-          name="phoneExt"
-        />
-        <p class="text-xs text-gray-400">Internal phone extension for the department.</p>
-      </div>
     </div>
 
     <!-- Form Actions -->
@@ -128,19 +213,25 @@
       </button>
       <button
         type="button"
-        class="w-full sm:w-auto px-6 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition"
+        class="w-full sm:w-auto px-6 py-2.5 rounded-xl border border-gray-200 text-gray-700 text-sm font-medium hover:bg-gray-50 transition flex items-center justify-center gap-2"
         (click)="onReset()"
       >
-        <mat-icon class="w-4 h-4 text-gray-500 mr-2">restart_alt</mat-icon>
+        <mat-icon class="w-4 h-4 text-gray-500">restart_alt</mat-icon>
         Clear Form
       </button>
       <button
         type="submit"
-        class="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
-        [disabled]="!departmentForm.form.valid"
+        class="w-full sm:w-auto px-6 py-2.5 rounded-xl text-white text-sm font-semibold transition flex items-center justify-center gap-2"
+        [class.bg-primary]="!isSubmitting"
+        [class.bg-gray-400]="isSubmitting"
+        [class.cursor-not-allowed]="isSubmitting"
+        [disabled]="isSubmitting || !departmentForm.valid"
       >
-        <mat-icon class="w-4 h-4 text-white">add</mat-icon>
-        Create Department
+        @if (isSubmitting) {
+        } @else {
+          <mat-icon class="w-4 h-4 text-white">add</mat-icon>
+        }
+        {{ isSubmitting ? 'Creating...' : 'Create Department' }}
       </button>
     </div>
   </form>

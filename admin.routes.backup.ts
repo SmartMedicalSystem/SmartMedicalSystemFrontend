@@ -1,10 +1,11 @@
 import { Routes } from '@angular/router';
+import { authGuard } from '../../core/guards/auth-guard';
 import { adminGuard } from '../../core/guards/admin-guard';
 
 export const adminRoutes: Routes = [
   {
     path: 'admin',
-    canActivate: [adminGuard],
+    canActivate: [authGuard, adminGuard],
     children: [
       {
         path: '',
@@ -135,7 +136,13 @@ export const adminRoutes: Routes = [
                     (m) => m.AllLaboratories,
                   ),
               },
-
+              {
+                path: 'edit-laboratories/:id', // :id
+                loadComponent: () =>
+                  import('./components/laboratories/edit-laboratories/edit-laboratories').then(
+                    (m) => m.EditLaboratory,
+                  ),
+              },
               {
                 path: 'add-laboratories',
                 loadComponent: () =>
@@ -148,13 +155,6 @@ export const adminRoutes: Routes = [
                 loadComponent: () =>
                   import('./components/laboratories/laboratory-details/laboratory-details').then(
                     (l) => l.LaboratoryDetails,
-                  ),
-              },
-              {
-                path: 'edit-laboratories/:id',
-                loadComponent: () =>
-                  import('./components/laboratories/edit-laboratories/edit-laboratories').then(
-                    (l) => l.EditLaboratory,
                   ),
               },
             ],
@@ -177,7 +177,7 @@ export const adminRoutes: Routes = [
                   ),
               },
               {
-                path: 'edit-lab-technicians/:nationalId', // :id
+                path: 'edit-lab-technicians', // :id
                 loadComponent: () =>
                   import('./components/lab-technicians/edit-lab-technicians/edit-lab-technicians').then(
                     (m) => m.EditLabTechnicians,
