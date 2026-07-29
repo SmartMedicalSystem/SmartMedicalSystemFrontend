@@ -5,7 +5,6 @@
     <h1 class="text-3xl font-bold text-slate-800">
       Laboratory Test Requests
     </h1>
-
     <p class="text-gray-500 mt-1">
       View and process laboratory test requests assigned to your laboratory.
     </p>
@@ -15,389 +14,231 @@
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
     <!-- Card 1 -->
-    <div
-      class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
-
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
       <div>
-
-        <p class="text-sm text-gray-500">
-          Total Requests
-        </p>
-
+        <p class="text-sm text-gray-500">Total Requests</p>
         <h2 class="text-3xl font-bold text-[var(--color-primary)]">
-          1,284
+          {{ totalCount }}
         </h2>
-
       </div>
-
-      <div
-        class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
-
+      <div class="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
         <i class="fa-solid fa-vials text-xl text-[var(--color-primary)]"></i>
-
       </div>
-
     </div>
 
     <!-- Card 2 -->
-
-    <div
-      class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
-
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
       <div>
-
-        <p class="text-sm text-gray-500">
-          Pending
-        </p>
-
+        <p class="text-sm text-gray-500">Pending</p>
         <h2 class="text-3xl font-bold text-[var(--color-tertiary)]">
-          42
+          {{ stats?.pending ?? '—' }}
         </h2>
-
       </div>
-
-      <div
-        class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
-
+      <div class="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
         <i class="fa-solid fa-clock text-xl text-[var(--color-tertiary)]"></i>
-
       </div>
-
     </div>
 
     <!-- Card 3 -->
-
-    <div
-      class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
-
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 flex items-center justify-between">
       <div>
-
-        <p class="text-sm text-gray-500">
-          Completed Today
-        </p>
-
+        <p class="text-sm text-gray-500">Completed Today</p>
         <h2 class="text-3xl font-bold text-[var(--color-secondary)]">
-          156
+          {{ stats?.completedToday ?? '—' }}
         </h2>
-
       </div>
-
-      <div
-        class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-
+      <div class="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
         <i class="fa-solid fa-circle-check text-xl text-[var(--color-secondary)]"></i>
-
       </div>
-
     </div>
 
     <!-- Search -->
-
-    <div
-      class="bg-white rounded-xl shadow-sm border border-gray-200 px-4 flex items-center">
-
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 px-4 flex items-center">
       <i class="fa-solid fa-magnifying-glass text-gray-400 mr-3"></i>
-
       <input
         type="text"
+        [(ngModel)]="searchTerm"
         placeholder="Search by patient name, SSN, doctor name..."
         class="w-full py-3 outline-none text-sm">
-
     </div>
 
   </div>
 
   <!-- Filters -->
+  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
 
-  <div
-    class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-6">
-
-    <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
-
-      <select
-        class="border rounded-lg px-3 py-2 focus:outline-none">
-
-        <option>Status</option>
-        <option>All Statuses</option>
-        <option>Pending</option>
-        <option>Completed</option>
-
+      <select class="border rounded-lg px-3 py-2 focus:outline-none" [(ngModel)]="filterStatus">
+        <option [ngValue]="null">Status</option>
+        <option value="Pending">Pending</option>
+        <option value="In Progress">In Progress</option>
+        <option value="Completed">Completed</option>
       </select>
 
-      <select
-        class="border rounded-lg px-3 py-2">
-
-        <option>Priority</option>
-        <option>Emergency</option>
-        <option>Urgent</option>
-        <option>Routine</option>
-
+      <select class="border rounded-lg px-3 py-2" [(ngModel)]="filterPriority">
+        <option [ngValue]="null">Priority</option>
+        <option value="High">High</option>
+        <option value="Medium">Medium</option>
+        <option value="Low">Low</option>
       </select>
 
-      <select
-        class="border rounded-lg px-3 py-2">
-
-        <option>Laboratory Test</option>
-        <option>Blood Count</option>
-        <option>Lipid Profile</option>
-
+      <select class="border rounded-lg px-3 py-2" [(ngModel)]="filterTest">
+        <option [ngValue]="null">Laboratory Test</option>
+        <option *ngFor="let t of availableTests" [value]="t">{{ t }}</option>
       </select>
 
-      <select
-        class="border rounded-lg px-3 py-2">
-
-        <option>Doctor</option>
-        <option>Sarah Miller</option>
-        <option>James Wilson</option>
-
+      <select class="border rounded-lg px-3 py-2" [(ngModel)]="filterDoctor">
+        <option [ngValue]="null">Doctor</option>
+        <option *ngFor="let d of availableDoctors" [value]="d">{{ d }}</option>
       </select>
 
       <button
+        (click)="applyFilters()"
         class="bg-[var(--color-primary)] hover:opacity-90 text-white rounded-lg px-5 py-2">
-
         <i class="fa-solid fa-filter mr-2"></i>
-
         Apply Filters
-
       </button>
 
-      <button
-        class="border rounded-lg">
-
+      <button (click)="resetFilters()" class="border rounded-lg">
         <i class="fa-solid fa-rotate-right"></i>
-
       </button>
 
     </div>
-
   </div>
-  <!-- Table -->
 
+  <!-- Table -->
   <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
 
     <div class="overflow-x-auto">
-
       <table class="min-w-full text-sm">
-
         <thead class="bg-gray-50 text-gray-600 uppercase text-xs">
-
           <tr>
-
             <th class="px-6 py-4 text-left">Patient</th>
-
             <th class="px-6 py-4 text-left">SSN</th>
-
             <th class="px-6 py-4 text-left">Requested Test</th>
-
             <th class="px-6 py-4 text-left">Requested By</th>
-
             <th class="px-6 py-4 text-left">Priority</th>
-
             <th class="px-6 py-4 text-left">Date</th>
-
             <th class="px-6 py-4 text-left">Status</th>
-
             <th class="px-6 py-4 text-center">Action</th>
-
           </tr>
-
         </thead>
 
         <tbody>
 
+          <!-- Loading state -->
+          <tr *ngIf="isLoading">
+            <td colspan="8" class="text-center py-10 text-gray-500">
+              <i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading requests...
+            </td>
+          </tr>
+
+          <!-- Empty state -->
+          <tr *ngIf="!isLoading && filteredRequests.length === 0">
+            <td colspan="8" class="text-center py-10 text-gray-500">
+              No requests found.
+            </td>
+          </tr>
+
           <tr
-            *ngFor="let item of requests"
+            *ngFor="let item of filteredRequests"
             class="border-t hover:bg-gray-50 transition">
 
             <!-- Patient -->
-
             <td class="px-6 py-5">
-
               <div class="flex items-center gap-3">
-
-                <img
-                  [src]="item.image"
-                  class="w-12 h-12 rounded-full object-cover">
-
-                <div>
-
-                  <h3 class="font-semibold text-slate-800">
-
-                    {{item.patient}}
-
-                  </h3>
-
-                  <p class="text-gray-500 text-xs">
-
-                    {{item.age}}
-
-                  </p>
-
+                <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center font-semibold text-[var(--color-primary)]">
+                  {{ getInitials(item.patientName) }}
                 </div>
-
+                <div>
+                  <h3 class="font-semibold text-slate-800">
+                    {{ item.patientName }}
+                  </h3>
+                  <p class="text-gray-500 text-xs">
+                    {{ item.patientAge }} Years
+                  </p>
+                </div>
               </div>
-
             </td>
 
             <!-- SSN -->
-
             <td class="px-6 py-5">
-
-              {{item.ssn}}
-
+              {{ item.patientSSN }}
             </td>
 
             <!-- Test -->
-
             <td class="px-6 py-5">
-
               <p class="font-semibold">
-
-                {{item.test}}
-
+                {{ getTestNames(item) }}
               </p>
-
-              <p class="text-xs text-gray-500">
-
-                {{item.department}}
-
-              </p>
-
             </td>
 
             <!-- Doctor -->
-
             <td class="px-6 py-5">
-
-              <p>
-
-                {{item.doctor}}
-
-              </p>
-
-              <p class="text-xs text-gray-500">
-
-                {{item.speciality}}
-
-              </p>
-
+              <p>{{ item.doctorName }}</p>
+              <p class="text-xs text-gray-500">{{ item.doctorDepartment }}</p>
             </td>
 
             <!-- Priority -->
-
             <td class="px-6 py-5">
-
-              <span
-
-                class="px-3 py-1 rounded-full text-xs"
-
-                [ngClass]="{
-
-                  'bg-red-100 text-red-600': item.priority=='Emergency',
-
-                  'bg-orange-100 text-orange-600': item.priority=='Urgent',
-
-                  'bg-cyan-100 text-cyan-700': item.priority=='Routine'
-
-                }">
-
-                {{item.priority}}
-
+              <span [class]="'px-3 py-1 rounded-full text-xs ' + getPriorityClass(item.priority)">
+                {{ item.priority }}
               </span>
-
             </td>
 
             <!-- Date -->
-
             <td class="px-6 py-5">
-
-              {{item.date}}
-
+              {{ item.requestedAt | date:'yyyy-MM-dd' }}
             </td>
 
             <!-- Status -->
-
             <td class="px-6 py-5">
-
-              <span
-
-                class="px-3 py-1 rounded-full text-xs"
-
-                [ngClass]="{
-
-                  'bg-orange-100 text-orange-600': item.status=='Pending',
-
-                  'bg-blue-100 text-blue-700': item.status=='In Progress',
-
-                  'bg-green-100 text-green-700': item.status=='Completed'
-
-                }">
-
-                {{item.status}}
-
+              <span [class]="'px-3 py-1 rounded-full text-xs ' + getStatusClass(item.status)">
+                {{ item.status }}
               </span>
-
             </td>
 
-  <!-- Action -->
-
-<td class="px-6 py-5 text-center">
-
-  <button
-  routerLink="/labtechnician/dashboard/requests/test-results"
-  class="px-4 py-2 rounded-lg text-white text-sm bg-[var(--color-primary)] hover:opacity-90">
-
-  Start Test
-
-</button>
-
-</td>
+            <!-- Action -->
+            <td class="px-6 py-5 text-center">
+              <button
+                [routerLink]="['/labtechnician/dashboard/requests/test-results', item.id]"
+                class="px-4 py-2 rounded-lg text-white text-sm bg-[var(--color-primary)] hover:opacity-90">
+                {{ getActionLabel(item.status) }}
+              </button>
+            </td>
 
           </tr>
 
         </tbody>
-
       </table>
-
     </div>
 
     <!-- Footer -->
-
-    <div
-      class="flex flex-col md:flex-row items-center justify-between px-6 py-4 border-t">
-
+    <div class="flex flex-col md:flex-row items-center justify-between px-6 py-4 border-t">
       <p class="text-sm text-gray-500">
-
         Rows per page:
-        <span class="font-semibold">10</span>
-
+        <span class="font-semibold">{{ pageSize }}</span>
       </p>
 
-      <p class="text-sm text-gray-500">
-
-        1-10 of 1,284
-
+      <p class="text-sm text-gray-500" *ngIf="totalCount > 0">
+        {{ firstItemIndex }}-{{ lastItemIndex }} of {{ totalCount }}
       </p>
 
       <div class="flex gap-2 mt-3 md:mt-0">
-
-        <button class="w-9 h-9 rounded border">
-
+        <button
+          class="w-9 h-9 rounded border disabled:opacity-40"
+          [disabled]="!hasPreviousPage"
+          (click)="goToPreviousPage()">
           <i class="fa-solid fa-chevron-left"></i>
-
         </button>
-
-        <button class="w-9 h-9 rounded border">
-
+        <button
+          class="w-9 h-9 rounded border disabled:opacity-40"
+          [disabled]="!hasNextPage"
+          (click)="goToNextPage()">
           <i class="fa-solid fa-chevron-right"></i>
-
         </button>
-
       </div>
-
     </div>
 
   </div>
-
 </div>

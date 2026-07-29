@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { LabTechService } from '../../../../core/services/lab-tech-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-profile',
@@ -11,49 +13,106 @@ import { FormsModule } from '@angular/forms';
 })
 export class Profile {
 
+  isEditing = false;
+
   profile = {
-
-    firstName: 'Alex',
-
-    lastName: 'Rivera',
-
+    id: 0,
+    userId: 0,
+    firstName: '',
+    lastName: '',
+    fullName: '',
     gender: 'Male',
-
-    birthDate: '1992-08-24',
-
-    nationality: 'American',
-
-    nationalId: 'ID-98234-AX',
-
-    employeeId: 'LAB-2024-0512',
-
-    lab: 'Central Hematology Lab',
-
-    jobTitle: 'Senior Laboratory Technician',
-
-    experience: 8,
-
-    email: 'alex.rivera@labnexuspro.com',
-
-    phone: '+1 (555) 123-4567',
-
-    address: '125 Medical Street, New York, USA'
-
+    dateOfBirth: '',
+    nationality: '',
+    nationalId: '',
+    profilePictureUrl: '',
+    employeeId: '',
+    assignedLaboratory: '',
+    jobTitle: '',
+    yearsOfExperience: 0,
+    status: '',
+    joiningDate: '',
+    email: '',
+    phoneNumber: '',
+    address: ''
   };
 
-  saveProfile() {
+  // مؤقتاً لحين ربط الـ Login
+  profileId = 1;
 
-    console.log('Profile Saved');
-
-    console.log(this.profile);
-
-    alert('Profile Saved Successfully');
-
+  constructor(
+    private labTechProfileService: LabTechService
+  ) {
+    this.LoadLabTechProfile();
   }
 
-  cancel() {
+  LoadLabTechProfile(): void {
+    this.labTechProfileService.ProfileOpen(this.profileId).subscribe({
+      next: (res) => {
+        console.log('Profile Loaded:', res);
 
-    alert('Changes Cancelled');
+        this.profile = res;
+
+        // حفظ الـ id الحقيقي بعد أول GET
+        this.profileId = res.id;
+      },
+      error: (err) => {
+        console.error('Failed to load profile', err);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: err?.error?.message || err?.error?.Message || 'Failed to Load Profile',
+        });
+      }
+    });
+  }
+
+  editProfile(): void {
+    this.isEditing = true;
+  }
+
+  saveProfile(): void {
+    this.labTechProfileService
+      .ProfileSaveChanges(this.profileId, this.profile)
+      .subscribe({
+        next: (res) => {
+
+          console.log('Profile Updated:', res);
+
+          this.profile = res;
+
+          this.isEditing = false;
+
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Profile Updated Successfully'
+          });
+        },
+        error: (err) => {
+
+          console.error('Update Failed', err);
+
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err?.error?.message || err?.error?.Message || 'Failed to Save Profile',
+          });
+        }
+      });
+  }
+
+  cancel(): void {
+    this.isEditing = false;
+    this.LoadLabTechProfile();
+  }
+
+  ChangePassword(): void {
+
+    // هنكملها لما نعمل شاشة Change Password
+    // لأن الـ Endpoint بيستقبل بيانات الباسورد
+    // وليس صورة.
 
   }
 

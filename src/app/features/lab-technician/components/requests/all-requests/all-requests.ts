@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { RequestLabsService } from '../../../core/services/request-labs-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-all-requests',
@@ -11,8 +13,7 @@ import { RouterModule } from '@angular/router';
 })
 export class AllRequests {
 
-
-  requests = [
+  requests: any[] = [
 
     {
       patient: 'John Smith',
@@ -105,5 +106,38 @@ export class AllRequests {
     }
 
   ];
+
+  constructor(private requestLabsService: RequestLabsService) {
+    this.LoadRequestLabs();
+  }
+
+  LoadRequestLabs(): void {
+
+    this.requestLabsService.RequestLabsTable().subscribe({
+
+      next: (res: any) => {
+
+        console.log('Request Labs:', res);
+
+        // استبدال البيانات التجريبية ببيانات الـ API
+        this.requests = res.items;
+
+      },
+
+      error: (err: any) => {
+
+        console.error('Failed to load requests', err);
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: err?.error?.message || err?.error?.Message || 'Failed to Load Requests'
+        });
+
+      }
+
+    });
+
+  }
 
 }

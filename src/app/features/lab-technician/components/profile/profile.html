@@ -1,9 +1,7 @@
 <div class="min-h-screen bg-[var(--color-neutral)] p-6">
 
   <!-- Page Title -->
-
   <div class="mb-6">
-
     <h1 class="text-3xl font-bold text-slate-800">
       My Profile
     </h1>
@@ -11,26 +9,33 @@
     <p class="text-gray-500 mt-1">
       View and update your personal and professional information within the LabNexus clinical ecosystem.
     </p>
-
   </div>
 
   <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
 
     <!-- Left Card -->
-
-    <div
-      class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
 
       <div class="flex flex-col items-center">
 
         <div class="relative">
 
           <img
-            src="https://i.pravatar.cc/180?img=32"
+            [src]="profile.profilePictureUrl || 'https://i.pravatar.cc/180?img=32'"
             class="w-32 h-32 rounded-full object-cover border-4 border-white shadow">
 
+          <!-- Upload Picture -->
+          <input
+            #fileInput
+            type="file"
+            hidden
+            accept="image/*"
+            (change)="ChangePicture($event)">
+
           <button
-            class="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-[var(--color-primary)] text-white">
+            *ngIf="isEditing"
+            (click)="fileInput.click()"
+            class="absolute bottom-0 right-0 w-10 h-10 rounded-full bg-[var(--color-primary)] text-white hover:opacity-90">
 
             <i class="fa-solid fa-camera"></i>
 
@@ -39,15 +44,11 @@
         </div>
 
         <h2 class="text-2xl font-bold mt-4">
-
-          Alex Rivera
-
+          {{ profile.fullName }}
         </h2>
 
         <p class="text-gray-500">
-
-          LAB-2024-0512
-
+          {{ profile.employeeId }}
         </p>
 
         <span
@@ -55,7 +56,7 @@
 
           <i class="fa-solid fa-circle mr-1 text-xs"></i>
 
-          Active Status
+          {{ profile.status }}
 
         </span>
 
@@ -67,21 +68,16 @@
 
         <div class="flex gap-3">
 
-          <i
-            class="fa-solid fa-building text-[var(--color-primary)] mt-1"></i>
+          <i class="fa-solid fa-building text-[var(--color-primary)] mt-1"></i>
 
           <div>
 
             <p class="text-xs text-gray-500">
-
               Assigned Laboratory
-
             </p>
 
             <h4 class="font-semibold">
-
-              Central Hematology Lab
-
+              {{ profile.assignedLaboratory }}
             </h4>
 
           </div>
@@ -90,21 +86,16 @@
 
         <div class="flex gap-3">
 
-          <i
-            class="fa-solid fa-calendar-days text-[var(--color-primary)] mt-1"></i>
+          <i class="fa-solid fa-calendar-days text-[var(--color-primary)] mt-1"></i>
 
           <div>
 
             <p class="text-xs text-gray-500">
-
               Joining Date
-
             </p>
 
             <h4 class="font-semibold">
-
-              January 15, 2021
-
+              {{ profile.joiningDate | date:'longDate' }}
             </h4>
 
           </div>
@@ -115,122 +106,83 @@
 
     </div>
 
-    <!-- Right Side -->
+    <!-- Right Card -->
+    <div class="xl:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
 
-    <div
-      class="xl:col-span-3 bg-white rounded-xl shadow-sm border border-gray-200 p-8">
-
-      <!-- Personal -->
-
+      <!-- Personal Information -->
       <div>
 
-        <h2
-          class="text-xl font-bold flex items-center gap-2 mb-6">
-
-          <i
-            class="fa-solid fa-user text-[var(--color-primary)]"></i>
-
+        <h2 class="text-xl font-bold flex items-center gap-2 mb-6">
+          <i class="fa-solid fa-user text-[var(--color-primary)]"></i>
           Personal Information
-
         </h2>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           <div>
-
-            <label
-              class="text-sm text-gray-500">
-
-              First Name
-
-            </label>
-
+            <label class="text-sm text-gray-500">First Name</label>
             <input
               [(ngModel)]="profile.firstName"
-              class="w-full border rounded-lg p-3 mt-2 outline-none focus:ring-2 focus:ring-[var(--color-primary)]">
-
+              [readonly]="!isEditing"
+              class="w-full border rounded-lg p-3 mt-2 bg-white"
+              [class.bg-gray-100]="!isEditing">
           </div>
 
           <div>
-
-            <label
-              class="text-sm text-gray-500">
-
-              Last Name
-
-            </label>
-
+            <label class="text-sm text-gray-500">Last Name</label>
             <input
               [(ngModel)]="profile.lastName"
-              class="w-full border rounded-lg p-3 mt-2 outline-none focus:ring-2 focus:ring-[var(--color-primary)]">
-
+              [readonly]="!isEditing"
+              class="w-full border rounded-lg p-3 mt-2 bg-white"
+              [class.bg-gray-100]="!isEditing">
           </div>
 
           <div>
-
-            <label
-              class="text-sm text-gray-500">
-
-              Gender
-
-            </label>
+            <label class="text-sm text-gray-500">Gender</label>
 
             <select
               [(ngModel)]="profile.gender"
+              [disabled]="!isEditing"
               class="w-full border rounded-lg p-3 mt-2">
 
-              <option>Male</option>
-
-              <option>Female</option>
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
 
             </select>
 
           </div>
 
           <div>
-
-            <label
-              class="text-sm text-gray-500">
-
-              Date of Birth
-
-            </label>
+            <label class="text-sm text-gray-500">Date of Birth</label>
 
             <input
               type="date"
-              [(ngModel)]="profile.birthDate"
-              class="w-full border rounded-lg p-3 mt-2">
+              [(ngModel)]="profile.dateOfBirth"
+              [readonly]="!isEditing"
+              class="w-full border rounded-lg p-3 mt-2 bg-white"
+              [class.bg-gray-100]="!isEditing">
 
           </div>
 
           <div>
-
-            <label
-              class="text-sm text-gray-500">
-
-              Nationality
-
-            </label>
+            <label class="text-sm text-gray-500">Nationality</label>
 
             <input
               [(ngModel)]="profile.nationality"
-              class="w-full border rounded-lg p-3 mt-2">
+              [readonly]="!isEditing"
+              class="w-full border rounded-lg p-3 mt-2 bg-white"
+              [class.bg-gray-100]="!isEditing">
 
           </div>
 
           <div>
-
-            <label
-              class="text-sm text-gray-500">
-
-              National ID
-
-            </label>
+            <label class="text-sm text-gray-500">National ID</label>
 
             <input
               [(ngModel)]="profile.nationalId"
-              class="w-full border rounded-lg p-3 mt-2">
+              [readonly]="!isEditing"
+              class="w-full border rounded-lg p-3 mt-2 bg-white"
+              [class.bg-gray-100]="!isEditing">
 
           </div>
 
@@ -239,12 +191,11 @@
       </div>
 
       <hr class="my-10">
-      <!-- Professional Information -->
 
+      <!-- Professional Information -->
       <div>
 
-        <h2
-          class="text-xl font-bold flex items-center gap-2 mb-6">
+        <h2 class="text-xl font-bold flex items-center gap-2 mb-6">
 
           <i class="fa-solid fa-briefcase text-[var(--color-primary)]"></i>
 
@@ -252,16 +203,11 @@
 
         </h2>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           <div>
 
-            <label class="text-sm text-gray-500">
-
-              Employee ID
-
-            </label>
+            <label class="text-sm text-gray-500">Employee ID</label>
 
             <input
               [(ngModel)]="profile.employeeId"
@@ -272,14 +218,10 @@
 
           <div>
 
-            <label class="text-sm text-gray-500">
-
-              Assigned Laboratory
-
-            </label>
+            <label class="text-sm text-gray-500">Assigned Laboratory</label>
 
             <input
-              [(ngModel)]="profile.lab"
+              [(ngModel)]="profile.assignedLaboratory"
               readonly
               class="w-full mt-2 p-3 rounded-lg border bg-gray-100">
 
@@ -287,11 +229,7 @@
 
           <div>
 
-            <label class="text-sm text-gray-500">
-
-              Job Title
-
-            </label>
+            <label class="text-sm text-gray-500">Job Title</label>
 
             <input
               [(ngModel)]="profile.jobTitle"
@@ -302,18 +240,17 @@
 
           <div>
 
-            <label class="text-sm text-gray-500">
+  <label class="text-sm text-gray-500">
+    Years of Experience
+  </label>
 
-              Years of Experience
+  <input
+    type="number"
+    [value]="profile.yearsOfExperience"
+    readonly
+    class="w-full mt-2 p-3 rounded-lg border bg-gray-100">
 
-            </label>
-
-            <input
-              type="number"
-              [(ngModel)]="profile.experience"
-              class="w-full mt-2 p-3 rounded-lg border">
-
-          </div>
+</div>
 
         </div>
 
@@ -322,11 +259,9 @@
       <hr class="my-10">
 
       <!-- Contact Information -->
-
       <div>
 
-        <h2
-          class="text-xl font-bold flex items-center gap-2 mb-6">
+        <h2 class="text-xl font-bold flex items-center gap-2 mb-6">
 
           <i class="fa-solid fa-address-card text-[var(--color-primary)]"></i>
 
@@ -334,55 +269,43 @@
 
         </h2>
 
-        <div
-          class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
           <div>
 
-            <label class="text-sm text-gray-500">
-
-              Email Address
-
-            </label>
+            <label class="text-sm text-gray-500">Email Address</label>
 
             <input
               type="email"
               [(ngModel)]="profile.email"
-              class="w-full mt-2 p-3 rounded-lg border">
+              [readonly]="!isEditing"
+              class="w-full mt-2 p-3 rounded-lg border bg-white"
+              [class.bg-gray-100]="!isEditing">
 
           </div>
 
           <div>
 
-            <label class="text-sm text-gray-500">
-
-              Phone Number
-
-            </label>
+            <label class="text-sm text-gray-500">Phone Number</label>
 
             <input
-              [(ngModel)]="profile.phone"
-              class="w-full mt-2 p-3 rounded-lg border">
+              [(ngModel)]="profile.phoneNumber"
+              [readonly]="!isEditing"
+              class="w-full mt-2 p-3 rounded-lg border bg-white"
+              [class.bg-gray-100]="!isEditing">
 
           </div>
 
           <div class="md:col-span-2">
 
-            <label class="text-sm text-gray-500">
-
-              Address
-
-            </label>
+            <label class="text-sm text-gray-500">Address</label>
 
             <textarea
-
               rows="3"
-
               [(ngModel)]="profile.address"
-
-              class="w-full mt-2 p-3 rounded-lg border resize-none">
-
-            </textarea>
+              [readonly]="!isEditing"
+              class="w-full mt-2 p-3 rounded-lg border resize-none bg-white"
+              [class.bg-gray-100]="!isEditing"></textarea>
 
           </div>
 
@@ -392,28 +315,43 @@
 
       <hr class="my-10">
 
-      <!-- Buttons -->
+      <!-- Action Buttons -->
+      <div class="flex justify-end gap-4">
 
-      <div
-        class="flex flex-col sm:flex-row justify-end gap-4">
+        <!-- Edit -->
+        <button
+          *ngIf="!isEditing"
+          (click)="editProfile()"
+          class="px-6 py-3 rounded-lg bg-[var(--color-primary)] text-white hover:opacity-90">
 
-       <button
-  (click)="cancel()"
-  class="px-6 py-3 rounded-lg border hover:bg-gray-100">
+          <i class="fa-solid fa-pen-to-square mr-2"></i>
 
-  Cancel
+          Edit Profile
 
-</button>
+        </button>
 
-<button
-  (click)="saveProfile()"
-  class="px-6 py-3 rounded-lg text-white bg-[var(--color-primary)] hover:opacity-90">
+        <!-- Save / Cancel -->
+        <ng-container *ngIf="isEditing">
 
-  <i class="fa-solid fa-floppy-disk mr-2"></i>
+          <button
+            (click)="cancel()"
+            class="px-6 py-3 rounded-lg border hover:bg-gray-100">
 
-  Save Changes
+            Cancel
 
-</button>
+          </button>
+
+          <button
+            (click)="saveProfile()"
+            class="px-6 py-3 rounded-lg bg-[var(--color-primary)] text-white hover:opacity-90">
+
+            <i class="fa-solid fa-floppy-disk mr-2"></i>
+
+            Save Changes
+
+          </button>
+
+        </ng-container>
 
       </div>
 
@@ -422,4 +360,3 @@
   </div>
 
 </div>
-
