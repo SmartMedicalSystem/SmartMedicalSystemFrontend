@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { TestResultService } from '../../../../core/services/test-result-service';
+import { TestResultService } from '../../../../../core/services/test-result-service';
 import Swal from 'sweetalert2';
 
 @Component({

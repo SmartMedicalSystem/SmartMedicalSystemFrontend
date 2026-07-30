@@ -4,10 +4,10 @@ import { RouterOutlet } from '@angular/router';
 
 import { LabTechService } from '../../../../core/services/lab-tech-service';
 import Swal from 'sweetalert2';
+import { Footer } from '../../../../shared/components/footer/footer';
+import { Navbar } from '../../../../shared/components/navbar/navbar';
+import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 
-import { Footer } from '../../../shared/components/footer/footer';
-import { Navbar } from '../../../shared/components/navbar/navbar';
-import { Sidebar } from '../../../shared/components/sidebar/sidebar';
 
 @Component({
   selector: 'app-dashboard',
