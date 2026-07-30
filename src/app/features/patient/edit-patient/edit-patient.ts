@@ -9,7 +9,8 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientsService } from '../../../core/services/patient-service';
-import { UpdatePatientDto } from '../../../shared/interfaces/Patient.model';
+import { UpdatePatientDto } from '../../../shared/interfaces/Patient/update-patient.dto';
+import { AlertService } from '../../../core/services/alert-service';
 
 const NATIONAL_ID_PATTERN = /^\d{14}$/;
 
@@ -33,13 +34,12 @@ function notInFutureValidator(control: AbstractControl): ValidationErrors | null
 export class EditPatient implements OnInit {
   private fb = inject(FormBuilder);
   private patientService = inject(PatientsService);
+  private alertService = inject(AlertService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
-
- patientId!: number;
+  patientId!: number;
   submitted = signal(false);
-
 
   patient = signal({
     name: '',
@@ -51,10 +51,12 @@ export class EditPatient implements OnInit {
 
   modifiedFields = signal<Set<string>>(new Set());
 
+  // nationalId is editable now — same as add-patient — just with a stricter
+  // pattern check since we already know the expected format.
   form = this.fb.group({
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
-    nationalId: [{ value: '', disabled: true }, [Validators.required, Validators.pattern(NATIONAL_ID_PATTERN)]],
+    nationalId: ['', [Validators.required, Validators.pattern(NATIONAL_ID_PATTERN)]],
     dateOfBirth: ['', [Validators.required, notInFutureValidator]],
     gender: [null as number | null, Validators.required],
     mobileNumber: ['', Validators.required],
@@ -85,7 +87,7 @@ export class EditPatient implements OnInit {
         this.patient.set({
           name: `${patient.firstName} ${patient.lastName}`,
           patientId: patient.id.toString(),
-          nationalId: patient.nationalId.toString(),
+      nationalId: patient.nationalId ?? '',
           status: 'Active',
           registeredDate: '',
         });
@@ -93,7 +95,7 @@ export class EditPatient implements OnInit {
         this.form.patchValue({
           firstName: patient.firstName,
           lastName: patient.lastName,
-          nationalId: patient.nationalId.toString(),
+          nationalId: patient.nationalId ?? '',
           dateOfBirth: patient.dateOfBirth.substring(0, 10),
           gender: patient.gender,
           mobileNumber: patient.mobileNumber.toString(),
@@ -108,10 +110,9 @@ export class EditPatient implements OnInit {
       },
       error: (err) => {
         console.error(err);
-        alert('Failed to load patient');
+        this.alertService.error('Failed to load patient');
       },
     });
-  
   }
 
   isInvalid(controlName: string): boolean {
@@ -124,6 +125,7 @@ export class EditPatient implements OnInit {
     if (!control || !control.errors) return '';
 
     if (control.hasError('required')) return `${label} is required`;
+    if (control.hasError('email')) return 'Invalid email address';
     if (control.hasError('futureDate')) return `${label} cannot be in the future`;
     if (control.hasError('pattern')) {
       if (controlName === 'nationalId') return 'National ID must be exactly 14 digits';
@@ -164,21 +166,33 @@ export class EditPatient implements OnInit {
   }
 
   onCancel() {
-    this.form.reset(this.originalValue);
-    this.modifiedFields.set(new Set());
-    this.router.navigate(['/admin/dashboard/patients/all-patients']);
+    this.alertService
+      .confirm('Discard any unsaved changes and leave this page?', 'Cancel editing?')
+      .then((result) => {
+        if (!result.isConfirmed) return;
+
+        this.form.reset(this.originalValue);
+        this.modifiedFields.set(new Set());
+        this.router.navigate(['/admin/dashboard/patients/all-patients']);
+      });
   }
 
   onResetChanges() {
-    this.form.reset(this.originalValue);
-    this.modifiedFields.set(new Set());
+    this.alertService
+      .confirm('Reset all fields back to their last saved values?', 'Reset changes?')
+      .then((result) => {
+        if (!result.isConfirmed) return;
+
+        this.form.reset(this.originalValue);
+        this.modifiedFields.set(new Set());
+      });
   }
 
   onSaveAndContinue() {
     this.onSaveChanges();
   }
 
-   onSaveChanges() {
+  onSaveChanges() {
     this.submitted.set(true);
 
     if (this.form.invalid) {
@@ -186,32 +200,38 @@ export class EditPatient implements OnInit {
       return;
     }
 
-    const value = this.form.getRawValue();
+    this.alertService
+      .confirm('Save changes to this patient record?', 'Confirm save')
+      .then((result) => {
+        if (!result.isConfirmed) return;
 
-    const dto: UpdatePatientDto = {
-      firstName: value.firstName!,
-      lastName: value.lastName!,
-      nationalId: value.nationalId!,
-      email: value.email!,
-      dateOfBirth: value.dateOfBirth!,
-      gender: Number(value.gender),
-      mobileNumber: Number(value.mobileNumber),
-      address: value.address ?? '',
-      bloodType: Number(value.bloodType),
-    };
+        const value = this.form.getRawValue();
 
-    this.patientService.updatePatientById(this.patientId, dto).subscribe({
-      next: () => {
-        alert('Patient updated successfully');
-        this.originalValue = this.form.getRawValue();
-        this.modifiedFields.set(new Set());
-        this.router.navigate(['/admin/dashboard/patients/all-patients']);
-      },
-      error: (err) => {
-        console.error(err);
-        alert(err.error?.message ?? 'Failed to update patient');
-      },
-    });
+        const dto: UpdatePatientDto = {
+          firstName: value.firstName!,
+          lastName: value.lastName!,
+          nationalId: value.nationalId!,
+          email: value.email!,
+          dateOfBirth: value.dateOfBirth!,
+          gender: Number(value.gender),
+          mobileNumber: value.mobileNumber!,
+          address: value.address ?? '',
+          bloodType: Number(value.bloodType),
+        };
+
+        this.patientService.updatePatientById(this.patientId, dto).subscribe({
+          next: () => {
+            this.alertService.success('Patient updated successfully');
+            this.originalValue = this.form.getRawValue();
+            this.modifiedFields.set(new Set());
+            this.router.navigate(['/admin/dashboard/patients/all-patients']);
+          },
+          error: (err) => {
+            console.error(err);
+            this.alertService.error(err.error?.message ?? 'Failed to update patient');
+          },
+        });
+      });
   }
 
   onArchivePatient() {

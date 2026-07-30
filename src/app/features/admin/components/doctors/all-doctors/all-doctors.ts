@@ -2,11 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { Doctor } from '../../../../../shared/interfaces/Doctor.model';
+import { Doctor } from '../../../../../shared/interfaces/Doctor/doctor.interface';
 import {
 
   DoctorService,
 } from '../../../../../core/services/doctor-service';
+import { AlertService } from '../../../../../core/services/alert-service';
 
 @Component({
   selector: 'app-all-doctors',
@@ -17,6 +18,7 @@ import {
 })
 export class AllDoctors implements OnInit {
   private doctorService = inject(DoctorService);
+  private alertService = inject(AlertService);
 
   // ================= Data =================
   rawDoctors = signal<Doctor[]>([]);
@@ -74,6 +76,7 @@ specializationFilter = signal('');
         },
         error: (err) => {
           console.error(err);
+          this.alertService.error('Failed to load doctors');
         },
       });
   }
@@ -128,7 +131,9 @@ specializationFilter = signal('');
   applyFilters() {
  
   }
-
+onRefresh() {
+  this.loadDoctors();
+}
   resetFilters() {
     this.searchTerm.set('');
     this.departmentFilter.set('All Departments');
@@ -139,10 +144,21 @@ specializationFilter = signal('');
 
   // ================= Delete =================
   deleteDoctor(doctor: Doctor) {
-  if (!confirm(`Are you sure you want to delete Dr. ${doctor.name}?`)) return;
-  this.doctorService.deleteDoctor(doctor.id).subscribe({
-    next: () => this.loadDoctors(),
-    error: (err) => console.error(err),
-  });
-}
+    this.alertService
+      .confirm(`Are you sure you want to delete Dr. ${doctor.name}?`, 'Delete doctor?', 'Yes, delete')
+      .then((result) => {
+        if (!result.isConfirmed) return;
+
+        this.doctorService.deleteDoctor(doctor.id).subscribe({
+          next: () => {
+            this.alertService.success(`Dr. ${doctor.name} has been deleted`);
+            this.loadDoctors();
+          },
+          error: (err) => {
+            console.error(err);
+            this.alertService.error('Failed to delete doctor');
+          },
+        });
+      });
+  }
 }

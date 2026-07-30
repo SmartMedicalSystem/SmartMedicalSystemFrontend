@@ -14,7 +14,7 @@ import { IResetPassword } from '../../shared/interfaces/Authentication/i-reset-p
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private readonly baseUrl = 'https://localhost:7099/api/';
+  private readonly baseUrl = 'https://smartmedicalsystem.runasp.net/api/';
   private readonly REFRESH_KEY = 'refreshToken';
   private readonly accessToken = signal<string | null>(null);
 

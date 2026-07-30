@@ -8,10 +8,11 @@ import {
   Validators,
 } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UpdateDoctorDto } from '../../../../../shared/interfaces/Doctor.model';
+import { UpdateDoctorDto } from '../../../../../shared/interfaces/Doctor/update-doctor.interface';
 import {
   DoctorService
 } from '../../../../../core/services/doctor-service';
+import { AlertService } from '../../../../../core/services/alert-service';
 
 // Matches Guard.ValidatePhone in the backend: 010/011/012/015 + 8 digits
 const EGYPT_PHONE_PATTERN = /^(010|011|012|015)\d{8}$/;
@@ -29,6 +30,21 @@ function notInFutureValidator(control: AbstractControl): ValidationErrors | null
   return inputDate > today ? { futureDate: true } : null;
 }
 
+// Backend returns gender as a string ("Male" / "Female"), but the form
+// (and the DTOs) use numeric codes: 0 = Female, 1 = Male.
+function mapGenderToNumber(gender: string | number): number | null {
+  if (typeof gender === 'number') return gender;
+
+  switch (gender?.toLowerCase()) {
+    case 'female':
+      return 0;
+    case 'male':
+      return 1;
+    default:
+      return null;
+  }
+}
+
 @Component({
   selector: 'app-edit-doctors',
   standalone: true,
@@ -39,11 +55,19 @@ function notInFutureValidator(control: AbstractControl): ValidationErrors | null
 export class EditDoctors implements OnInit {
   private fb = inject(FormBuilder);
   private doctorService = inject(DoctorService);
+  private alertService = inject(AlertService);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
 
   doctorId = 0;
   submitted = signal(false);
+
+  // The backend never exposes the plaintext National ID — only an encrypted
+  // value. We can't display or let the user edit it, but the backend's
+  // UpdateDoctorDto still requires the field to be present. So we stash
+  // whatever value the GET response gave us and echo it back unchanged on
+  // save, without ever showing it in the form.
+  private originalNationalId = '';
 
   doctor = signal({
     name: '',
@@ -62,11 +86,15 @@ export class EditDoctors implements OnInit {
     { id: 4, name: 'Oncology' },
   ]);
 
+  // nationalId stays disabled and read-only: the backend only exposes an
+  // encrypted value (encryptedNationalId), never the plaintext, so it can't
+  // be displayed or re-submitted from this form. It is intentionally left
+  // out of the patchValue call and out of the update DTO below.
   form = this.fb.group({
     name: ['', [Validators.required, Validators.maxLength(200)]],
     gender: [null as number | null, Validators.required],
     dateOfBirth: ['', [Validators.required, notInFutureValidator]],
-    nationalId: [{ value: '', disabled: true }, [Validators.required, Validators.pattern(NATIONAL_ID_PATTERN)]],
+    nationalId: [{ value: '', disabled: true }],
     specialization: ['', [Validators.required, Validators.maxLength(100)]],
     departmentId: [null as number | null, Validators.required],
     mobileNumber: ['', [Validators.required, Validators.pattern(EGYPT_PHONE_PATTERN)]],
@@ -89,14 +117,19 @@ export class EditDoctors implements OnInit {
           name: doctor.name,
         });
 
+        // The API returns this under different names depending on the
+        // endpoint/version (encryptedNationalId vs nationalId). Grab
+        // whichever is present so we have something to send back on save.
+        this.originalNationalId =
+          (doctor as any).encryptedNationalId ?? (doctor as any).nationalId ?? '';
+
         this.form.patchValue({
           name: doctor.name,
-          gender: doctor.gender,
+          gender: mapGenderToNumber(doctor.gender),
           dateOfBirth: doctor.dateOfBirth.substring(0, 10),
-          nationalId: doctor.nationalId,
           specialization: doctor.specialization,
           departmentId: doctor.departmentId,
-          mobileNumber: doctor.mobileNumber,
+          mobileNumber: doctor.phoneNumber,
           email: doctor.email,
           address: doctor.address,
         });
@@ -106,7 +139,7 @@ export class EditDoctors implements OnInit {
 
       error: (err) => {
         console.error(err);
-        alert('Failed to load doctor');
+        this.alertService.error('Failed to load doctor');
       },
     });
   }
@@ -141,8 +174,14 @@ export class EditDoctors implements OnInit {
   }
 
   onCancel() {
-    this.form.reset(this.originalValue);
-    this.submitted.set(false);
+    this.alertService
+      .confirm('Discard all unsaved changes to this profile?', 'Cancel editing?')
+      .then((result) => {
+        if (!result.isConfirmed) return;
+
+        this.form.reset(this.originalValue);
+        this.submitted.set(false);
+      });
   }
 
   onSaveChanges() {
@@ -153,31 +192,38 @@ export class EditDoctors implements OnInit {
       return;
     }
 
-    const raw = this.form.getRawValue(); // getRawValue since nationalId is disabled
+    this.alertService
+      .confirm('Save changes to this doctor profile?', 'Confirm save')
+      .then((result) => {
+        if (!result.isConfirmed) return;
 
-    const dto: UpdateDoctorDto = {
-      name: raw.name!,
-      specialization: raw.specialization!,
-      dateOfBirth: raw.dateOfBirth!,
-      email: raw.email!,
-      mobileNumber: raw.mobileNumber!,
-      address: raw.address ?? '',
-      gender: Number(raw.gender),
-      nationalId: raw.nationalId!,
-      departmentId: Number(raw.departmentId),
-    };
+        const raw = this.form.getRawValue();
 
-    this.doctorService.updateDoctor(this.doctorId, dto).subscribe({
-      next: (res) => {
-        console.log(res);
-        alert('Doctor updated successfully');
-        this.router.navigate(['/admin/dashboard/doctors/all-doctors']);
-      },
+        const dto: UpdateDoctorDto = {
+          name: raw.name!,
+          specialization: raw.specialization!,
+          dateOfBirth: raw.dateOfBirth!,
+          email: raw.email!,
+          mobileNumber: raw.mobileNumber!,
+          address: raw.address ?? '',
+          gender: Number(raw.gender),
+          departmentId: Number(raw.departmentId),
+          // Echo back the exact value the backend gave us on load — the user
+          // never sees or edits it, this just satisfies the required field.
+          nationalId: this.originalNationalId,
+        };
 
-      error: (err) => {
-        console.error(err);
-        alert(err.error?.message ?? 'Failed to update doctor');
-      },
-    });
+        this.doctorService.updateDoctor(this.doctorId, dto).subscribe({
+          next: (res) => {
+            this.alertService.success('Doctor updated successfully');
+            this.router.navigate(['/admin/dashboard/doctors/all-doctors']);
+          },
+
+          error: (err) => {
+            console.error(err);
+            this.alertService.error(err.error?.message ?? 'Failed to update doctor');
+          },
+        });
+      });
   }
 }

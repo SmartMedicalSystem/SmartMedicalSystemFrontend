@@ -123,19 +123,20 @@ Personal Information
 </div>
 
 <div>
-
-<label class="text-xs text-gray-500">
-
-National ID
-
-</label>
-
-<input
-  type="text"
-  formControlName="mobileNumber"
-  class="w-full border border-gray-200 rounded-lg px-3 py-2.5 focus:ring-2 focus:ring-primary/40">
+  <label class="text-xs text-gray-500">National ID</label>
+  <input
+    type="text"
+    formControlName="nationalId"
+    class="w-full border rounded-lg px-3 py-2.5"
+    [class.border-gray-200]="!isInvalid('nationalId')"
+    [class.border-tertiary]="isInvalid('nationalId')"
+  />
+  @if (isInvalid('nationalId')) {
+    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+      <span>⚠️</span> {{ errorMessage('nationalId', 'National ID') }}
+    </p>
+  }
 </div>
-
 </div>
 
 </div>

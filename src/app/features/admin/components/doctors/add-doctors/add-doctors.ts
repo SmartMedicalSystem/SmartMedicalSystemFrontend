@@ -8,8 +8,9 @@ import {
   Validators,
 } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CreateDoctorDto } from '../../../../../shared/interfaces/Doctor.model';
+import { CreateDoctorDto } from '../../../../../shared/interfaces/Doctor/create-doctor.interface';
 import {  DoctorService } from '../../../../../core/services/doctor-service';
+import { AlertService } from '../../../../../core/services/alert-service';
 
 // مطابق لـ Guard.ValidatePhone في الباك: 010/011/012/015 + 8 أرقام
 const EGYPT_PHONE_PATTERN = /^(010|011|012|015)\d{8}$/;
@@ -37,6 +38,7 @@ function notInFutureValidator(control: AbstractControl): ValidationErrors | null
 export class AddDoctors {
   private fb = inject(FormBuilder);
   private doctorService = inject(DoctorService);
+  private alertService = inject(AlertService);
   private router = inject(Router);
 
   submitted = signal(false);
@@ -124,7 +126,12 @@ if (control.hasError('pattern')) {
   }
 
   onCancel() {
-    this.onClearForm();
+    this.alertService
+      .confirm('Discard all entered data for this new doctor?', 'Cancel adding doctor?')
+      .then((result) => {
+        if (!result.isConfirmed) return;
+        this.onClearForm();
+      });
   }
 
   onCreateAndAddAnother() {
@@ -143,38 +150,42 @@ if (control.hasError('pattern')) {
       return;
     }
 
-    const value = this.form.getRawValue();
+    this.alertService
+      .confirm('Create this new doctor profile?', 'Confirm creation')
+      .then((result) => {
+        if (!result.isConfirmed) return;
 
-    const doctor: CreateDoctorDto = {
-      name: `${value.firstName} ${value.lastName}`.trim(),
-      specialization: value.specialization!,
-      dateOfBirth: value.dateOfBirth!,
-      email: value.personalEmail!,
-      mobileNumber: value.mobileNumber!,
-      password: this.temporaryPassword(),
-      address: value.residentialAddress ?? '',
-      gender: Number(value.gender),
-      nationalId: value.nationalId!,
-      departmentId: Number(value.department),
-    };
+        const value = this.form.getRawValue();
 
-    this.doctorService.addDoctor(doctor).subscribe({
-      next: (res) => {
-        console.log('Doctor Created', res);
+        const doctor: CreateDoctorDto = {
+          name: `${value.firstName} ${value.lastName}`.trim(),
+          specialization: value.specialization!,
+          dateOfBirth: value.dateOfBirth!,
+          email: value.personalEmail!,
+          mobileNumber: value.mobileNumber!,
+          password: this.temporaryPassword(),
+          address: value.residentialAddress ?? '',
+          gender: Number(value.gender),
+          nationalId: value.nationalId!,
+          departmentId: Number(value.department),
+        };
 
-        alert('Doctor added successfully');
+        this.doctorService.addDoctor(doctor).subscribe({
+          next: (res) => {
+            this.alertService.success('Doctor added successfully');
 
-        if (addAnother) {
-          this.onClearForm();
-        } else {
-          this.router.navigate(['/admin/dashboard/doctors/all-doctors']);
-        }
-      },
+            if (addAnother) {
+              this.onClearForm();
+            } else {
+              this.router.navigate(['/admin/dashboard/doctors/all-doctors']);
+            }
+          },
 
-      error: (err) => {
-        console.error(err);
-        alert(err.error?.message ?? 'Failed to create doctor');
-      },
-    });
+          error: (err) => {
+            console.error(err);
+            this.alertService.error(err.error?.message ?? 'Failed to create doctor');
+          },
+        });
+      });
   }
 }

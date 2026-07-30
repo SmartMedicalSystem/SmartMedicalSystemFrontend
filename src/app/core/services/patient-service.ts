@@ -1,19 +1,16 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import {
-  Patient,
-  CreatePatientDto,
-  UpdatePatientDto,
-} from '../../shared/interfaces/Patient.model';
-
+import {Patient} from '../../shared/interfaces/Patient/patient.interface';
+import{ CreatePatientDto} from '../../shared/interfaces/Patient/create-patient.dto';
+import { UpdatePatientDto } from '../../shared/interfaces/Patient/update-patient.dto';
 @Injectable({
   providedIn: 'root',
 })
 export class PatientsService {
   private http = inject(HttpClient);
 
-  private apiUrl = 'https://localhost:7099/api/Patients';
+  private apiUrl = 'https://smartmedicalsystem.runasp.net/api/Patients';
 
   addPatient(dto: CreatePatientDto): Observable<Patient> {
     return this.http.post<Patient>(this.apiUrl, dto);

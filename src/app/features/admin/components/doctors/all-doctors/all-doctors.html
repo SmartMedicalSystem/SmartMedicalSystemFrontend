@@ -88,9 +88,9 @@
 
     <div class="flex justify-end gap-3 mt-6">
       <button
-        (click)="resetFilters()"
-        class="w-11 h-11 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50"
-      >
+       (click)="onRefresh()"
+  class="w-11 h-11 flex items-center justify-center rounded-lg border border-gray-300 text-gray-500 hover:bg-gray-50"
+ >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="w-4 h-4"
@@ -148,7 +148,7 @@
 
               <td class="px-6 py-5 align-top text-gray-600">{{ doctor.specialization }}</td>
               <td class="px-6 py-5 align-top text-gray-600">{{ doctor.departmentName }}</td>
-              <td class="px-6 py-5 align-top text-gray-600">{{ doctor.mobileNumber }}</td>
+              <td class="px-6 py-5 align-top text-gray-600">{{ doctor.phoneNumber }}</td>
 
               <td class="px-6 py-5 align-top text-right relative">
                 <button

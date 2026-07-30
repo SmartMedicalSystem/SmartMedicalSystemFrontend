@@ -2,9 +2,10 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { CreatePatientDto } from '../../../shared/interfaces/Patient.model';
+import { CreatePatientDto } from '../../../shared/interfaces/Patient/create-patient.dto';
 
 import { PatientsService } from '../../../core/services/patient-service';
+import { AlertService } from '../../../core/services/alert-service';
 
 @Component({
   selector: 'app-add-patients',
@@ -16,6 +17,7 @@ import { PatientsService } from '../../../core/services/patient-service';
 export class AddPatients {
   private fb = inject(FormBuilder);
   private patientService = inject(PatientsService);
+  private alertService = inject(AlertService);
   private router = inject(Router);
 
   submitted = signal(false);
@@ -56,13 +58,19 @@ export class AddPatients {
   }
 
   onCancel() {
-    this.form.reset({
-      gender: null,
-      bloodType: null,
-      patientStatus: 'Active',
-    });
+    this.alertService
+      .confirm('Discard all entered data for this new patient?', 'Cancel adding patient?')
+      .then((result) => {
+        if (!result.isConfirmed) return;
 
-    this.submitted.set(false);
+        this.form.reset({
+          gender: null,
+          bloodType: null,
+          patientStatus: 'Active',
+        });
+
+        this.submitted.set(false);
+      });
   }
 
   onSavePatient() {
@@ -73,32 +81,37 @@ export class AddPatients {
       return;
     }
 
-    const value = this.form.getRawValue();
+    this.alertService
+      .confirm('Save this new patient record?', 'Confirm save')
+      .then((result) => {
+        if (!result.isConfirmed) return;
 
-    const dto: CreatePatientDto = {
-      firstName: value.firstName!,
-      lastName: value.lastName!,
-      nationalId: value.nationalId!, 
-      dateOfBirth: value.dateOfBirth!,
-      gender: Number(value.gender),
-        email: value.email!,   
+        const value = this.form.getRawValue();
 
-      mobileNumber: Number(value.mobileNumber),
-      address: value.address ?? '',
-      bloodType: Number(value.bloodType),
-    };
+        const dto: CreatePatientDto = {
+          firstName: value.firstName!,
+          lastName: value.lastName!,
+          nationalId: value.nationalId!, 
+          dateOfBirth: value.dateOfBirth!,
+          gender: Number(value.gender),
+          email: value.email!,   
 
-    this.patientService.addPatient(dto).subscribe({
-      next: (res) => {
-        console.log(res);
-        alert('Patient added successfully');
-        this.router.navigate(['/admin/dashboard/patients/all-patients']);
-      },
+          mobileNumber: value.mobileNumber!,
+          address: value.address ?? '',
+          bloodType: Number(value.bloodType),
+        };
 
-      error: (err) => {
-        console.error(err);
-        alert(err.error?.message ?? 'Failed to add patient');
-      },
-    });
+        this.patientService.addPatient(dto).subscribe({
+          next: (res) => {
+            this.alertService.success('Patient added successfully');
+            this.router.navigate(['/admin/dashboard/patients/all-patients']);
+          },
+
+          error: (err) => {
+            console.error(err);
+            this.alertService.error(err.error?.message ?? 'Failed to add patient');
+          },
+        });
+      });
   }
 }
