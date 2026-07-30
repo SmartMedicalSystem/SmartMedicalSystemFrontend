@@ -40,10 +40,16 @@ export class Navbar {
 
   role: string = '';
   userName: string = '';
+  image: string = '';
   constructor(private authServ: AuthenticationService) {
     const decoded = jwtDecode(this.authServ.getAccessToken() || '') as any;
     this.role = this.authServ.getUserRole() || '';
     this.userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+    if (this.authServ.getUserImage() === '' || this.authServ.getUserImage() === null) {
+      this.image = 'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png'
+    } else {
+      this.image = `https://smartmedicalsystem.runasp.net/${this.authServ.getUserImage()}`;
+    }
   }
 
 

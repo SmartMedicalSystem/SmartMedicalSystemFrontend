@@ -14,15 +14,15 @@ import { IResetPassword } from '../../shared/interfaces/Authentication/i-reset-p
   providedIn: 'root',
 })
 export class AuthenticationService {
-   private readonly baseUrl = 'https://smartmedicalsystem.runasp.net/api/';
- 
+  private readonly baseUrl = 'https://smartmedicalsystem.runasp.net/api/';
+
   private readonly REFRESH_KEY = 'refreshToken';
   private readonly accessToken = signal<string | null>(null);
 
   constructor(
     private http: HttpClient,
     private router: Router,
-  ) {}
+  ) { }
 
   // ================= APIs =================
 
@@ -88,6 +88,15 @@ export class AuthenticationService {
     }
     const decoded = jwtDecode<any>(token);
     return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? null;
+  }
+
+  getUserImage(): string | null {
+    const token = this.getAccessToken();
+    if (!token) {
+      return null;
+    }
+    const decoded = jwtDecode<any>(token);
+    return decoded['photo_url'] ?? null;
   }
 
   clearToken(): void {
