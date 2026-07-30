@@ -1,6 +1,8 @@
-import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { LabTechService } from '../../../../core/services/lab-tech-service';
+import Swal from 'sweetalert2';
+
 
 import { Footer } from "../../../shared/components/footer/footer";
 import { Navbar } from '../../../shared/components/navbar/navbar';

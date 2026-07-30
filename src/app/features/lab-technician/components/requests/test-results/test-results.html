@@ -282,20 +282,15 @@
 
             <td class="px-5 py-4 font-semibold text-slate-800">
 
-              {{item.name}}
+              {{ item.testElementName }}
 
             </td>
 
             <!-- Result -->
 
-            <td class="px-5 py-4">
-
-              <input
-                [(ngModel)]="item.value"
-                class="w-28 border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
-                [ngClass]="{
-                  'border-red-400 text-red-600': item.status=='Low' || item.status=='Critical Low'
-                }">
+            <input
+  [(ngModel)]="item.value"
+  class="w-28 border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--color-primary)]">
 
             </td>
 
@@ -303,57 +298,24 @@
 
             <td class="px-5 py-4">
 
-              {{item.unit}}
-
+              --
             </td>
 
             <!-- Reference -->
 
             <td class="px-5 py-4 text-gray-500">
 
-              {{item.reference}}
+              --
 
             </td>
 
             <!-- Status -->
 
             <td class="px-5 py-4">
-
-              <span
-                class="px-3 py-1 rounded-full text-xs font-semibold"
-                [ngClass]="{
-
-                  'bg-green-100 text-green-700':
-                    item.status=='Normal',
-
-                  'bg-red-100 text-red-700':
-                    item.status=='Low',
-
-                  'bg-red-600 text-white':
-                    item.status=='Critical Low'
-
-                }">
-
-                <i
-                  class="fa-solid"
-                  [ngClass]="{
-
-                    'fa-circle-check':
-                      item.status=='Normal',
-
-                    'fa-arrow-down':
-                      item.status=='Low',
-
-                    'fa-triangle-exclamation':
-                      item.status=='Critical Low'
-
-                  }"></i>
-
-                {{item.status}}
-
-              </span>
-
-            </td>
+  <span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+    N/A
+  </span>
+</td>
 
           </tr>
 

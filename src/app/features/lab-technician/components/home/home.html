@@ -1,24 +1,31 @@
 <div class="space-y-6">
   <!-- Welcome -->
-  <div class=" ">
+  <div>
     <h2 class="text-2xl font-bold text-tertiary">
-      Good Morning, <span class="text-sky-600">Dr. Sarah Miller</span>
+      Good Morning,
+      <span class="text-sky-600">Lab Technician</span>
     </h2>
   </div>
 
   <div class="min-h-screen bg-gray-50">
+
     <!-- Statistics -->
     <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-      <!-- Card -->
+
+      <!-- Total Requests -->
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
       >
         <div>
-          <p class="text-sm text-gray-500">Pending Requests</p>
+          <p class="text-sm text-gray-500">Total Requests</p>
 
-          <h2 class="text-3xl font-bold mt-2">24</h2>
+          <h2 class="text-3xl font-bold mt-2">
+            {{ statistics.totalRequests }}
+          </h2>
 
-          <span class="text-xs text-primary font-medium"> Today </span>
+          <span class="text-xs text-primary font-medium">
+            All Requests
+          </span>
         </div>
 
         <div
@@ -28,17 +35,43 @@
         </div>
       </div>
 
-      <!-- Card -->
-
+      <!-- Pending Requests -->
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
       >
         <div>
-          <p class="text-sm text-gray-500">Results Entered</p>
+          <p class="text-sm text-gray-500">Pending Requests</p>
 
-          <h2 class="text-3xl font-bold mt-2">58</h2>
+          <h2 class="text-3xl font-bold mt-2">
+            {{ statistics.pendingRequests }}
+          </h2>
 
-          <span class="text-xs text-green-600 font-medium"> +12% </span>
+          <span class="text-xs text-orange-500">
+            Waiting
+          </span>
+        </div>
+
+        <div
+          class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center text-orange-500"
+        >
+          <i class="fa-solid fa-hourglass-half text-xl"></i>
+        </div>
+      </div>
+
+      <!-- Completed Today -->
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
+      >
+        <div>
+          <p class="text-sm text-gray-500">Completed Today</p>
+
+          <h2 class="text-3xl font-bold mt-2">
+            {{ statistics.completedToday }}
+          </h2>
+
+          <span class="text-xs text-green-600">
+            Completed
+          </span>
         </div>
 
         <div
@@ -48,51 +81,44 @@
         </div>
       </div>
 
-      <!-- Card -->
-
-      <div
-        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
-      >
-        <div>
-          <p class="text-sm text-gray-500">Processing Results</p>
-
-          <h2 class="text-3xl font-bold mt-2">08</h2>
-
-          <span class="text-xs text-orange-500"> Active </span>
-        </div>
-
-        <div
-          class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center text-orange-500"
-        >
-          <i class="fa-solid fa-flask text-xl"></i>
-        </div>
-      </div>
-
-      <!-- Card -->
-
+      <!-- Notifications -->
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
       >
         <div>
           <p class="text-sm text-gray-500">Notifications</p>
 
-          <h2 class="text-3xl font-bold mt-2">05</h2>
+          <h2 class="text-3xl font-bold mt-2">
+            {{ unreadNotifications }}
+          </h2>
 
-          <span class="text-xs text-red-500"> Unread </span>
+          <span class="text-xs text-red-500">
+            Unread
+          </span>
         </div>
 
-        <div class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center text-red-500">
+        <div
+          class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center text-red-500"
+        >
           <i class="fa-solid fa-envelope"></i>
         </div>
       </div>
+
     </div>
 
+    <!-- Pending Requests Table -->
     <div class="bg-white rounded-2xl shadow-md mt-8 overflow-hidden w-full">
-      <div class="flex items-center justify-between px-6 py-5">
-        <div>
-          <h2 class="text-xl font-bold">Pending Test Requests</h2>
 
-          <p class="text-sm text-gray-500 mt-1">Manage all pending laboratory requests</p>
+      <div class="flex items-center justify-between px-6 py-5">
+
+        <div>
+          <h2 class="text-xl font-bold">
+            Pending Test Requests
+          </h2>
+
+          <p class="text-sm text-gray-500 mt-1">
+            Manage all pending laboratory requests
+          </p>
         </div>
 
         <button
@@ -101,12 +127,17 @@
         >
           View All
         </button>
+
       </div>
 
       <div class="overflow-x-auto">
+
         <table class="w-full">
+
           <thead class="bg-gray-50">
+
             <tr class="text-left text-gray-600 text-sm">
+
               <th class="px-6 py-4">Patient</th>
 
               <th class="px-6 py-4">Doctor</th>
@@ -118,127 +149,99 @@
               <th class="px-6 py-4">Request Time</th>
 
               <th class="px-6 py-4 text-center">Action</th>
+
             </tr>
+
           </thead>
 
           <tbody>
-            <tr class="hover:bg-gray-50 transition">
-              <td class="px-6 py-5">
-                <p class="font-semibold">Eleanor Vance</p>
+        <tbody>
 
-                <span class="text-sm text-gray-500"> #PX-8821 </span>
-              </td>
+  <tr
+    *ngFor="let request of pendingRequests"
+    class="hover:bg-gray-50 transition"
+  >
 
-              <td class="px-6 py-5">Dr. Aris Thorne</td>
+    <!-- Patient -->
+    <td class="px-6 py-5">
+      <p class="font-semibold">
+        {{ request.patientName }}
+      </p>
 
-              <td class="px-6 py-5">Complete Blood Count</td>
+      <span class="text-sm text-gray-500">
+        {{ request.patientSSN }}
+      </span>
+    </td>
 
-              <td class="px-6 py-5">
-                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
-                  HIGH
-                </span>
-              </td>
+    <!-- Doctor -->
+    <td class="px-6 py-5">
+      {{ request.doctorName }}
+    </td>
 
-              <td class="px-6 py-5">08:15 AM</td>
+    <!-- Laboratory Tests -->
+    <td class="px-6 py-5">
 
-              <td class="px-6 py-5 text-center">
-                <button
-                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
-                >
-                  Start Test
-                </button>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-5">
-                <p class="font-semibold">Julian Blackwood</p>
-
-                <span class="text-sm text-gray-500"> #PX-8825 </span>
-              </td>
-
-              <td class="px-6 py-5">Dr. Sarah Jenkins</td>
-
-              <td class="px-6 py-5">Lipid Profile</td>
-
-              <td class="px-6 py-5">
-                <span
-                  class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-semibold"
-                >
-                  NORMAL
-                </span>
-              </td>
-
-              <td class="px-6 py-5">09:30 AM</td>
-
-              <td class="px-6 py-5 text-center">
-                <button
-                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
-                >
-                  Start Test
-                </button>
-              </td>
-            </tr>
-
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-5">
-                <p class="font-semibold">Clara Oswald</p>
-
-                <span class="text-sm text-gray-500"> #PX-8820 </span>
-              </td>
-
-              <td class="px-6 py-5">Dr. Aris Thorne</td>
-
-              <td class="px-6 py-5">Thyroid Panel (T3,T4)</td>
-
-              <td class="px-6 py-5">
-                <span
-                  class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-semibold"
-                >
-                  NORMAL
-                </span>
-              </td>
-
-              <td class="px-6 py-5">10:05 AM</td>
-
-              <td class="px-6 py-5 text-center">
-                <button
-                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
-                >
-                  Start Test
-                </button>
-              </td>
-            </tr>
-
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-5">
-                <p class="font-semibold">Theodore Logan</p>
-
-                <span class="text-sm text-gray-500"> #PX-8832 </span>
-              </td>
-
-              <td class="px-6 py-5">Dr. Ben Keller</td>
-
-              <td class="px-6 py-5">Metabolic Panel</td>
-
-              <td class="px-6 py-5">
-                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
-                  HIGH
-                </span>
-              </td>
-
-              <td class="px-6 py-5">10:45 AM</td>
-
-              <td class="px-6 py-5 text-center">
-                <button
-                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
-                >
-                  Start Test
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+      <div *ngFor="let test of request.labTests">
+        {{ test.testName }}
       </div>
+
+    </td>
+
+    <!-- Priority -->
+    <td class="px-6 py-5">
+
+      <span
+        class="px-3 py-1 rounded-full text-xs font-semibold"
+        [ngClass]="{
+          'bg-red-100 text-red-600': request.priority === 'High',
+          'bg-yellow-100 text-yellow-600': request.priority === 'Medium',
+          'bg-green-100 text-green-600': request.priority === 'Low'
+        }"
+      >
+        {{ request.priority }}
+      </span>
+
+    </td>
+
+    <!-- Request Time -->
+    <td class="px-6 py-5">
+      {{ request.requestedAt | date:'shortTime' }}
+    </td>
+
+    <!-- Action -->
+    <td class="px-6 py-5 text-center">
+
+      <button
+        (click)="startTest(request.id)"
+        class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90 transition"
+      >
+        Start Test
+      </button>
+
+    </td>
+
+  </tr>
+
+  <!-- Empty State -->
+  <tr *ngIf="pendingRequests.length === 0">
+
+    <td
+      colspan="6"
+      class="text-center py-10 text-gray-500"
+    >
+      No pending laboratory requests found.
+    </td>
+
+  </tr>
+
+</tbody>
+
+        </table>
+
+      </div>
+
     </div>
+
   </div>
+
 </div>
