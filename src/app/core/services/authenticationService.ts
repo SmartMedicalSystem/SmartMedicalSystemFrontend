@@ -90,10 +90,20 @@ export class AuthenticationService {
     return decoded['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ?? null;
   }
 
-  getUserImage(): string | null {
+  getUserId(): number {
     const token = this.getAccessToken();
     if (!token) {
-      return null;
+      return 0;
+    }
+    const decoded = jwtDecode<any>(token);
+    return decoded['base_person_id'] ?? null;
+  }
+
+
+  getUserImage(): string {
+    const token = this.getAccessToken();
+    if (!token) {
+      return '';
     }
     const decoded = jwtDecode<any>(token);
     return decoded['photo_url'] ?? null;
