@@ -15,21 +15,21 @@
 
       <!-- Email -->
       <div class="mt-5">
-        <label class="text-md text-gray-700 font-medium">Work Email</label>
+        <label class="text-md text-gray-700 font-medium">Work Email/UserName</label>
         <div class="mt-2 flex items-center border rounded-xl px-4 py-3">
           <i class="fa-regular fa-envelope mr-3 text-xl text-primary"></i>
           <input
-            type="email"
+            type="text"
             placeholder="dr.smith@hospital.org"
             class="w-full outline-none text-gray-600"
-            formControlName="email"
+            formControlName="userNameOrEmail"
           />
         </div>
 
-        @if (emailRequired) {
-          <p class="text-xs text-red-600 mt-1">Email is required</p>
-        } @else if (emailInvalid) {
-          <p class="text-xs text-red-600 mt-1">Email is invalid</p>
+        @if (userNameOrEmailRequired) {
+          <p class="text-xs text-red-600 mt-1">This field is required</p>
+        } @else if (userNameOrEmailInvalid) {
+          <p class="text-xs text-red-600 mt-1">Min Length of this field is invalid</p>
         }
       </div>
 

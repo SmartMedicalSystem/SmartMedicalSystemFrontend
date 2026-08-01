@@ -22,20 +22,20 @@ export class Login {
   ) { }
 
   loginForm = new FormGroup({
-    email: new FormControl('', [Validators.required, Validators.email]),
+    userNameOrEmail: new FormControl('', [Validators.required, Validators.minLength(8)]),
     password: new FormControl('', [Validators.required, Validators.minLength(8)]),
   });
 
   // ================= Getters =================
 
-  get emailRequired() {
-    return this.loginForm.get('email')?.touched &&
-      this.loginForm.get('email')?.hasError('required');
+  get userNameOrEmailRequired() {
+    return this.loginForm.get('userNameOrEmail')?.touched &&
+      this.loginForm.get('userNameOrEmail')?.hasError('required');
   }
 
-  get emailInvalid() {
-    return this.loginForm.get('email')?.touched &&
-      this.loginForm.get('email')?.hasError('email');
+  get userNameOrEmailInvalid() {
+    return this.loginForm.get('userNameOrEmail')?.touched &&
+      this.loginForm.get('userNameOrEmail')?.hasError('minLength');
   }
 
   get passwordRequired() {
@@ -58,7 +58,7 @@ export class Login {
     }
 
     const loginObj = {
-      userNameOrEmail: this.loginForm.get('email')?.value || '',
+      userNameOrEmail: this.loginForm.get('userNameOrEmail')?.value || '',
       password: this.loginForm.get('password')?.value || ''
     };
 
