@@ -25,6 +25,13 @@ ProfileSaveChanges(id: number, data: any): Observable<any> {
   return this.http.put(`${this.apiUrl}/me/${id}`, data);
 }
 
+ProfileChangePic(id: number, formData: FormData): Observable<any> {
+  return this.http.put(
+    `${this.apiUrl}/me/${id}/picture`,
+    formData
+  );
+}
+
 ProfileChangePassword(id: number, data: any): Observable<any> {
   return this.http.post(
     `${this.apiUrl}/me/change-password/${id}`,

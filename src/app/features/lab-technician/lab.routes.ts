@@ -13,64 +13,45 @@ export const laboratoryRoutes: Routes = [
       },
 
       {
-        path: 'dashboard',
+  path: 'home',
+  loadComponent: () =>
+    import('./components/home/home')
+      .then((m) => m.Home),
+},
+
+      {
+        path: 'profile',
         loadComponent: () =>
-          import('./dashboard/dashboard')
-            .then((m) => m.Dashboard),
+          import('./components/profile/profile').then((m) => m.Profile),
+      },
+
+      {
+        path: 'requests',
+        loadComponent: () =>
+          import('./components/requests/requests').then((m) => m.Requests),
 
         children: [
-
           {
             path: '',
-            redirectTo: 'home',
+            redirectTo: 'all-requests',
             pathMatch: 'full',
           },
 
           {
-            path: 'home',
+            path: 'all-requests',
             loadComponent: () =>
-              import('./components/home/home')
-                .then((m) => m.Home),
+              import('./components/requests/all-requests/all-requests').then(
+                (m) => m.AllRequests
+              ),
           },
 
           {
-            path: 'profile',
+            path: 'test-results',
             loadComponent: () =>
-              import('./components/profile/profile')
-                .then((m) => m.Profile),
+              import('./components/requests/test-results/test-results').then(
+                (m) => m.TestResults
+              ),
           },
-
-
-          {
-            path: 'requests',
-            loadComponent: () =>
-              import('./components/requests/requests')
-                .then((m) => m.Requests),
-
-            children: [
-
-              {
-                path: '',
-                redirectTo: 'all-requests',
-                pathMatch: 'full',
-              },
-
-              {
-                path: 'all-requests',
-                loadComponent: () =>
-                  import('./components/requests/all-requests/all-requests')
-                    .then((m) => m.AllRequests),
-              },
-
-              {
-                path: 'test-results',
-                loadComponent: () =>
-                  import('./components/requests/test-results/test-results')
-                    .then((m) => m.TestResults),
-              },
-
-            ],
-          }
         ],
       },
     ],

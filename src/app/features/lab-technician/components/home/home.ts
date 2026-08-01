@@ -1,28 +1,26 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterOutlet } from '@angular/router';
 
 import { LabTechService } from '../../../../core/services/lab-tech-service';
 import Swal from 'sweetalert2';
+
 import { Footer } from '../../../../shared/components/footer/footer';
 import { Navbar } from '../../../../shared/components/navbar/navbar';
 import { Sidebar } from '../../../../shared/components/sidebar/sidebar';
 
-
 @Component({
-  selector: 'app-dashboard',
+  selector: 'app-home',
   standalone: true,
   imports: [
     CommonModule,
     Navbar,
     Sidebar,
-    Footer,
-    RouterOutlet
+    Footer
   ],
-  templateUrl: './dashboard.html',
-  styleUrl: './dashboard.css'
+  templateUrl: './home.html',
+  styleUrl: './home.css'
 })
-export class Dashboard implements OnInit {
+export class Home implements OnInit {
 
   constructor(private labTechService: LabTechService) {}
 
@@ -64,14 +62,14 @@ export class Dashboard implements OnInit {
     this.loadUnreadNotifications();
   }
 
-  // ================= Load Statistics =================
+  // ================= Statistics =================
 
   loadStatistics(): void {
     this.labTechService.getLabRequestStatistics().subscribe({
-      next: (res) => {
+      next: (res: any) => {
         this.statistics = res;
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
 
         Swal.fire({
@@ -83,7 +81,7 @@ export class Dashboard implements OnInit {
     });
   }
 
-  // ================= Load Notifications =================
+  // ================= Notifications =================
 
   loadUnreadNotifications(): void {
     this.labTechService.getUnreadNotificationsCount().subscribe({
@@ -91,29 +89,29 @@ export class Dashboard implements OnInit {
 
         if (typeof res === 'number') {
           this.unreadNotifications = res;
-        } else if (res.unreadCount !== undefined) {
+        } else if (res?.unreadCount !== undefined) {
           this.unreadNotifications = res.unreadCount;
-        } else if (res.count !== undefined) {
+        } else if (res?.count !== undefined) {
           this.unreadNotifications = res.count;
         } else {
           this.unreadNotifications = 0;
         }
 
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
       }
     });
   }
 
-  // ================= Load Pending Requests =================
+  // ================= Pending Requests =================
 
   loadPendingRequests(): void {
     this.labTechService.getLabRequests().subscribe({
-      next: (res) => {
-        this.pendingRequests = res.items;
+      next: (res: any) => {
+        this.pendingRequests = res.items ?? [];
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
 
         Swal.fire({
@@ -144,8 +142,9 @@ export class Dashboard implements OnInit {
 
         this.loadStatistics();
         this.loadPendingRequests();
+        this.loadUnreadNotifications();
       },
-      error: (err) => {
+      error: (err: any) => {
         console.error(err);
 
         Swal.fire({

@@ -1,10 +1,8 @@
+import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { LabTechService } from '../../../../core/services/lab-tech-service';
-import Swal from 'sweetalert2';
+import { RouterOutlet } from '@angular/router';
 
-
-import { Footer } from "../../../shared/components/footer/footer";
+import { Footer } from '../../../shared/components/footer/footer';
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { Sidebar } from '../../../shared/components/sidebar/sidebar';
 
@@ -24,15 +22,17 @@ import { Sidebar } from '../../../shared/components/sidebar/sidebar';
 export class Dashboard {
 
   sidebarOpen = signal(false);
+
   openSidebar(): void {
     this.sidebarOpen.set(true);
   }
+
   closeSidebar(): void {
     this.sidebarOpen.set(false);
   }
 
   toggleSidebar(): void {
-    this.sidebarOpen.update(value => !value);
+    this.sidebarOpen.update((value: boolean) => !value);
   }
 
 }
