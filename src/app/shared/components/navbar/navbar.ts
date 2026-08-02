@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, output, Output } from '@angular/core';
+import { Component, EventEmitter, inject, output, Output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import {
@@ -34,23 +34,29 @@ export class Navbar {
   clock = faClockRotateLeft;
   message = faComment;
 
+  authServ = inject(AuthenticationService);
+
   // Buttons
   export = faFileExport;
   aiScan = faChartColumn;
+  image = this.authServ.userImageSignal;
 
   role: string = '';
   userName: string = '';
-  image: string = '';
-  constructor(private authServ: AuthenticationService) {
+  constructor() {
     const decoded = jwtDecode(this.authServ.getAccessToken() || '') as any;
+
     this.role = this.authServ.getUserRole() || '';
-    this.userName = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-    if (this.authServ.getUserImage() === '' || this.authServ.getUserImage() === null) {
-      this.image = 'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png'
-    } else {
-      this.image = `https://smartmedicalsystem.runasp.net/${this.authServ.getUserImage()}`;
+    this.userName =
+      decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
+
+    if (!this.authServ.getUserImage()) {
+      this.authServ.setUserImage(
+        'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png'
+      );
     }
   }
+
 
 
 

@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import Swal from 'sweetalert2';
+import { LabTechService } from '../../../../core/services/lab-tech-service';
+import { AuthenticationService } from '../../../../core/services/authenticationService';
 
 @Component({
   selector: 'app-profile',
@@ -11,50 +14,118 @@ import { FormsModule } from '@angular/forms';
 })
 export class Profile {
 
+  isEditing = false;
+
   profile = {
-
-    firstName: 'Alex',
-
-    lastName: 'Rivera',
-
+    id: 0,
+    userId: 0,
+    firstName: '',
+    lastName: '',
+    fullName: '',
     gender: 'Male',
-
-    birthDate: '1992-08-24',
-
-    nationality: 'American',
-
-    nationalId: 'ID-98234-AX',
-
-    employeeId: 'LAB-2024-0512',
-
-    lab: 'Central Hematology Lab',
-
-    jobTitle: 'Senior Laboratory Technician',
-
-    experience: 8,
-
-    email: 'alex.rivera@labnexuspro.com',
-
-    phone: '+1 (555) 123-4567',
-
-    address: '125 Medical Street, New York, USA'
-
+    dateOfBirth: '',
+    nationality: '',
+    nationalId: '',
+    profilePictureUrl: '',
+    employeeId: '',
+    assignedLaboratory: '',
+    jobTitle: '',
+    yearsOfExperience: 0,
+    status: '',
+    joiningDate: '',
+    email: '',
+    phoneNumber: '',
+    address: ''
   };
 
-  saveProfile() {
+  profileId = 0;
 
-    console.log('Profile Saved');
+  constructor(
+    private labTechProfileService: LabTechService,
+    private authService: AuthenticationService,
 
-    console.log(this.profile);
-
-    alert('Profile Saved Successfully');
-
+  ) {
+    this.LoadLabTechProfile();
   }
 
-  cancel() {
+  LoadLabTechProfile(): void {
+    this.labTechProfileService.ProfileOpen(this.authService.getUserId()).subscribe({
+      next: (res) => {
+        this.profile = res;
+        this.profileId = this.authService.getUserId();
+        this.profile.profilePictureUrl = `https://smartmedicalsystem.runasp.net/${res.photoUrl}`;
+        this.profile.dateOfBirth = res.dateOfBirth
+          ? res.dateOfBirth.split('T')[0]
+          : '';
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: err?.error?.message || err?.error?.Message || 'Failed to Load Profile',
+        });
+      }
+    });
+  }
 
-    alert('Changes Cancelled');
+  editProfile(): void {
+    this.isEditing = true;
+  }
 
+  saveProfile(): void {
+    const formData = new FormData();
+    formData.append('FirstName', this.profile.firstName);
+    formData.append('LastName', this.profile.lastName);
+    formData.append('Email', this.profile.email);
+    formData.append('PhoneNumber', this.profile.phoneNumber);
+    formData.append('Address', this.profile.address);
+
+    if (this.selectedImage) {
+      formData.append('PhotoUrl', this.selectedImage);
+    }
+    this.labTechProfileService
+      .ProfileSaveChanges(this.profileId, formData)
+      .subscribe({
+        next: (res) => {
+          console.log(res);
+          this.profile = res;
+          this.isEditing = false;
+          Swal.fire({
+            icon: 'success',
+            title: 'Success',
+            text: 'Profile Updated Successfully'
+          }).then(() => {
+            const imageUrl =
+              `https://smartmedicalsystem.runasp.net/${res.photoUrl}`;
+            this.authService.setUserImage(imageUrl);
+            this.LoadLabTechProfile();
+          });
+        },
+        error: (err) => {
+          console.error('Update Failed', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: err?.error?.message || err?.error?.Message || 'Failed to Save Profile',
+          });
+        }
+      });
+  }
+
+  cancel(): void {
+    this.isEditing = false;
+    this.LoadLabTechProfile();
+  }
+
+  selectedImage: File | null = null;
+  ChangePicture(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (!input.files || input.files.length === 0) {
+      return;
+    }
+    const file = input.files[0];
+    this.selectedImage = file;
+    this.profile.profilePictureUrl = URL.createObjectURL(file);
   }
 
 }

@@ -4,16 +4,16 @@ export interface ILabTechnician {
   // Personal Information
   firstName: string;
   lastName: string;
-  gender: number;
+  gender: string;
   dateOfBirth: string;
   nationality: string;
   nationalId: string;
 
   // Employment
-  laboratoryId: number;
+  assignedLaboratory: string;
   jobTitle: string;
-  employmentStatus: number;
-  workShift: number;
+  employmentStatus: string;
+  workShift: string;
   joiningDate: string;
   yearsOfExperience: number;
 

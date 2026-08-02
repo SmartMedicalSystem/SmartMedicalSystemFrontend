@@ -251,6 +251,15 @@
                         <option [ngValue]="1">
                             Central Medical Laboratory
                         </option>
+                        <option [ngValue]="2">
+                            Hematology Laboratory
+                        </option>
+                        <option [ngValue]="3">
+                            Microbiology Laboratory
+                        </option>
+                        <option [ngValue]="4">
+                            Pathology Laboratory
+                        </option>
 
                     </select>
 
@@ -289,11 +298,14 @@
                         class="w-full border rounded-lg p-3 focus:ring-2 focus:ring-primary outline-none">
 
                         <option [ngValue]="1">
-                            Active
+                            FullTime
                         </option>
 
                         <option [ngValue]="2">
-                            Inactive
+                            PartTime
+                        </option>
+                        <option [ngValue]="3">
+                            Contract
                         </option>
 
                     </select>

@@ -1,24 +1,27 @@
 <div class="space-y-6">
   <!-- Welcome -->
-  <div class=" ">
+  <div>
     <h2 class="text-2xl font-bold text-tertiary">
-      Good Morning, <span class="text-sky-600">Dr. Sarah Miller</span>
+      Good Morning,
+      <span class="text-sky-600">Lab Technician</span>
     </h2>
   </div>
 
   <div class="min-h-screen bg-gray-50">
     <!-- Statistics -->
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-4">
-      <!-- Card -->
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+      <!-- Total Requests -->
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
       >
         <div>
-          <p class="text-sm text-gray-500">Pending Requests</p>
+          <p class="text-sm text-gray-500">Total Requests</p>
 
-          <h2 class="text-3xl font-bold mt-2">24</h2>
+          <h2 class="text-3xl font-bold mt-2">
+            {{ statistics.totalRequests }}
+          </h2>
 
-          <span class="text-xs text-primary font-medium"> Today </span>
+          <span class="text-xs text-primary font-medium"> All Requests </span>
         </div>
 
         <div
@@ -28,17 +31,39 @@
         </div>
       </div>
 
-      <!-- Card -->
-
+      <!-- Pending Requests -->
       <div
         class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
       >
         <div>
-          <p class="text-sm text-gray-500">Results Entered</p>
+          <p class="text-sm text-gray-500">Pending Requests</p>
 
-          <h2 class="text-3xl font-bold mt-2">58</h2>
+          <h2 class="text-3xl font-bold mt-2">
+            {{ statistics.pendingRequests }}
+          </h2>
 
-          <span class="text-xs text-green-600 font-medium"> +12% </span>
+          <span class="text-xs text-orange-500"> Waiting </span>
+        </div>
+
+        <div
+          class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center text-orange-500"
+        >
+          <i class="fa-solid fa-hourglass-half text-xl"></i>
+        </div>
+      </div>
+
+      <!-- Completed Today -->
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
+      >
+        <div>
+          <p class="text-sm text-gray-500">Completed Today</p>
+
+          <h2 class="text-3xl font-bold mt-2">
+            {{ statistics.completedToday }}
+          </h2>
+
+          <span class="text-xs text-green-600"> Completed </span>
         </div>
 
         <div
@@ -48,70 +73,59 @@
         </div>
       </div>
 
-      <!-- Card -->
-
-      <div
-        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
-      >
-        <div>
-          <p class="text-sm text-gray-500">Processing Results</p>
-
-          <h2 class="text-3xl font-bold mt-2">08</h2>
-
-          <span class="text-xs text-orange-500"> Active </span>
-        </div>
-
+      <!-- Notifications -->
+      @if (unreadNotifications > 0) {
         <div
-          class="w-14 h-14 rounded-xl bg-orange-100 flex items-center justify-center text-orange-500"
+          class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
         >
-          <i class="fa-solid fa-flask text-xl"></i>
+          <div>
+            <p class="text-sm text-gray-500">Notifications</p>
+
+            <h2 class="text-3xl font-bold mt-2">
+              {{ unreadNotifications }}
+            </h2>
+
+            <span class="text-xs text-red-500"> Unread </span>
+          </div>
+
+          <div
+            class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center text-red-500"
+          >
+            <i class="fa-solid fa-envelope"></i>
+          </div>
         </div>
-      </div>
-
-      <!-- Card -->
-
+      }
+    </div>
+    <!-- Pending Requests Table -->
+    <div class="mt-8 w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+      <!-- Header -->
       <div
-        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex items-center justify-between"
+        class="flex flex-col gap-4 border-b border-slate-100 bg-[var(--color-primary)]/5 px-6 py-5 sm:flex-row sm:items-center sm:justify-between"
       >
         <div>
-          <p class="text-sm text-gray-500">Notifications</p>
+          <h2 class="text-xl font-bold text-[var(--color-primary)]">Pending Test Requests</h2>
 
-          <h2 class="text-3xl font-bold mt-2">05</h2>
-
-          <span class="text-xs text-red-500"> Unread </span>
-        </div>
-
-        <div class="w-14 h-14 rounded-xl bg-red-100 flex items-center justify-center text-red-500">
-          <i class="fa-solid fa-envelope"></i>
-        </div>
-      </div>
-    </div>
-
-    <div class="bg-white rounded-2xl shadow-md mt-8 overflow-hidden w-full">
-      <div class="flex items-center justify-between px-6 py-5">
-        <div>
-          <h2 class="text-xl font-bold">Pending Test Requests</h2>
-
-          <p class="text-sm text-gray-500 mt-1">Manage all pending laboratory requests</p>
+          <p class="mt-1 text-sm text-slate-500">Manage all pending laboratory requests</p>
         </div>
 
         <button
           routerLink="../requests/all-requests"
-          class="bg-primary cursor-pointer text-white px-5 py-2 rounded-xl hover:opacity-90 transition"
+          class="cursor-pointer rounded-xl bg-[var(--color-primary)] px-5 py-2.5 text-sm font-medium text-white transition hover:brightness-110"
         >
           View All
         </button>
       </div>
 
+      <!-- Table -->
       <div class="overflow-x-auto">
-        <table class="w-full">
-          <thead class="bg-gray-50">
-            <tr class="text-left text-gray-600 text-sm">
+        <table class="min-w-full">
+          <thead class="border-y border-slate-200 bg-slate-50">
+            <tr class="text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
               <th class="px-6 py-4">Patient</th>
 
               <th class="px-6 py-4">Doctor</th>
 
-              <th class="px-6 py-4">Laboratory Test</th>
+              <th class="px-6 py-4">Laboratory Tests</th>
 
               <th class="px-6 py-4">Priority</th>
 
@@ -122,118 +136,92 @@
           </thead>
 
           <tbody>
-            <tr class="hover:bg-gray-50 transition">
+            <tr
+              *ngFor="let request of pendingRequests"
+              class="border-b border-slate-100 transition hover:bg-[var(--color-primary)]/5"
+            >
+              <!-- Patient -->
               <td class="px-6 py-5">
-                <p class="font-semibold">Eleanor Vance</p>
+                <div class="flex items-center gap-3">
+                  <!-- Avatar -->
+                  <div
+                    class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--color-primary)]/10 font-bold text-[var(--color-primary)]"
+                  >
+                    {{ request.patientName?.charAt(0) }}
+                  </div>
 
-                <span class="text-sm text-gray-500"> #PX-8821 </span>
+                  <div>
+                    <p class="font-semibold text-slate-800">
+                      {{ request.patientName }}
+                    </p>
+
+                    <span class="text-sm text-slate-500">
+                      {{ request.patientSSN }}
+                    </span>
+                  </div>
+                </div>
               </td>
 
-              <td class="px-6 py-5">Dr. Aris Thorne</td>
-
-              <td class="px-6 py-5">Complete Blood Count</td>
-
+              <!-- Doctor -->
               <td class="px-6 py-5">
-                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
-                  HIGH
-                </span>
+                <p class="font-medium text-slate-700">
+                  {{ request.doctorName }}
+                </p>
               </td>
 
-              <td class="px-6 py-5">08:15 AM</td>
-
-              <td class="px-6 py-5 text-center">
-                <button
-                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
-                >
-                  Start Test
-                </button>
-              </td>
-            </tr>
-            <tr class="hover:bg-gray-50">
+              <!-- Laboratory Tests -->
               <td class="px-6 py-5">
-                <p class="font-semibold">Julian Blackwood</p>
-
-                <span class="text-sm text-gray-500"> #PX-8825 </span>
+                <div class="flex flex-col flex-wrap gap-2">
+                  <span
+                    *ngFor="let test of request.labTests"
+                    class="rounded-lg border border-[var(--color-primary)]/10 bg-[var(--color-primary)]/10 px-2.5 py-1 text-xs font-medium text-[var(--color-primary)]"
+                  >
+                    {{ test.testName }}
+                  </span>
+                </div>
               </td>
 
-              <td class="px-6 py-5">Dr. Sarah Jenkins</td>
-
-              <td class="px-6 py-5">Lipid Profile</td>
-
-              <td class="px-6 py-5">
-                <span
-                  class="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-semibold"
-                >
-                  NORMAL
-                </span>
-              </td>
-
-              <td class="px-6 py-5">09:30 AM</td>
-
-              <td class="px-6 py-5 text-center">
-                <button
-                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
-                >
-                  Start Test
-                </button>
-              </td>
-            </tr>
-
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-5">
-                <p class="font-semibold">Clara Oswald</p>
-
-                <span class="text-sm text-gray-500"> #PX-8820 </span>
-              </td>
-
-              <td class="px-6 py-5">Dr. Aris Thorne</td>
-
-              <td class="px-6 py-5">Thyroid Panel (T3,T4)</td>
-
+              <!-- Priority -->
               <td class="px-6 py-5">
                 <span
-                  class="bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full text-xs font-semibold"
+                  class="rounded-full px-3 py-1 text-xs font-semibold"
+                  [ngClass]="{
+                    'bg-red-100 text-red-600': request.priority === 'High',
+                    'bg-orange-100 text-[var(--color-tertiary)]': request.priority === 'Medium',
+                    'bg-[var(--color-secondary)]/10 text-[var(--color-secondary)]':
+                      request.priority === 'Low',
+                  }"
                 >
-                  NORMAL
+                  {{ request.priority }}
                 </span>
               </td>
 
-              <td class="px-6 py-5">10:05 AM</td>
+              <!-- Request Time -->
+              <td class="px-6 py-5">
+                <div class="font-medium text-slate-700">
+                  {{ request.requestedAt | date: 'hh:mm a' }}
+                </div>
 
+                <div class="text-xs text-slate-500">
+                  {{ request.requestedAt | date: 'dd MMM yyyy' }}
+                </div>
+              </td>
+
+              <!-- Action -->
               <td class="px-6 py-5 text-center">
                 <button
-                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
+                  routerLink="/labtechnician/dashboard/requests/test-results"
+                  class="cursor-pointer rounded-xl bg-[var(--color-secondary)] px-4 py-2 text-sm font-medium text-white transition hover:brightness-110"
                 >
                   Start Test
                 </button>
               </td>
             </tr>
 
-            <tr class="hover:bg-gray-50">
-              <td class="px-6 py-5">
-                <p class="font-semibold">Theodore Logan</p>
-
-                <span class="text-sm text-gray-500"> #PX-8832 </span>
-              </td>
-
-              <td class="px-6 py-5">Dr. Ben Keller</td>
-
-              <td class="px-6 py-5">Metabolic Panel</td>
-
-              <td class="px-6 py-5">
-                <span class="bg-red-100 text-red-600 px-3 py-1 rounded-full text-xs font-semibold">
-                  HIGH
-                </span>
-              </td>
-
-              <td class="px-6 py-5">10:45 AM</td>
-
-              <td class="px-6 py-5 text-center">
-                <button
-                  class="cursor-pointer bg-primary text-white px-4 py-2 rounded-lg hover:opacity-90"
-                >
-                  Start Test
-                </button>
+            <!-- Empty State -->
+            <tr *ngIf="pendingRequests.length === 0">
+              <td colspan="6" class="py-12 text-center text-slate-500">
+                No pending laboratory requests found.
               </td>
             </tr>
           </tbody>
