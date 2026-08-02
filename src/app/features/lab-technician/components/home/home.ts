@@ -88,6 +88,7 @@ export class Home {
   loadPendingRequests(): void {
     this.labTechService.getLabRequests().subscribe({
       next: (res: any) => {
+        console.log(res);
         this.pendingRequests = res.items.slice(0, 4) ?? [];
       },
       error: (err: any) => {

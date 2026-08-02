@@ -38,6 +38,7 @@ export class AllRequests {
   LoadRequestLabs(): void {
     this.requestLabsService.RequestLabsTable().subscribe({
       next: (res: any) => {
+        console.log(res);
         this.requests = res.items ?? [];
         this.totalCount = res.totalCount ?? this.requests.length;
 
