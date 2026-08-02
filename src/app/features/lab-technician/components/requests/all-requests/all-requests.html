@@ -64,29 +64,37 @@
               <div
                 class="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-primary)]/10 font-bold text-lg text-[var(--color-primary)] ring-4 ring-white"
               >
-                {{ item.patientName?.charAt(0) }}
+                {{ item.patientName?.charAt(0) || 'A' }}
               </div>
 
               <div>
                 <h2 class="text-lg font-bold text-slate-800">
-                  {{ item.patientName }}
+                  {{ item.patientName || 'John Doe' }}
                 </h2>
 
                 <p class="mt-1 text-sm text-slate-500">SSN • {{ item.patientSSN }}</p>
               </div>
             </div>
 
-            <span
-              class="rounded-full px-4 py-1.5 text-xs font-semibold"
-              [ngClass]="{
-                'bg-orange-100 text-[var(--color-tertiary)]': item.status === 'Pending',
-                'bg-[var(--color-secondary)]/10 text-[var(--color-secondary)]':
-                  item.status === 'Completed',
-                'bg-red-100 text-red-700': item.status === 'Cancelled',
-              }"
-            >
-              {{ item.status }}
-            </span>
+            <div class="flex flex-col gap-4">
+              <span
+                class="rounded-full text-center px-4 py-1.5 text-xs font-semibold"
+                [ngClass]="{
+                  'bg-orange-100 text-[var(--color-tertiary)]': item.status === 'Pending',
+                  'bg-[var(--color-secondary)]/10 text-[var(--color-secondary)]':
+                    item.status === 'Completed',
+                  'bg-red-100 text-red-700': item.status === 'Cancelled',
+                }"
+              >
+                {{ item.status }}
+              </span>
+              <button
+                routerLink="../test-results"
+                class="bg-primary text-white text-center rounded-full px-4 py-1.5 text-xs font-semibold"
+              >
+                Start Test
+              </button>
+            </div>
           </div>
         </div>
 
