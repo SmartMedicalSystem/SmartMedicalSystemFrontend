@@ -19,7 +19,7 @@
       <div class="flex items-center justify-between mb-5">
         <div class="flex items-center gap-2">
           <div
-            class="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+            class="w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 text-primary"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +40,7 @@
         </div>
         <button
           (click)="onEditProfile()"
-          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm font-medium text-[var(--color-primary)] hover:bg-gray-50 transition"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-gray-200 text-sm font-medium text-primary hover:bg-gray-50 transition"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -121,7 +121,7 @@
           <label class="block text-xs text-gray-500 mb-1.5">Default Laboratory</label>
           <select
             [(ngModel)]="defaultLab"
-            class="w-full bg-[var(--color-neutral)] border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30"
+            class="w-full bg-neutral border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
             @for (lab of labs; track lab) {
               <option [ngValue]="lab">{{ lab }}</option>
@@ -133,7 +133,7 @@
           <label class="block text-xs text-gray-500 mb-1.5">Default Printer</label>
           <select
             [(ngModel)]="defaultPrinter"
-            class="w-full bg-[var(--color-neutral)] border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/30"
+            class="w-full bg-neutral border border-gray-200 rounded-xl px-3 py-2.5 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary/30"
           >
             @for (printer of printers; track printer) {
               <option [ngValue]="printer">{{ printer }}</option>
@@ -146,7 +146,7 @@
           <button
             (click)="toggleBarcodeScanner()"
             class="relative w-11 h-6 shrink-0 rounded-full transition-colors duration-300"
-            [ngClass]="barcodeScanner() ? 'bg-[var(--color-primary)]' : 'bg-gray-200'"
+            [ngClass]="barcodeScanner() ? 'bg-primary' : 'bg-gray-200'"
           >
             <span
               class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300"
@@ -162,7 +162,7 @@
           <button
             (click)="toggleAutoPrintLabels()"
             class="relative w-11 h-6 shrink-0 rounded-full transition-colors duration-300"
-            [ngClass]="autoPrintLabels() ? 'bg-[var(--color-primary)]' : 'bg-gray-200'"
+            [ngClass]="autoPrintLabels() ? 'bg-primary' : 'bg-gray-200'"
           >
             <span
               class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300"
@@ -179,7 +179,7 @@
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6">
       <div class="flex items-center gap-2 mb-5">
         <div
-          class="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+          class="w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 text-primary"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -273,7 +273,7 @@
     <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sm:p-6">
       <div class="flex items-center gap-2 mb-5">
         <div
-          class="w-8 h-8 rounded-full flex items-center justify-center bg-[var(--color-primary)]/10 text-[var(--color-primary)]"
+          class="w-8 h-8 rounded-full flex items-center justify-center bg-primary/10 text-primary"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -304,7 +304,7 @@
           <button
             (click)="toggleEmailNotifications()"
             class="relative w-11 h-6 shrink-0 rounded-full transition-colors duration-300"
-            [ngClass]="emailNotifications() ? 'bg-[var(--color-primary)]' : 'bg-gray-200'"
+            [ngClass]="emailNotifications() ? 'bg-primary' : 'bg-gray-200'"
           >
             <span
               class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300"
@@ -325,7 +325,7 @@
           <button
             (click)="toggleNewTestRequests()"
             class="relative w-11 h-6 shrink-0 rounded-full transition-colors duration-300"
-            [ngClass]="newTestRequests() ? 'bg-[var(--color-primary)]' : 'bg-gray-200'"
+            [ngClass]="newTestRequests() ? 'bg-primary' : 'bg-gray-200'"
           >
             <span
               class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300"
@@ -344,7 +344,7 @@
           <button
             (click)="toggleUrgentCriticalAlerts()"
             class="relative w-11 h-6 shrink-0 rounded-full transition-colors duration-300"
-            [ngClass]="urgentCriticalAlerts() ? 'bg-[var(--color-primary)]' : 'bg-gray-200'"
+            [ngClass]="urgentCriticalAlerts() ? 'bg-primary' : 'bg-gray-200'"
           >
             <span
               class="absolute left-0.5 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-300"
@@ -364,7 +364,7 @@
   >
     <div class="flex items-center gap-3 text-left w-full sm:w-auto">
       <div
-        class="w-9 h-9 rounded-full flex items-center justify-center bg-[var(--color-primary)]/10 text-[var(--color-primary)] shrink-0"
+        class="w-9 h-9 rounded-full flex items-center justify-center bg-primary/10 text-primary shrink-0"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -398,7 +398,7 @@
       </button>
       <button
         (click)="onSaveChanges()"
-        class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-[var(--color-primary)] text-white text-sm font-semibold hover:opacity-90 transition"
+        class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-white text-sm font-semibold hover:opacity-90 transition"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

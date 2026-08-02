@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TestResultService } from '../../../../../core/services/test-result-service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-test-results',
@@ -11,40 +13,29 @@ import { FormsModule } from '@angular/forms';
 })
 export class TestResults {
 
-  analytes = [
+  analytes: any[] = [];
 
-    {
-      name: 'Hemoglobin (Hb)',
-      value: '12.1',
-      unit: 'g/dL',
-      reference: '13.5 - 17.5',
-      status: 'Low'
-    },
+  constructor(private testResultService: TestResultService) { }
 
-    {
-      name: 'White Blood Cells (WBC)',
-      value: '7.2',
-      unit: 'x10³/µL',
-      reference: '4.0 - 11.0',
-      status: 'Normal'
-    },
+  ngOnInit(): void {
+    this.loadResultElements();
+  }
 
-    {
-      name: 'Platelets',
-      value: '122',
-      unit: 'x10³/µL',
-      reference: '150 - 450',
-      status: 'Critical Low'
-    },
+  loadResultElements(): void {
+    this.testResultService.getElements(1).subscribe({
+      next: (res: any) => {
+        console.log(res);
+        this.analytes = res.items ?? res.data ?? res;
+      },
+      error: (err: any) => {
+        console.error(err);
 
-    {
-      name: 'Glucose (Fasting)',
-      value: '105',
-      unit: 'mg/dL',
-      reference: '70 - 110',
-      status: 'Normal'
-    }
-
-  ];
-
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load test results.'
+        });
+      }
+    });
+  }
 }

@@ -18,6 +18,8 @@ export class AuthenticationService {
 
   private readonly REFRESH_KEY = 'refreshToken';
   private readonly accessToken = signal<string | null>(null);
+  private userImage = signal('');
+  userImageSignal = this.userImage.asReadonly();
 
   constructor(
     private http: HttpClient,
@@ -67,6 +69,10 @@ export class AuthenticationService {
   setToken(accessToken: string, refreshToken: string): void {
     this.accessToken.set(accessToken);
     localStorage.setItem(this.REFRESH_KEY, refreshToken);
+    const decoded = jwtDecode<any>(accessToken);
+    this.userImage.set(
+      `https://smartmedicalsystem.runasp.net/${decoded['photo_url'] ?? ''}`
+    );
   }
 
   getAccessToken(): string | null {
@@ -99,14 +105,13 @@ export class AuthenticationService {
     return decoded['base_person_id'] ?? null;
   }
 
+  setUserImage(url: string) {
+    this.userImage.set(url);
+  }
+
 
   getUserImage(): string {
-    const token = this.getAccessToken();
-    if (!token) {
-      return '';
-    }
-    const decoded = jwtDecode<any>(token);
-    return decoded['photo_url'] ?? null;
+    return this.userImage();
   }
 
   clearToken(): void {
