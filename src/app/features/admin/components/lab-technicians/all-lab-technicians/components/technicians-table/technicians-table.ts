@@ -221,59 +221,25 @@ export class TechniciansTable
     this.loadTechnicians();
   }
 
-  getStatusClass(
-    status: number | undefined
-  ): string {
+  
+getStatusClass(status: string | undefined): string {
 
-    switch (status) {
+  switch (status) {
 
-      case 1:
-        return 'active';
+    case 'FullTime':
+      return 'active';
 
-      case 2:
-        return 'inactive';
+    case 'PartTime':
+      return 'inactive';
 
-      default:
-        return 'vacation';
-    }
+    case 'Contract':
+      return 'vacation';
+
+    default:
+      return '';
   }
 
-  getStatusName(
-    status: number | undefined
-  ): string {
-
-    switch (status) {
-
-      case 1:
-        return 'Active';
-
-      case 2:
-        return 'Inactive';
-
-      default:
-        return 'Unknown';
-    }
-  }
-
-  getShiftName(
-    shift: number | undefined
-  ): string {
-
-    switch (shift) {
-
-      case 1:
-        return 'Morning';
-
-      case 2:
-        return 'Evening';
-
-      case 3:
-        return 'Night';
-
-      default:
-        return '-';
-    }
-  }
+}
 
   getFullName(
     technician: ILabTechnician

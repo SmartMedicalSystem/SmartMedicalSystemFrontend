@@ -19,6 +19,8 @@ import {
 import { CommonModule } from '@angular/common';
 
 import { AdminService } from '../../../../../core/services/admin-service';
+// NOTE: adjust this import path to wherever ILabTechnician actually lives in your project.
+import { ILabTechnician } from '../../../../../shared/interfaces/Admin/ILabTechnician';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -39,21 +41,15 @@ export class EditLabTechnicians implements OnInit {
   // =========================
 
   private fb = inject(FormBuilder);
-
   private adminService = inject(AdminService);
-
   private router = inject(Router);
-
   private route = inject(ActivatedRoute);
-
 
   // =========================
   // API Base URL
   // =========================
 
-  private readonly apiBaseUrl =
-    'https://smartmedicalsystem.runasp.net';
-
+  private readonly apiBaseUrl = 'https://smartmedicalsystem.runasp.net';
 
   // =========================
   // Technician National ID
@@ -61,167 +57,59 @@ export class EditLabTechnicians implements OnInit {
 
   technicianNationalId = '';
 
-
   // =========================
   // Image
   // =========================
 
   selectedImage: File | null = null;
-
   imagePreview: string | null = null;
-
 
   // =========================
   // Form
   // =========================
+  // NOTE: ILabTechnician types gender / employmentStatus / workShift /
+  // assignedLaboratory as `string`, so every form control below matches
+  // that (all defaults and option values are strings, not numbers).
+  // The literal codes used here ('0'/'1', '1'-'4', etc.) mirror what the
+  // original component used — double check them against your actual
+  // backend enum values (they may instead be words like "Male"/"Female").
 
   form = this.fb.group({
 
-    // =========================
     // Personal Information
-    // =========================
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
+    gender: ['Male', Validators.required],
+    dateOfBirth: ['', Validators.required],
+    nationality: ['', Validators.required],
+    nationalId: ['', Validators.required],
 
-    firstName: [
-      '',
-      Validators.required
-    ],
-
-    lastName: [
-      '',
-      Validators.required
-    ],
-
-    gender: [
-      0,
-      Validators.required
-    ],
-
-    dateOfBirth: [
-      '',
-      Validators.required
-    ],
-
-    nationality: [
-      '',
-      Validators.required
-    ],
-
-    nationalId: [
-      '',
-      Validators.required
-    ],
-
-
-    // =========================
     // Employment Information
-    // =========================
+    assignedLaboratory: ['', Validators.required],
+    jobTitle: ['', Validators.required],
+    employmentStatus: ['FullTime', Validators.required],
+    workShift: ['Morning', Validators.required],
+    joiningDate: ['', Validators.required],
+    yearsOfExperience: [0, [Validators.required, Validators.min(0)]],
 
-    laboratoryId: [
-      0,
-      Validators.required
-    ],
-
-    jobTitle: [
-      '',
-      Validators.required
-    ],
-
-    employmentStatus: [
-      1,
-      Validators.required
-    ],
-
-    workShift: [
-      1,
-      Validators.required
-    ],
-
-    joiningDate: [
-      '',
-      Validators.required
-    ],
-
-    yearsOfExperience: [
-      0,
-      [
-        Validators.required,
-        Validators.min(0)
-      ]
-    ],
-
-
-    // =========================
     // Contact Information
-    // =========================
+    phoneNumber: ['', Validators.required],
+    alternativePhone: [''],
+    email: ['', [Validators.required, Validators.email]],
+    address: ['', Validators.required],
+    city: ['', Validators.required],
+    country: ['', Validators.required],
+    postalCode: [''],
 
-    phoneNumber: [
-      '',
-      Validators.required
-    ],
-
-    alternativePhone: [
-      ''
-    ],
-
-    email: [
-      '',
-      [
-        Validators.required,
-        Validators.email
-      ]
-    ],
-
-    address: [
-      '',
-      Validators.required
-    ],
-
-    city: [
-      '',
-      Validators.required
-    ],
-
-    country: [
-      '',
-      Validators.required
-    ],
-
-    postalCode: [
-      ''
-    ],
-
-
-    // =========================
     // Account Information
-    // =========================
-
-    username: [
-      '',
-      Validators.required
-    ],
-
-    allowLogin: [
-      true
-    ],
-
-    accountActive: [
-      true
-    ],
-
-    receiveNotifications: [
-      true
-    ],
-
-    sendWelcomeEmail: [
-      true
-    ],
-
-    sendLoginCredentials: [
-      true
-    ]
+    username: ['', Validators.required],
+    allowLogin: [true],
+    accountActive: [true],
+    receiveNotifications: [true],
+    sendWelcomeEmail: [true],
+    sendLoginCredentials: [true]
 
   });
-
 
   // =========================
   // On Init
@@ -231,39 +119,18 @@ export class EditLabTechnicians implements OnInit {
 
     const nationalId =
       this.route.snapshot.paramMap.get('nationalId')
-      ??
-      this.route.parent?.snapshot.paramMap.get('nationalId');
-
+      ?? this.route.parent?.snapshot.paramMap.get('nationalId');
 
     if (!nationalId) {
-
-      console.error(
-        'National ID was not found in route'
-      );
-
-      alert(
-        'Technician National ID Not Found'
-      );
-
+      console.error('National ID was not found in route');
+      alert('Technician National ID Not Found');
       return;
-
     }
 
-
-    this.technicianNationalId =
-      nationalId;
-
-
-    console.log(
-      'National ID from URL:',
-      this.technicianNationalId
-    );
-
+    this.technicianNationalId = nationalId;
 
     this.loadTechnician();
-
   }
-
 
   // =========================
   // Load Technician
@@ -272,325 +139,165 @@ export class EditLabTechnicians implements OnInit {
   loadTechnician(): void {
 
     this.adminService
-      .getLabTechnicianById(
-        this.technicianNationalId
-      )
+      .getLabTechnicianById(this.technicianNationalId)
       .subscribe({
 
-        next: (res) => {
-
-          console.log(
-            'Technician data received:',
-            res
-          );
-
+        next: (res: ILabTechnician) => {
 
           // =========================
           // Patch Form
           // =========================
 
           this.form.patchValue({
+            
 
             // Personal
-
-            firstName:
-              res.firstName ?? '',
-
-            lastName:
-              res.lastName ?? '',
-
-            gender:
-              res.gender ?? 0,
-
-            dateOfBirth:
-              this.formatDate(
-                res.dateOfBirth
-              ),
-
-            nationality:
-              res.nationality ?? '',
-
-            nationalId:
-              res.nationalId ?? '',
-
+            firstName: res.firstName ?? '',
+            lastName: res.lastName ?? '',
+            gender: res.gender ?? '0',
+            dateOfBirth: this.formatDate(res.dateOfBirth),
+            nationality: res.nationality ?? '',
+            nationalId: res.nationalId ?? '',
 
             // Employment
-
-            laboratoryId:
-              res.laboratoryId ?? 0,
-
-            jobTitle:
-              res.jobTitle ?? '',
-
-            employmentStatus:
-              res.employmentStatus ?? 1,
-
-            workShift:
-              res.workShift ?? 1,
-
-            joiningDate:
-              this.formatDate(
-                res.joiningDate
-              ),
-
-            yearsOfExperience:
-              res.yearsOfExperience ?? 0,
-
+            assignedLaboratory: res.assignedLaboratory ?? '',
+            jobTitle: res.jobTitle ?? '',
+            employmentStatus: res.employmentStatus ?? '1',
+            workShift: res.workShift ?? '1',
+            joiningDate: this.formatDate(res.joiningDate),
+            yearsOfExperience: res.yearsOfExperience ?? 0,
 
             // Contact
-
-            phoneNumber:
-              res.phoneNumber ?? '',
-
-            alternativePhone:
-              res.alternativePhone ?? '',
-
-            email:
-              res.email ?? '',
-
-            address:
-              res.address ?? '',
-
-            city:
-              res.city ?? '',
-
-            country:
-              res.country ?? '',
-
-            postalCode:
-              res.postalCode ?? '',
-
+            phoneNumber: res.phoneNumber ?? '',
+            alternativePhone: res.alternativePhone ?? '',
+            email: res.email ?? '',
+            address: res.address ?? '',
+            city: res.city ?? '',
+            country: res.country ?? '',
+            postalCode: res.postalCode ?? '',
 
             // Account
-
-            username:
-              res.username ?? '',
-
-            allowLogin:
-              res.allowLogin ?? false,
-
-            accountActive:
-              res.accountActive ?? false,
-
-            receiveNotifications:
-              res.receiveNotifications ?? false,
-
-            sendWelcomeEmail:
-              res.sendWelcomeEmail ?? false,
-
-            sendLoginCredentials:
-              res.sendLoginCredentials ?? false
+            username: res.username ?? '',
+            allowLogin: res.allowLogin ?? false,
+            accountActive: res.accountActive ?? false,
+            receiveNotifications: res.receiveNotifications ?? false,
+            sendWelcomeEmail: res.sendWelcomeEmail ?? false,
+            sendLoginCredentials: res.sendLoginCredentials ?? false
 
           });
-
+          this.disableReadOnlyFields();
 
           // =========================
           // Existing Photo
           // =========================
 
-          if (res.photoUrl) {
-
-            this.imagePreview =
-              this.getImageUrl(
-                res.photoUrl
-              );
-
-          }
-
-          else {
-
-            this.imagePreview =
-              '/images/blank-profile.png';
-
-          }
-
-
-          console.log(
-            'Image URL:',
-            this.imagePreview
-          );
+          this.imagePreview = res.photoUrl
+            ? this.getImageUrl(res.photoUrl)
+            : '/images/blank-profile.png';
 
         },
 
-
         error: (err) => {
-
-          console.error(
-            'Get Technician Error:',
-            err
-          );
-
-          alert(
-            'Failed to load laboratory technician data.'
-          );
-
+          console.error('Get Technician Error:', err);
+          alert('Failed to load laboratory technician data.');
         }
 
       });
 
   }
+  private disableReadOnlyFields(): void {
 
+  this.form.get('firstName')?.disable();
+
+  this.form.get('lastName')?.disable();
+
+  this.form.get('gender')?.disable();
+
+  this.form.get('dateOfBirth')?.disable();
+
+  this.form.get('nationality')?.disable();
+
+  this.form.get('nationalId')?.disable();
+
+  this.form.get('username')?.disable();
+
+  this.form.get('joiningDate')?.disable();
+
+}
 
   // =========================
   // Format Date
   // =========================
 
-  private formatDate(
-    date: string | null | undefined
-  ): string {
-
+  private formatDate(date: string | null | undefined): string {
     if (!date) {
-
       return '';
-
     }
-
-
-    return date.substring(
-      0,
-      10
-    );
-
+    return date.substring(0, 10);
   }
-
 
   // =========================
   // Build Image URL
   // =========================
 
-  getImageUrl(
-    photoUrl: string | null | undefined
-  ): string {
+  getImageUrl(photoUrl: string | null | undefined): string {
 
     if (!photoUrl) {
-
       return '/images/blank-profile.png';
-
     }
-
 
     // If API already returns full URL
-
-    if (
-      photoUrl.startsWith('http://')
-      ||
-      photoUrl.startsWith('https://')
-    ) {
-
+    if (photoUrl.startsWith('http://') || photoUrl.startsWith('https://')) {
       return photoUrl;
-
     }
 
-
     // Remove duplicated slash
-
-    const cleanPhotoUrl =
-      photoUrl.startsWith('/')
-        ? photoUrl
-        : `/${photoUrl}`;
-
+    const cleanPhotoUrl = photoUrl.startsWith('/') ? photoUrl : `/${photoUrl}`;
 
     return `${this.apiBaseUrl}${cleanPhotoUrl}`;
-
   }
-
 
   // =========================
   // Select Image
   // =========================
 
-  onImageSelected(
-    event: Event
-  ): void {
+  onImageSelected(event: Event): void {
 
-    const input =
-      event.target as HTMLInputElement;
+    const input = event.target as HTMLInputElement;
 
-
-    if (
-      !input.files ||
-      input.files.length === 0
-    ) {
-
+    if (!input.files || input.files.length === 0) {
       return;
-
     }
 
-
-    const file =
-      input.files[0];
-
+    const file = input.files[0];
 
     // Maximum 5 MB
-
-    if (
-      file.size >
-      5 * 1024 * 1024
-    ) {
-
-      alert(
-        'Image size must not exceed 5 MB.'
-      );
-
+    if (file.size > 5 * 1024 * 1024) {
+      alert('Image size must not exceed 5 MB.');
       input.value = '';
-
       return;
-
     }
-
 
     // Allowed types
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
 
-    const allowedTypes = [
-
-      'image/png',
-
-      'image/jpeg',
-
-      'image/jpg'
-
-    ];
-
-
-    if (
-      !allowedTypes.includes(
-        file.type
-      )
-    ) {
-
-      alert(
-        'Only PNG, JPG and JPEG images are allowed.'
-      );
-
+    if (!allowedTypes.includes(file.type)) {
+      alert('Only PNG, JPG and JPEG images are allowed.');
       input.value = '';
-
       return;
-
     }
 
+    this.selectedImage = file;
 
-    this.selectedImage =
-      file;
-
-
-    const reader =
-      new FileReader();
-
+    const reader = new FileReader();
 
     reader.onload = () => {
-
-      this.imagePreview =
-        reader.result as string;
-
+      this.imagePreview = reader.result as string;
     };
 
-
-    reader.readAsDataURL(
-      file
-    );
+    reader.readAsDataURL(file);
 
   }
-
 
   // =========================
   // Submit Update
@@ -598,250 +305,90 @@ export class EditLabTechnicians implements OnInit {
 
   submit(): void {
 
-    if (
-      this.form.invalid
-    ) {
-
+    if (this.form.invalid) {
       this.form.markAllAsTouched();
-
       return;
-
     }
 
-
-    const formData =
-      new FormData();
-
+    const formData = new FormData();
+    const v = this.form.getRawValue();
 
     // =========================
     // Personal Information
     // =========================
 
-    formData.append(
-      'firstName',
-      this.form.value.firstName ?? ''
-    );
-
-    formData.append(
-      'lastName',
-      this.form.value.lastName ?? ''
-    );
-
-    formData.append(
-      'gender',
-      String(
-        this.form.value.gender ?? 0
-      )
-    );
-
-    formData.append(
-      'dateOfBirth',
-      this.form.value.dateOfBirth ?? ''
-    );
-
-    formData.append(
-      'nationality',
-      this.form.value.nationality ?? ''
-    );
-
-    formData.append(
-      'nationalId',
-      this.form.value.nationalId ?? ''
-    );
-
+    formData.append('firstName', v.firstName ?? '');
+    formData.append('lastName', v.lastName ?? '');
+    formData.append('gender', v.gender ?? '0');
+    formData.append('dateOfBirth', v.dateOfBirth ?? '');
+    formData.append('nationality', v.nationality ?? '');
+    formData.append('nationalId', v.nationalId ?? '');
 
     // =========================
     // Employment Information
     // =========================
 
-    formData.append(
-      'laboratoryId',
-      String(
-        this.form.value.laboratoryId ?? 0
-      )
-    );
-
-    formData.append(
-      'jobTitle',
-      this.form.value.jobTitle ?? ''
-    );
-
-    formData.append(
-      'employmentStatus',
-      String(
-        this.form.value.employmentStatus ?? 1
-      )
-    );
-
-    formData.append(
-      'workShift',
-      String(
-        this.form.value.workShift ?? 1
-      )
-    );
-
-    formData.append(
-      'joiningDate',
-      this.form.value.joiningDate ?? ''
-    );
-
-    formData.append(
-      'yearsOfExperience',
-      String(
-        this.form.value.yearsOfExperience ?? 0
-      )
-    );
-
+    formData.append('assignedLaboratory', v.assignedLaboratory ?? '');
+    formData.append('jobTitle', v.jobTitle ?? '');
+    formData.append('employmentStatus', v.employmentStatus ?? '1');
+    formData.append('workShift', v.workShift ?? '1');
+    formData.append('joiningDate', v.joiningDate ?? '');
+    formData.append('yearsOfExperience', String(v.yearsOfExperience ?? 0));
 
     // =========================
     // Contact Information
     // =========================
 
-    formData.append(
-      'phoneNumber',
-      this.form.value.phoneNumber ?? ''
-    );
-
-    formData.append(
-      'alternativePhone',
-      this.form.value.alternativePhone ?? ''
-    );
-
-    formData.append(
-      'email',
-      this.form.value.email ?? ''
-    );
-
-    formData.append(
-      'address',
-      this.form.value.address ?? ''
-    );
-
-    formData.append(
-      'city',
-      this.form.value.city ?? ''
-    );
-
-    formData.append(
-      'country',
-      this.form.value.country ?? ''
-    );
-
-    formData.append(
-      'postalCode',
-      this.form.value.postalCode ?? ''
-    );
-
+    formData.append('phoneNumber', v.phoneNumber ?? '');
+    formData.append('alternativePhone', v.alternativePhone ?? '');
+    formData.append('email', v.email ?? '');
+    formData.append('address', v.address ?? '');
+    formData.append('city', v.city ?? '');
+    formData.append('country', v.country ?? '');
+    formData.append('postalCode', v.postalCode ?? '');
 
     // =========================
     // Account Information
     // =========================
 
-    formData.append(
-      'username',
-      this.form.value.username ?? ''
-    );
-
-    formData.append(
-      'allowLogin',
-      String(
-        this.form.value.allowLogin ?? false
-      )
-    );
-
-    formData.append(
-      'accountActive',
-      String(
-        this.form.value.accountActive ?? false
-      )
-    );
-
-    formData.append(
-      'receiveNotifications',
-      String(
-        this.form.value.receiveNotifications ?? false
-      )
-    );
-
-    formData.append(
-      'sendWelcomeEmail',
-      String(
-        this.form.value.sendWelcomeEmail ?? false
-      )
-    );
-
-    formData.append(
-      'sendLoginCredentials',
-      String(
-        this.form.value.sendLoginCredentials ?? false
-      )
-    );
-
+    formData.append('username', v.username ?? '');
+    formData.append('allowLogin', String(v.allowLogin ?? false));
+    formData.append('accountActive', String(v.accountActive ?? false));
+    formData.append('receiveNotifications', String(v.receiveNotifications ?? false));
+    formData.append('sendWelcomeEmail', String(v.sendWelcomeEmail ?? false));
+    formData.append('sendLoginCredentials', String(v.sendLoginCredentials ?? false));
 
     // =========================
     // New Photo
     // =========================
 
-    if (
-      this.selectedImage
-    ) {
-
-      formData.append(
-
-        'photoUrl',
-
-        this.selectedImage,
-
-        this.selectedImage.name
-
-      );
-
+    if (this.selectedImage) {
+      formData.append('photoUrl', this.selectedImage, this.selectedImage.name);
     }
-
-
-    // =========================
-    // Debug FormData
-    // =========================
-
-    for (
-      const pair of formData.entries()
-    ) {
-      console.log(
-        pair[0],
-        pair[1]
-      );
-    }
-
 
     // =========================
     // Update API
     // =========================
 
     this.adminService
-      .updateLabTechnician(
-        this.technicianNationalId,
-        formData
-      )
+      .updateLabTechnician(this.technicianNationalId, formData)
       .subscribe({
-        next: (res) => {
-          console.log(res);
+        next: () => {
           Swal.fire({
             icon: 'success',
             text: 'Laboratory Technician Updated Successfully',
             showConfirmButton: true
           });
-          this.router.navigate([
-            '/admin/dashboard/labtechnicians/all-lab-technicians'
-          ]);
+          this.router.navigate(['/admin/dashboard/labtechnicians/all-lab-technicians']);
         },
         error: (err) => {
-          console.log(err);
+          console.error(err);
           Swal.fire({
             icon: 'error',
             title: 'Something went wrong.',
-            text: err.error.message,
+            text: err?.error?.message ?? 'Please try again later.',
             showConfirmButton: true
-          })
+          });
         }
       });
   }
