@@ -18,26 +18,16 @@
           <!-- Image -->
 
           <div class="relative">
-            <img
-              [src]="imagePreview ? imagePreview : '/images/blank-profile.png'"
-              class="w-24 h-24 rounded-full border-4 border-secondary object-cover"
-            />
+            <img [src]="imagePreview ? imagePreview : '/images/blank-profile.png'"
+              class="w-24 h-24 rounded-full border-4 border-secondary object-cover" />
 
-            <button
-              type="button"
-              (click)="fileInput.click()"
-              class="absolute bottom-0 right-0 bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center shadow"
-            >
+            <button type="button" (click)="fileInput.click()"
+              class="absolute bottom-0 right-0 bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center shadow">
               ✎
             </button>
 
-            <input
-              #fileInput
-              hidden
-              type="file"
-              accept="image/png,image/jpeg,image/jpg"
-              (change)="onImageSelected($event)"
-            />
+            <input #fileInput hidden type="file" accept="image/png,image/jpeg,image/jpg"
+              (change)="onImageSelected($event)" />
           </div>
 
           <!-- Info -->
@@ -48,16 +38,7 @@
                 {{ form.value.firstName }} {{ form.value.lastName }}
               </h2>
 
-              <span
-                class="px-3 py-1 rounded-full text-xs font-semibold"
-                [ngClass]="
-                  form.value.accountActive
-                    ? 'bg-green-100 text-green-700'
-                    : 'bg-red-100 text-red-700'
-                "
-              >
-                {{ form.value.accountActive ? 'ACTIVE' : 'INACTIVE' }}
-              </span>
+
             </div>
 
             <div class="mt-3 flex flex-wrap gap-x-8 gap-y-2 text-sm text-gray-600">
@@ -65,7 +46,7 @@
                 🧪 Lab:
 
                 <span class="font-medium">
-                  {{ form.value.laboratoryId }}
+                  {{ form.value.assignedLaboratory }}
                 </span>
               </p>
 
@@ -73,7 +54,7 @@
                 📅 Joined:
 
                 <span class="font-medium">
-                  {{ form.value.joiningDate }}
+                  {{ form.get('joiningDate')?.value }}
                 </span>
               </p>
             </div>
@@ -112,11 +93,8 @@
           <div>
             <label class="block text-sm font-medium mb-2"> First Name </label>
 
-            <input
-              type="text"
-              formControlName="firstName"
-              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="text" formControlName="firstName"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary" />
           </div>
 
           <!-- Last Name -->
@@ -124,24 +102,21 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Last Name </label>
 
-            <input
-              type="text"
-              formControlName="lastName"
-              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="text" formControlName="lastName"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary" />
           </div>
 
           <!-- Gender -->
+          <!-- gender is a string per ILabTechnician; verify these codes
+               match what your backend actually sends/expects. -->
 
           <div>
             <label class="block text-sm font-medium mb-2"> Gender </label>
 
-            <select
-              formControlName="gender"
-              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-            >
-              <option [value]="0">Male</option>
-              <option [value]="1">Female</option>
+            <select formControlName="gender"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary">
+              <option value="0">Male</option>
+              <option value="1">Female</option>
             </select>
           </div>
 
@@ -150,11 +125,8 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Date of Birth </label>
 
-            <input
-              type="date"
-              formControlName="dateOfBirth"
-              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="date" formControlName="dateOfBirth"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary" />
           </div>
 
           <!-- Nationality -->
@@ -162,11 +134,8 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Nationality </label>
 
-            <input
-              type="text"
-              formControlName="nationality"
-              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="text" formControlName="nationality"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary" />
           </div>
 
           <!-- National ID -->
@@ -174,11 +143,8 @@
           <div>
             <label class="block text-sm font-medium mb-2"> National ID </label>
 
-            <input
-              type="text"
-              formControlName="nationalId"
-              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary"
-            />
+            <input type="text" formControlName="nationalId"
+              class="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 outline-none focus:ring-2 focus:ring-primary" />
           </div>
         </div>
       </div>
@@ -198,20 +164,23 @@
 
       <div class="p-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Employee ID -->
-
           <!-- Assigned Laboratory -->
+          <!-- assignedLaboratory is a string per ILabTechnician. These
+               options now match the real lab names used in the filter
+               toolbar (app-filter-toolbar) — keep both lists in sync,
+               or better, pull them from one shared source. -->
 
           <div>
             <label class="block text-sm font-medium mb-2"> Assigned Laboratory </label>
 
-            <select
-              formControlName="laboratoryId"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-            >
-              <option [ngValue]="null">Select Laboratory</option>
+            <select formControlName="assignedLaboratory"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
+              <option value="">Select Laboratory</option>
 
-              <option [ngValue]="1">Central Medical Laboratory</option>
+              <option value="Central Chemistry Laboratory">Central Chemistry Laboratory</option>
+              <option value="Hematology Laboratory">Hematology Laboratory</option>
+              <option value="Microbiology Laboratory">Microbiology Laboratory</option>
+              <option value="Pathology Laboratory">Pathology Laboratory</option>
             </select>
           </div>
 
@@ -220,11 +189,8 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Job Title </label>
 
-            <input
-              type="text"
-              formControlName="jobTitle"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-            />
+            <input type="text" formControlName="jobTitle"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none" />
           </div>
 
           <!-- Employment Status -->
@@ -232,14 +198,11 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Employment Status </label>
 
-            <select
-              formControlName="employmentStatus"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-            >
-              <option [value]="1">Active</option>
-              <option [value]="2">Inactive</option>
-              <option [value]="3">On Leave</option>
-              <option [value]="4">Suspended</option>
+            <select formControlName="employmentStatus"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
+              <option value="FullTime">FullTime</option>
+              <option value="PartTime">PartTime</option>
+              <option value="Contract">Contract</option>
             </select>
           </div>
 
@@ -248,13 +211,11 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Work Shift </label>
 
-            <select
-              formControlName="workShift"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-            >
-              <option [value]="1">Morning</option>
-              <option [value]="2">Evening</option>
-              <option [value]="3">Night</option>
+            <select formControlName="workShift"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none">
+              <option value="Morning">Morning</option>
+              <option value="Evening">Evening</option>
+              <option value="Night">Night</option>
             </select>
           </div>
 
@@ -263,11 +224,8 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Joining Date </label>
 
-            <input
-              type="date"
-              formControlName="joiningDate"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-            />
+            <input type="date" formControlName="joiningDate"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none" />
           </div>
 
           <!-- Years Of Experience -->
@@ -275,11 +233,8 @@
           <div class="md:col-span-2">
             <label class="block text-sm font-medium mb-2"> Years Of Experience </label>
 
-            <input
-              type="number"
-              formControlName="yearsOfExperience"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none"
-            />
+            <input type="number" formControlName="yearsOfExperience"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3 focus:ring-2 focus:ring-primary outline-none" />
           </div>
         </div>
       </div>
@@ -299,11 +254,8 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Phone Number </label>
 
-            <input
-              type="text"
-              formControlName="phoneNumber"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3"
-            />
+            <input type="text" formControlName="phoneNumber"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3" />
           </div>
 
           <!-- Alternative -->
@@ -311,11 +263,8 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Alternative Phone </label>
 
-            <input
-              type="text"
-              formControlName="alternativePhone"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3"
-            />
+            <input type="text" formControlName="alternativePhone"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3" />
           </div>
 
           <!-- Email -->
@@ -323,11 +272,7 @@
           <div class="md:col-span-2">
             <label class="block text-sm font-medium mb-2"> Email Address </label>
 
-            <input
-              type="email"
-              formControlName="email"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3"
-            />
+            <input type="email" formControlName="email" class="w-full rounded-lg border border-gray-300 px-4 py-3" />
           </div>
 
           <!-- Address -->
@@ -335,11 +280,7 @@
           <div class="md:col-span-2">
             <label class="block text-sm font-medium mb-2"> Home Address </label>
 
-            <input
-              type="text"
-              formControlName="address"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3"
-            />
+            <input type="text" formControlName="address" class="w-full rounded-lg border border-gray-300 px-4 py-3" />
           </div>
 
           <!-- City -->
@@ -347,11 +288,7 @@
           <div>
             <label class="block text-sm font-medium mb-2"> City </label>
 
-            <input
-              type="text"
-              formControlName="city"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3"
-            />
+            <input type="text" formControlName="city" class="w-full rounded-lg border border-gray-300 px-4 py-3" />
           </div>
 
           <!-- Country -->
@@ -359,11 +296,7 @@
           <div>
             <label class="block text-sm font-medium mb-2"> Country </label>
 
-            <input
-              type="text"
-              formControlName="country"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3"
-            />
+            <input type="text" formControlName="country" class="w-full rounded-lg border border-gray-300 px-4 py-3" />
           </div>
 
           <!-- Postal -->
@@ -371,11 +304,8 @@
           <div class="md:col-span-2">
             <label class="block text-sm font-medium mb-2"> Postal Code </label>
 
-            <input
-              type="text"
-              formControlName="postalCode"
-              class="w-full rounded-lg border border-gray-300 px-4 py-3"
-            />
+            <input type="text" formControlName="postalCode"
+              class="w-full rounded-lg border border-gray-300 px-4 py-3" />
           </div>
         </div>
       </div>
@@ -395,11 +325,8 @@
             <div>
               <label class="block text-sm font-medium mb-2"> Username </label>
 
-              <input
-                type="text"
-                formControlName="username"
-                class="w-full rounded-lg border border-gray-300 px-4 py-3"
-              />
+              <input type="text" formControlName="username"
+                class="w-full rounded-lg border border-gray-300 px-4 py-3" />
             </div>
           </div>
 
@@ -410,31 +337,19 @@
               <div class="flex justify-between items-center">
                 <span class="font-medium"> Allow System Login </span>
 
-                <input
-                  type="checkbox"
-                  formControlName="allowLogin"
-                  class="accent-secondary w-5 h-5"
-                />
+                <input type="checkbox" formControlName="allowLogin" class="accent-secondary w-5 h-5" />
               </div>
 
               <div class="flex justify-between items-center">
                 <span class="font-medium"> Receive Critical Notifications </span>
 
-                <input
-                  type="checkbox"
-                  formControlName="receiveNotifications"
-                  class="accent-secondary w-5 h-5"
-                />
+                <input type="checkbox" formControlName="receiveNotifications" class="accent-secondary w-5 h-5" />
               </div>
 
               <div class="flex justify-between items-center">
                 <span class="font-medium"> Account Active </span>
 
-                <input
-                  type="checkbox"
-                  formControlName="accountActive"
-                  class="accent-secondary w-5 h-5"
-                />
+                <input type="checkbox" formControlName="accountActive" class="accent-secondary w-5 h-5" />
               </div>
             </div>
           </div>
@@ -445,11 +360,8 @@
     <!-- Buttons -->
 
     <div class="mt-8 flex justify-end gap-4">
-      <button
-        type="button"
-        routerLink="./all-lab-technicians"
-        class="px-8 py-3 rounded-xl border border-gray-300 hover:bg-gray-100"
-      >
+      <button type="button" routerLink="../all-lab-technicians"
+        class="px-8 py-3 rounded-xl border border-gray-300 hover:bg-gray-100">
         Cancel
       </button>
 

@@ -1,144 +1,108 @@
 <div class="w-full rounded-xl bg-white p-4 shadow-sm">
-
   <div class="flex flex-col gap-4">
-
     <!-- Search -->
-
     <div class="relative w-full">
-
       <fa-icon
         [icon]="faMagnifyingGlass"
         class="absolute left-3 top-1/2
                -translate-y-1/2
                text-gray-400">
       </fa-icon>
-
       <input
         type="text"
-
         [(ngModel)]="searchText"
-
         (keyup.enter)="onSearchEnter()"
-
         placeholder="Search by name, email, phone or username..."
-
         class="w-full rounded-lg
                border border-gray-300
                py-3 pl-10 pr-4
                text-sm
                outline-none
                transition
-
                focus:border-primary
                focus:ring-2
                focus:ring-primary/20"
       />
-
     </div>
-
     <!-- Filters -->
-
     <div
       class="grid grid-cols-1
              gap-3
              md:grid-cols-2
              lg:grid-cols-4">
-
       <!-- Laboratory -->
-
       <select
         [(ngModel)]="selectedLaboratory"
-
         class="rounded-lg
                border border-gray-300
                px-3 py-3
                text-sm
                outline-none
                focus:border-primary">
-
         <option
           *ngFor="let lab of laboratories"
           [value]="lab.value">
-
           {{ lab.name }}
-
         </option>
-
       </select>
-
       <!-- Status -->
-
       <select
         [(ngModel)]="selectedStatus"
-
         class="rounded-lg
                border border-gray-300
                px-3 py-3
                text-sm
                outline-none
                focus:border-primary">
-
         <option
           *ngFor="let status of statuses"
-          [ngValue]="status.id">
-
+          [value]="status.id">
           {{ status.name }}
-
         </option>
-
       </select>
-
       <!-- Shift -->
-
       <select
         [(ngModel)]="selectedShift"
-
         class="rounded-lg
                border border-gray-300
                px-3 py-3
                text-sm
                outline-none
                focus:border-primary">
-
         <option
           *ngFor="let shift of shifts"
-          [ngValue]="shift.id">
-
+          [value]="shift.id">
           {{ shift.name }}
-
         </option>
-
       </select>
-
       <!-- Joining Date -->
-
-      <input
-        type="date"
-
-        [(ngModel)]="joiningDate"
-
-        class="rounded-lg
-               border border-gray-300
-               px-3 py-3
-               text-sm
-               outline-none
-               focus:border-primary"
-      />
-
+      <div class="relative">
+        <fa-icon
+          [icon]="faCalendarDays"
+          class="pointer-events-none absolute left-3 top-1/2
+                 -translate-y-1/2
+                 text-gray-400">
+        </fa-icon>
+        <input
+          type="date"
+          [(ngModel)]="joiningDate"
+          class="w-full rounded-lg
+                 border border-gray-300
+                 py-3 pl-10 pr-3
+                 text-sm
+                 outline-none
+                 focus:border-primary"
+        />
+      </div>
     </div>
-
     <!-- Actions -->
-
     <div
       class="flex flex-wrap
              items-center
              gap-3">
-
       <button
         type="button"
-
         (click)="applyFilters()"
-
         class="rounded-lg
                bg-primary
                px-5 py-3
@@ -147,21 +111,15 @@
                text-white
                transition
                hover:opacity-90">
-
         <fa-icon
           [icon]="faFilter"
           class="mr-2">
         </fa-icon>
-
         Apply Filters
-
       </button>
-
       <button
         type="button"
-
         (click)="clearFilters()"
-
         class="rounded-lg
                border border-gray-300
                px-5 py-3
@@ -169,18 +127,12 @@
                text-gray-600
                transition
                hover:bg-gray-100">
-
         <fa-icon
           [icon]="faRotateRight"
           class="mr-2">
         </fa-icon>
-
         Clear
-
       </button>
-
     </div>
-
   </div>
-
 </div>
