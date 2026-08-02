@@ -63,7 +63,7 @@ export const laboratoryRoutes: Routes = [
               },
 
               {
-                path: 'test-results',
+                path: 'test-results/:id',
                 loadComponent: () =>
                   import('./components/requests/test-results/test-results')
                     .then((m) => m.TestResults),
