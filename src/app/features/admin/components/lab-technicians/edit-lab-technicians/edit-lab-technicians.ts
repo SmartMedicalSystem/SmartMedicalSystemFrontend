@@ -149,7 +149,7 @@ export class EditLabTechnicians implements OnInit {
           // =========================
 
           this.form.patchValue({
-            
+
 
             // Personal
             firstName: res.firstName ?? '',
@@ -207,23 +207,23 @@ export class EditLabTechnicians implements OnInit {
   }
   private disableReadOnlyFields(): void {
 
-  this.form.get('firstName')?.disable();
+    this.form.get('firstName')?.disable();
 
-  this.form.get('lastName')?.disable();
+    this.form.get('lastName')?.disable();
 
-  this.form.get('gender')?.disable();
+    this.form.get('gender')?.disable();
 
-  this.form.get('dateOfBirth')?.disable();
+    this.form.get('dateOfBirth')?.disable();
 
-  this.form.get('nationality')?.disable();
+    this.form.get('nationality')?.disable();
 
-  this.form.get('nationalId')?.disable();
+    this.form.get('nationalId')?.disable();
 
-  this.form.get('username')?.disable();
+    this.form.get('username')?.disable();
 
-  this.form.get('joiningDate')?.disable();
+    this.form.get('joiningDate')?.disable();
 
-}
+  }
 
   // =========================
   // Format Date
