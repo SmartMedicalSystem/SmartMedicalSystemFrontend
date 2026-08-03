@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { TestResultService } from '../../../../core/services/test-result-service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-patient-full-report',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './patient-full-report.html',
   styleUrl: './patient-full-report.css',
 })
@@ -15,14 +16,16 @@ export class PatientFullReport {
     this.getUserFullReport(id);
   }
 
+  report: any;
+
   getUserFullReport(patientId: number) {
-    this.testResultService.getUserFullReport(patientId).subscribe(
-      (response) => {
-        console.log('Full report:', response);
+    this.testResultService.getUserFullReport(patientId).subscribe({
+      next: (response) => {
+        this.report = response;
       },
-      (error) => {
-        console.error('Error fetching full report:', error);
+      error: (err) => {
+        console.error(err);
       }
-    );
+    });
   }
 }
