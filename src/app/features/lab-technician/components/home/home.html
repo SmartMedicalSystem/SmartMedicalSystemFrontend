@@ -172,7 +172,7 @@
                 <div class="flex flex-col flex-wrap gap-2">
                   <span
                     *ngFor="let test of request.labTests; trackBy: request.labTests.id"
-                    class="rounded-lg border border-[var(--color-primary)]/10 bg-[var(--color-primary)]/10 px-2.5 py-1 text-xs font-medium text-[var(--color-primary)]"
+                    class="cursor-pointer rounded-lg border border-[var(--color-primary)]/10 bg-[var(--color-primary)]/10 px-2.5 py-1 text-xs font-medium text-[var(--color-primary)]"
                     (click)="goToRequestDetails(request.id, test.id)"
                   >
                     {{ test.testName }}

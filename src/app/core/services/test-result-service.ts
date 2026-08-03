@@ -10,61 +10,40 @@ import { PatientAIReport } from '../../shared/interfaces/LabTechnician/PatientAI
 })
 export class TestResultService {
 
-  // Local API
-  private api = 'https://localhost:7099/api';
+  private api = 'https://smartmedicalsystem.runasp.net/api';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getResult(id: number): Observable<PatientResult> {
-    return this.http.get<PatientResult>(
-      `${this.api}/PatientResults/${id}`
+
+  getRequestInfo(id: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.api}/requestLabs/${id}`
     );
   }
 
-  getElements(
-    patientResultId: number,
-    pageNumber: number = 1,
-    pageSize: number = 10
-  ): Observable<PaginatedResponse<PatientResultElement>> {
 
-    return this.http.get<PaginatedResponse<PatientResultElement>>(
-      `${this.api}/PatientResultElements/by-patient-result/${patientResultId}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+  getLabTestElements(labTestId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.api}/LabTestElements/by-lab-test/${labTestId}`
     );
   }
 
-  updateElement(id: number, body: any) {
-    return this.http.put(
-      `${this.api}/PatientResultElements/${id}`,
-      body
+  getTestElementById(testElementId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.api}/TestElements/${testElementId}`
     );
   }
 
-  createElement(body: any) {
-    return this.http.post(
-      `${this.api}/PatientResultElements`,
-      body
-    );
+  submitPatientResults(result: any): Observable<any> {
+    return this.http.post<any>(`${this.api}/PatientResults`, result);
   }
 
-  updateResult(id: number, body: any) {
-    return this.http.put(
-      `${this.api}/PatientResults/${id}`,
-      body
-    );
-  }
-
-  createPatientResult(body: any) {
-    return this.http.post(
-      `${this.api}/PatientResults`,
-      body
-    );
-  }
 
   generateAIReport(patientResultId: number): Observable<PatientAIReport> {
-  return this.http.post<PatientAIReport>(
-    `${this.api}/PatientAIReports/results/${patientResultId}/generate`,
-    {}
-  );
-}
+    return this.http.post<PatientAIReport>(
+      `${this.api}/PatientAIReports/results/${patientResultId}/generate`,
+      {}
+    );
+  }
 }
 

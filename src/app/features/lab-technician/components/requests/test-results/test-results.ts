@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-
+import { forkJoin, switchMap } from 'rxjs';
 import { TestResultService } from '../../../../../core/services/test-result-service';
-
 import { PatientResult } from '../../../../../shared/interfaces/LabTechnician/PatientResult';
 import { PatientResultElement } from '../../../../../shared/interfaces/LabTechnician/PatientResultElement';
 import { PatientAIReport } from '../../../../../shared/interfaces/LabTechnician/PatientAIReport';
+import { Router } from '@angular/router';
+
 
 @Component({
   selector: 'app-test-results',
@@ -27,46 +28,116 @@ export class TestResults {
   loadingAI = false;
 
   patientResultId = 1;
-
-  constructor(private testResultService: TestResultService) { }
+  labTestId = 0;
+  constructor(private testResultService: TestResultService, private router: Router) {
+    this.labTestId = Number(localStorage.getItem('labTestsId'));
+  }
 
   ngOnInit(): void {
-    this.loadPatientResult();
-    this.loadResultElements();
+
+    this.loadPatientInfo();
   }
 
-  loadPatientResult(): void {
-    this.testResultService.getResult(this.patientResultId).subscribe({
+  requestInfo = {
+    patientId: 0,
+    doctorId: 0,
+    patientName: '',
+    patientSSN: '',
+    patientAge: 0,
+    doctorName: '',
+    doctorDepartment: '',
+    labTestName: '',
+    labTestpriority: '',
+    status: '',
+    RequestDate: '',
+    sessionId: 0
+  };
+  testElements: any[] = [];
+
+  loadPatientInfo(): void {
+    const id = Number(this.router.url.split('/').pop());
+    this.testResultService.getRequestInfo(id).subscribe({
       next: (res) => {
-        this.patientResult = res;
+        this.requestInfo = {
+          patientId: res.patientId,
+          doctorId: res.doctorId,
+          patientName: res.patientName,
+          patientSSN: res.patientSSN,
+          patientAge: res.patientAge,
+          doctorName: res.doctorName,
+          doctorDepartment: res.doctorDepartment,
+          labTestName:
+            res.labTests?.find((test: any) => test.id === this.labTestId)?.testName ?? '',
+          labTestpriority: res.priority,
+          status: res.status,
+          RequestDate: res.requestedAt,
+          sessionId: res.sessionId
+        };
+        console.log(res);
+        console.log(this.requestInfo);
       },
       error: () => {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to load patient result.'
+          text: 'Failed to load patient info.'
+        });
+      }
+    });
+
+    this.testResultService.getLabTestElements(this.labTestId).pipe(
+      switchMap((relations: any[]) => {
+        const requests = relations.map(item =>
+          this.testResultService.getTestElementById(item.testElementId)
+        );
+        return forkJoin(requests);
+
+      })
+    ).subscribe({
+      next: (elements) => {
+        console.log(elements);
+        this.testElements = elements;
+      },
+      error: (err) => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to load test elements.'
         });
       }
     });
   }
 
-  loadResultElements(): void {
-    this.testResultService.getElements(this.patientResultId).subscribe({
-      next: (res) => {
-        this.analytes = res.items;
+  submitResults(): void {
+    const resultyObj = {
+      patientId: this.requestInfo.patientId,
+      sessionId: this.requestInfo.sessionId,
+      labTestId: this.labTestId,
+      summary: '',
+      aiClassifiedReport: '',
+      aiSuggestion: ''
+    }
+    this.testResultService.submitPatientResults(resultyObj).subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'Test Results Submitted',
+          text: 'The test results have been submitted successfully.'
+        });
       },
       error: () => {
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to load result elements.'
+          text: 'Failed to submit test results.'
         });
       }
     });
   }
+
+
 
   verifyWithAI(): void {
-
     this.loadingAI = true;
 
     this.testResultService.generateAIReport(this.patientResultId).subscribe({
@@ -141,24 +212,27 @@ export class TestResults {
 
   getElementStatusClasses(status: string): string {
 
-  switch(status){
+    switch (status) {
 
-    case 'Normal':
-      return 'bg-green-100 text-green-700';
-
-
-    case 'Abnormal':
-      return 'bg-red-100 text-red-700';
+      case 'Normal':
+        return 'bg-green-100 text-green-700';
 
 
-    case 'Critical':
-      return 'bg-red-200 text-red-900';
+      case 'Abnormal':
+        return 'bg-red-100 text-red-700';
 
 
-    default:
-      return 'bg-gray-100 text-gray-600';
+      case 'Critical':
+        return 'bg-red-200 text-red-900';
+
+
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+
   }
 
 }
 
-}
+
+
