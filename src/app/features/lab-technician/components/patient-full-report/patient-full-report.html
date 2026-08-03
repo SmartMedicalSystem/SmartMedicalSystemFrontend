@@ -1,0 +1,189 @@
+<div *ngIf="report" class="min-h-screen bg-slate-100">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-blue-700 to-cyan-600 text-white rounded-3xl p-8 shadow-xl">
+      <h1 class="text-4xl font-bold">Patient Laboratory Report</h1>
+
+      <p class="mt-2 text-blue-100">Complete AI Generated Medical Report</p>
+    </div>
+
+    <!-- Patient Info -->
+    <div class="bg-white rounded-3xl shadow-lg p-8 mt-8">
+      <h2 class="text-2xl font-bold mb-6">Patient Information</h2>
+
+      <div class="grid lg:grid-cols-5 md:grid-cols-2 gap-6">
+        <div>
+          <p class="text-gray-500 text-sm">Patient Name</p>
+          <p class="font-bold text-lg">
+            {{ report.patientFullName }}
+          </p>
+        </div>
+
+        <div>
+          <p class="text-gray-500 text-sm">Age</p>
+          <p class="font-semibold">
+            {{ report.age }}
+          </p>
+        </div>
+
+        <div>
+          <p class="text-gray-500 text-sm">Gender</p>
+          <p class="font-semibold">
+            {{ report.gender }}
+          </p>
+        </div>
+
+        <div>
+          <p class="text-gray-500 text-sm">Blood Type</p>
+          <span class="px-4 py-1 rounded-full bg-red-100 text-red-600 font-semibold">
+            {{ report.bloodType }}
+          </span>
+        </div>
+
+        <div>
+          <p class="text-gray-500 text-sm">Generated</p>
+          <p>
+            {{ report.generatedAtUtc | date: 'medium' }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Overall AI -->
+    <div class="bg-white rounded-3xl shadow-lg mt-8 p-8">
+      <h2 class="text-3xl font-bold mb-8 text-blue-700">Overall AI Analysis</h2>
+
+      <div class="space-y-6">
+        <div class="bg-blue-50 rounded-xl p-5 border-l-4 border-blue-600">
+          <h3 class="font-bold text-blue-700 mb-2">Overall Summary</h3>
+
+          <p>
+            {{ report.overallAISummary }}
+          </p>
+        </div>
+
+        <div class="bg-green-50 rounded-xl p-5 border-l-4 border-green-600">
+          <h3 class="font-bold text-green-700 mb-2">AI Suggestion</h3>
+
+          <p>
+            {{ report.overallAISuggestion }}
+          </p>
+        </div>
+
+        <div class="bg-yellow-50 rounded-xl p-5 border-l-4 border-yellow-500">
+          <h3 class="font-bold text-yellow-700 mb-2">Disclaimer</h3>
+
+          <p>
+            {{ report.disclaimer }}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tests -->
+
+    <div
+      *ngFor="let test of report.results"
+      class="bg-white rounded-3xl shadow-lg mt-8 overflow-hidden"
+    >
+      <div class="bg-gradient-to-r from-indigo-700 to-blue-600 text-white px-8 py-6">
+        <h2 class="text-2xl font-bold">
+          {{ test.labTestName }}
+        </h2>
+
+        <p class="text-blue-100">
+          {{ test.generatedAtUtc | date: 'medium' }}
+        </p>
+      </div>
+
+      <!-- Elements -->
+
+      <div class="overflow-x-auto">
+        <table class="w-full">
+          <thead class="bg-slate-100">
+            <tr>
+              <th class="px-6 py-4 text-left">Element</th>
+
+              <th class="px-6 py-4 text-center">Value</th>
+
+              <th class="px-6 py-4 text-center">Unit</th>
+
+              <th class="px-6 py-4 text-center">Normal Range</th>
+
+              <th class="px-6 py-4 text-center">Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let element of test.elements" class="border-b hover:bg-slate-50">
+              <td class="px-6 py-4 font-medium">
+                {{ element.elementName }}
+              </td>
+
+              <td class="text-center">
+                {{ element.value }}
+              </td>
+
+              <td class="text-center">
+                {{ element.unit }}
+              </td>
+
+              <td class="text-center">{{ element.normalMin }} - {{ element.normalMax }}</td>
+
+              <td class="text-center">
+                <span
+                  class="px-4 py-1 rounded-full font-semibold"
+                  [ngClass]="{
+                    'bg-green-100 text-green-700': element.flag == 'Normal',
+
+                    'bg-red-100 text-red-700': element.flag == 'High',
+
+                    'bg-yellow-100 text-yellow-700': element.flag == 'Low',
+                  }"
+                >
+                  {{ element.flag }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- AI -->
+
+      <div class="grid lg:grid-cols-3 gap-6 p-8">
+        <div class="bg-slate-50 rounded-xl p-5">
+          <h3 class="font-bold text-lg mb-2">Summary</h3>
+
+          <p>
+            {{ test.summary }}
+          </p>
+        </div>
+
+        <div class="bg-blue-50 rounded-xl p-5">
+          <h3 class="font-bold text-lg mb-2 text-blue-700">AI Classification</h3>
+
+          <p>
+            {{ test.aiClassifiedReport }}
+          </p>
+        </div>
+
+        <div class="bg-green-50 rounded-xl p-5">
+          <h3 class="font-bold text-lg mb-2 text-green-700">AI Suggestion</h3>
+
+          <p>
+            {{ test.aiSuggestion }}
+          </p>
+        </div>
+      </div>
+
+      <div class="bg-yellow-50 border-t px-8 py-5">
+        <h3 class="font-bold text-yellow-700">Disclaimer</h3>
+
+        <p>
+          {{ test.disclaimer }}
+        </p>
+      </div>
+    </div>
+  </div>
+</div>

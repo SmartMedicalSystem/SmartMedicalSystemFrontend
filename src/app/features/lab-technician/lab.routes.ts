@@ -68,9 +68,15 @@ export const laboratoryRoutes: Routes = [
                   import('./components/requests/test-results/test-results')
                     .then((m) => m.TestResults),
               },
-
             ],
-          }
+          },
+          {
+            path: 'PatientFullReport/:id',
+            loadComponent: () =>
+              import('./components/patient-full-report/patient-full-report')
+                .then((m) => m.PatientFullReport),
+          },
+
         ],
       },
     ],

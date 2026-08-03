@@ -1,5 +1,4 @@
 <div class="min-h-screen bg-neutral">
-
   <!-- Header -->
 
   <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
@@ -11,201 +10,324 @@
       </p>
     </div>
 
-    <div class="flex items-center gap-3 border border-red-200 bg-red-50 rounded-lg px-5 py-3">
-      <i class="fa-solid fa-triangle-exclamation text-red-600 text-xl"></i>
+    <div
+      class="flex items-center gap-3 rounded-lg px-5 py-3 border"
+      [ngClass]="getPriorityClasses(requestInfo.labTestpriority)"
+    >
+      <i class="fa-solid fa-triangle-exclamation text-xl"></i>
 
-      <span class="font-bold text-red-700"> EMERGENCY PRIORITY </span>
+      <span class="font-bold"> {{ requestInfo.labTestpriority | uppercase }} PRIORITY </span>
     </div>
   </div>
 
   <!-- Patient Card -->
 
-  <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5 mb-6">
-    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-      <!-- Patient -->
+  <!-- ================= Patient Information ================= -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 mb-6">
+    <div class="flex items-center gap-3 mb-6">
+      <div
+        class="w-12 h-12 rounded-xl bg-[var(--color-primary)]/10 flex items-center justify-center"
+      >
+        <i class="fa-solid fa-user text-[var(--color-primary)] text-xl"></i>
+      </div>
 
-      <div class="flex items-center gap-4">
-        <img src="https://i.pravatar.cc/120?img=12" class="w-24 h-24 rounded-lg object-cover" />
-
+      <div class="flex flex-col md:flex-row md:justify-between md:items-center w-full gap-3">
         <div>
-          <h2 class="text-2xl font-bold text-slate-800">Robert Chen</h2>
+          <h2 class="text-xl font-bold text-slate-800">Patient Information</h2>
 
-          <p class="text-gray-600 mt-2">
-            Age:
-            <span class="font-semibold">68</span>
-          </p>
-
-          <p class="text-gray-600">
-            Gender:
-            <span class="font-semibold">Male</span>
-          </p>
-
-          <p class="mt-2">
-            Status
-
-            <span
-              class="ml-2 bg-blue-100 text-primary px-3 py-1 rounded-full text-xs font-semibold"
-            >
-              In Progress
-            </span>
-          </p>
+          <p class="text-sm text-gray-500">General information about this laboratory request</p>
+        </div>
+        <div>
+          <button
+            *ngIf="this.requestInfo.status === 'Completed'"
+            class="w-full bg-primary hover:bg-primary-700 text-white font-semibold px-6 py-2 rounded-xl transition"
+            routerLink="/labtechnician/dashboard/PatientFullReport/{{ requestInfo.patientId }}"
+          >
+            View Full Report
+          </button>
         </div>
       </div>
+    </div>
 
-      <!-- Requested By -->
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div>
+        <p class="text-sm text-gray-500">Patient Name</p>
+        <h3 class="font-semibold text-lg">{{ requestInfo.patientName }}</h3>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Patient SSN</p>
+        <h3 class="font-semibold text-lg">{{ requestInfo.patientSSN }}</h3>
+      </div>
 
       <div>
-        <p class="text-gray-400 text-xs uppercase">Requested By</p>
-
-        <h3 class="font-bold mt-2">Dr. Sarah Miller</h3>
-
-        <p class="text-gray-500">Oncology Department</p>
+        <p class="text-sm text-gray-500">Age</p>
+        <h3 class="font-semibold">{{ requestInfo.patientAge }} Years</h3>
       </div>
-
-      <!-- Lab -->
 
       <div>
-        <p class="text-gray-400 text-xs uppercase">Laboratory & Test</p>
-
-        <h3 class="font-bold mt-2">Central Hematology Lab</h3>
-
-        <p class="text-primary">Complete Blood Count (CBC)</p>
+        <p class="text-sm text-gray-500">Doctor</p>
+        <h3 class="font-semibold">{{ requestInfo.doctorName }}</h3>
       </div>
-
-      <!-- Request -->
 
       <div>
-        <p class="text-gray-400 text-xs uppercase">Request Details</p>
-
-        <h3 class="font-bold mt-2">Oct 24, 2023</h3>
-
-        <p class="text-gray-500">Ref No: #REQ-9921-X</p>
+        <p class="text-sm text-gray-500">Department</p>
+        <h3 class="font-semibold">{{ requestInfo.doctorDepartment }}</h3>
       </div>
 
-      <!-- Empty -->
-
-      <div class="hidden lg:block"></div>
-    </div>
-  </div>
-
-  <!-- Measurements Card -->
-
-  <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-    <!-- Header -->
-
-    <div
-      class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-6 py-5 border-b"
-    >
-      <h2 class="text-2xl font-bold">Analyte Measurements</h2>
-
-      <div class="flex gap-3">
-        <button class="border rounded-lg px-4 py-2 hover:bg-gray-50">
-          <i class="fa-solid fa-chart-line mr-2"></i>
-
-          View Trends
-        </button>
-
-        <button class="bg-[var(--color-tertiary)] text-white rounded-lg px-4 py-2">
-          <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>
-
-          AI Verify
-        </button>
+      <div>
+        <p class="text-sm text-gray-500">Lab Test</p>
+        <h3 class="font-semibold">{{ requestInfo.labTestName }}</h3>
       </div>
-    </div>
 
-    <!-- Table -->
+      <div>
+        <p class="text-sm text-gray-500">Request Date</p>
+        <h3 class="font-semibold">
+          {{ requestInfo.RequestDate | date: 'dd MMM yyyy - hh:mm a' }}
+        </h3>
+      </div>
 
-    <div class="overflow-x-auto">
-      <table class="min-w-full">
-        <thead class="bg-gray-50 text-xs uppercase text-gray-500">
-          <tr>
-            <th class="text-left px-5 py-4">Element Name</th>
+      <div>
+        <p class="text-sm text-gray-500 mb-2">Status</p>
 
-            <th class="text-left px-5 py-4">Result Value</th>
+        <span
+          class="px-3 py-1 rounded-full text-sm font-semibold"
+          [ngClass]="getStatusClasses(requestInfo.status)"
+        >
+          {{ requestInfo.status }}
+        </span>
+      </div>
 
-            <th class="text-left px-5 py-4">Unit</th>
+      <div>
+        <p class="text-sm text-gray-500 mb-2">Priority</p>
 
-            <th class="text-left px-5 py-4">Reference Range</th>
-
-            <th class="text-left px-5 py-4">Status</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          <tr *ngFor="let item of analytes" class="border-b hover:bg-gray-50 transition">
-            <!-- Element -->
-            <td class="px-5 py-4 font-semibold text-slate-800">
-              {{ item.testElementName }}
-            </td>
-
-            <!-- Result -->
-            <td class="px-5 py-4">
-              <input
-                [(ngModel)]="item.value"
-                class="w-28 border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-primary"
-              />
-            </td>
-
-            <!-- Unit -->
-            <td class="px-5 py-4">--</td>
-
-            <!-- Reference -->
-            <td class="px-5 py-4 text-gray-500">--</td>
-
-            <!-- Status -->
-            <td class="px-5 py-4">
-              <span class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-                N/A
-              </span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
-  <!-- Bottom Section -->
-
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-    <!-- Notes -->
-
-    <div class="lg:col-span-2">
-      <label class="block text-sm font-semibold uppercase text-gray-500 mb-2">
-        Laboratory Notes
-      </label>
-
-      <textarea
-        rows="5"
-        placeholder="Enter clinical observations or anomalies noticed during analysis..."
-        class="w-full border rounded-xl p-4 resize-none outline-none focus:ring-2 focus:ring-primary"
-      ></textarea>
-    </div>
-
-    <!-- Alert -->
-
-    <div class="bg-blue-50 rounded-xl p-5 border border-blue-100">
-      <div class="flex gap-3">
-        <i class="fa-solid fa-circle-info text-primary text-xl mt-1"></i>
-
-        <p class="text-sm text-gray-600 leading-6">
-          Ensure all critical values are flagged. High-risk results will trigger an automatic
-          notification to the attending physician after submission.
-        </p>
+        <span
+          class="px-3 py-1 rounded-full border text-sm font-semibold"
+          [ngClass]="getPriorityClasses(requestInfo.labTestpriority)"
+        >
+          {{ requestInfo.labTestpriority }}
+        </span>
       </div>
     </div>
   </div>
 
-  <!-- Buttons -->
+  @if (this.requestInfo.status !== 'Completed') {
+    <!-- Measurements Card -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <!-- Header -->
+      <div
+        class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 px-6 py-5 border-b"
+      >
+        <h2 class="text-2xl font-bold">Analyte Measurements</h2>
+      </div>
 
-  <div class="flex flex-col sm:flex-row justify-end gap-3 mt-8">
-    <button class="border rounded-lg px-6 py-3 hover:bg-gray-100">Cancel</button>
+      <!-- Table -->
 
-    <button class="border rounded-lg px-6 py-3 bg-white hover:bg-gray-100">Save Draft</button>
+      <div class="overflow-x-auto">
+        <table class="min-w-full">
+          <thead class="bg-gray-50 text-xs uppercase text-gray-500">
+            <tr>
+              <th class="text-left px-5 py-4">Element Name</th>
 
-    <button class="bg-primary text-white rounded-full px-8 py-3 hover:opacity-90">
-      <i class="fa-solid fa-paper-plane mr-2"></i>
+              <th class="text-left px-5 py-4">Result Value</th>
 
-      Submit Results
-    </button>
-  </div>
+              <th class="text-left px-5 py-4">Unit</th>
+
+              <th class="text-left px-5 py-4">Reference Range</th>
+
+              <th class="text-left px-5 py-4">Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let item of testElements" class="border-b hover:bg-gray-50 transition">
+              <!-- Element Name -->
+              <td class="px-5 py-4 font-semibold text-slate-800">
+                {{ item.elementName }}
+              </td>
+
+              <!-- Result Value -->
+              <td class="px-5 py-4">
+                <input
+                  type="number"
+                  [(ngModel)]="item.resultValue"
+                  placeholder="Enter value"
+                  class="w-32 border rounded-md px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--color-primary)]"
+                />
+              </td>
+
+              <!-- Unit -->
+              <td class="px-5 py-4">
+                {{ item.unit }}
+              </td>
+
+              <!-- Reference Range -->
+              <td class="px-5 py-4 text-gray-500">{{ item.normalMin }} - {{ item.normalMax }}</td>
+
+              <!-- Status -->
+              <td class="px-5 py-4">
+                <span
+                  *ngIf="item.resultValue != null && item.resultValue !== ''"
+                  class="px-3 py-1 rounded-full text-xs font-semibold"
+                  [ngClass]="
+                    item.resultValue < item.normalMin
+                      ? 'bg-blue-100 text-blue-700'
+                      : item.resultValue > item.normalMax
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-green-100 text-green-700'
+                  "
+                >
+                  {{
+                    item.resultValue < item.normalMin
+                      ? 'Low'
+                      : item.resultValue > item.normalMax
+                        ? 'High'
+                        : 'Normal'
+                  }}
+                </span>
+
+                <span
+                  *ngIf="item.resultValue == null || item.resultValue === ''"
+                  class="px-3 py-1 rounded-full text-xs font-semibold bg-gray-100 text-gray-600"
+                >
+                  Pending
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Buttons -->
+
+    <div class="flex flex-wrap justify-end gap-3 mt-8">
+      <button class="px-6 py-3 rounded-xl border border-gray-300 hover:bg-gray-100 transition">
+        Cancel
+      </button>
+
+      <button
+        class="px-8 py-3 rounded-xl bg-[var(--color-primary)] text-white hover:opacity-90 transition"
+        (click)="submitResults()"
+      >
+        <i class="fa-solid fa-paper-plane mr-2"></i>
+
+        Submit Results
+      </button>
+    </div>
+
+    <!-- ================= AI Verification ================= -->
+    <div *ngIf="showAISection" class="mt-8">
+      <!-- Header -->
+      <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div
+          class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 px-6 py-5 border-b"
+        >
+          <div>
+            <h2 class="text-2xl font-bold text-slate-800">AI Laboratory Analysis</h2>
+
+            <p class="text-gray-500 mt-1">
+              Generate and review the AI interpretation before approving the final report.
+            </p>
+          </div>
+
+          <button
+            *ngIf="!aiGenerated"
+            (click)="verifyWithAI()"
+            [disabled]="loadingAI"
+            class="bg-[var(--color-tertiary)] text-white rounded-xl px-6 py-3 hover:opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <i
+              class="fa-solid mr-2"
+              [ngClass]="loadingAI ? 'fa-spinner fa-spin' : 'fa-wand-magic-sparkles'"
+            >
+            </i>
+
+            {{ loadingAI ? 'Generating AI Report...' : 'Verify with AI' }}
+          </button>
+        </div>
+        <!-- Loading -->
+        <div *ngIf="loadingAI" class="p-12 text-center">
+          <i class="fa-solid fa-spinner fa-spin text-5xl text-[var(--color-primary)]"></i>
+
+          <h3 class="text-xl font-semibold mt-5">AI Analysis in Progress...</h3>
+
+          <p class="text-gray-500 mt-2">
+            Please wait while the laboratory report is being analyzed.
+          </p>
+        </div>
+        <!-- Result -->
+        <div *ngIf="aiGenerated && aiReport" class="p-6">
+          <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+            <!-- Summary -->
+
+            <div class="xl:col-span-2">
+              <div class="bg-gray-50 border rounded-xl p-5">
+                <h3 class="font-bold text-lg mb-3">AI Summary</h3>
+
+                <p class="text-gray-700 leading-7 whitespace-pre-line">
+                  {{ aiReport.summary }}
+                </p>
+              </div>
+
+              <div class="bg-white border rounded-xl p-5 mt-5">
+                <h3 class="font-bold text-lg mb-3">AI Classification</h3>
+
+                <p class="leading-7 text-gray-700 whitespace-pre-line">
+                  {{ aiReport.aiClassifiedReport }}
+                </p>
+              </div>
+
+              <div class="bg-green-50 border border-green-200 rounded-xl p-5 mt-5">
+                <h3 class="font-bold text-lg mb-3 text-green-700">AI Recommendation</h3>
+
+                <p class="leading-7 text-gray-700 whitespace-pre-line">
+                  {{ aiReport.aiSuggestion }}
+                </p>
+              </div>
+            </div>
+
+            <!-- Side Card -->
+
+            <div>
+              <div
+                *ngIf="!aiReportAccepted"
+                class="bg-blue-50 border border-blue-100 rounded-xl p-5"
+              >
+                <div class="flex items-start gap-3">
+                  <i class="fa-solid fa-circle-info text-blue-600 text-xl mt-1"></i>
+
+                  <div>
+                    <h4 class="font-semibold mb-2">Review Before Approval</h4>
+
+                    <p class="text-sm text-gray-600 leading-6">
+                      Review the AI-generated interpretation carefully. The final responsibility for
+                      approving laboratory results remains with the laboratory technician.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                *ngIf="!aiReportAccepted"
+                class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition"
+                (click)="acceptAIReport()"
+              >
+                <i class="fa-solid fa-check mr-2"></i>
+
+                Accept AI Report
+              </button>
+
+              <button
+                *ngIf="aiReportAccepted"
+                class="w-full mt-6 bg-primary hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition"
+                routerLink="/labtechnician/dashboard/PatientFullReport/{{ requestInfo.patientId }}"
+              >
+                View Full Report
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
 </div>

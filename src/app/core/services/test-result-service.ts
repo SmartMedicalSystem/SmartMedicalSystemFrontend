@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
+import { PatientResult } from '../../shared/interfaces/LabTechnician/PatientResult';
+import { PatientResultElement } from '../../shared/interfaces/LabTechnician/PatientResultElement';
+import { PaginatedResponse } from '../../shared/interfaces/LabTechnician/PaginatedResponse';
+import { PatientAIReport } from '../../shared/interfaces/LabTechnician/PatientAIReport';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,45 +14,53 @@ export class TestResultService {
 
   constructor(private http: HttpClient) { }
 
-  getResult(id: number) {
-    return this.http.get(`${this.api}/PatientResults/${id}`);
-  }
 
-  getElements(
-    patientResultId: number,
-    pageNumber: number = 1,
-    pageSize: number = 10
-  ) {
-    return this.http.get(
-      `${this.api}/PatientResultElements/by-patient-result/${patientResultId}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+  getRequestInfo(id: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.api}/requestLabs/${id}`
     );
   }
 
-  updateElement(id: number, body: any) {
-    return this.http.put(
-      `${this.api}/PatientResultElements/${id}`,
-      body
+
+  getLabTestElements(labTestId: number): Observable<any[]> {
+    return this.http.get<any[]>(
+      `${this.api}/LabTestElements/by-lab-test/${labTestId}`
     );
   }
 
-  createElement(body: any) {
-    return this.http.post(
-      `${this.api}/PatientResultElements`,
-      body
+  getTestElementById(testElementId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.api}/TestElements/${testElementId}`
     );
   }
 
-  updateResult(id: number, body: any) {
-    return this.http.put(
-      `${this.api}/PatientResults/${id}`,
-      body
+  submitPatientResults(result: any): Observable<any> {
+    return this.http.post<any>(`${this.api}/PatientResults`, result);
+  }
+
+  submitPatientResultElements(resultElements: any): Observable<any> {
+    return this.http.post<any>(`${this.api}/PatientResultElements`, resultElements);
+  }
+
+
+  generateAIReport(patientResultId: number): Observable<PatientAIReport> {
+    return this.http.post<PatientAIReport>(
+      `${this.api}/PatientAIReports/results/${patientResultId}/generate`,
+      {}
     );
   }
 
-  createPatientResult(body: any) {
-    return this.http.post(
-      `${this.api}/PatientResults`,
-      body
+  updatePatientResult(patientId: number, updatedData: any): Observable<any> {
+    return this.http.put<any>(
+      `${this.api}/PatientResults/${patientId}`,
+      updatedData
+    );
+  }
+
+  getUserFullReport(patientId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.api}/PatientAIReports/patients/${patientId}/full-report`
     );
   }
 }
+
