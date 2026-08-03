@@ -275,7 +275,7 @@
           <!-- Side Card -->
 
           <div>
-            <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
+            <div *ngIf="!aiReportAccepted" class="bg-blue-50 border border-blue-100 rounded-xl p-5">
               <div class="flex items-start gap-3">
                 <i class="fa-solid fa-circle-info text-blue-600 text-xl mt-1"></i>
 
@@ -291,12 +291,21 @@
             </div>
 
             <button
+              *ngIf="!aiReportAccepted"
               class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl transition"
               (click)="acceptAIReport()"
             >
               <i class="fa-solid fa-check mr-2"></i>
 
               Accept AI Report
+            </button>
+
+            <button
+              *ngIf="aiReportAccepted"
+              class="w-full mt-6 bg-primary hover:bg-primary-700 text-white font-semibold py-3 rounded-xl transition"
+              routerLink="/labtechnician/dashboard/PatientFullReport/{{ requestInfo.patientId }}"
+            >
+              View Full Report
             </button>
           </div>
         </div>

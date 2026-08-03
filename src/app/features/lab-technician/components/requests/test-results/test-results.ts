@@ -7,14 +7,14 @@ import { TestResultService } from '../../../../../core/services/test-result-serv
 import { PatientResult } from '../../../../../shared/interfaces/LabTechnician/PatientResult';
 import { PatientResultElement } from '../../../../../shared/interfaces/LabTechnician/PatientResultElement';
 import { PatientAIReport } from '../../../../../shared/interfaces/LabTechnician/PatientAIReport';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { AuthenticationService } from '../../../../../core/services/authenticationService';
 
 
 @Component({
   selector: 'app-test-results',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './test-results.html',
   styleUrls: ['./test-results.css']
 })
@@ -26,7 +26,7 @@ export class TestResults {
   showAISection = false;
   aiGenerated = false;
   aiReport?: PatientAIReport;
-
+  aiReportAccepted = false;
   loadingAI = false;
 
   patientResultId = 0;
@@ -239,12 +239,11 @@ export class TestResults {
     }
     this.testResultService.updatePatientResult(this.requestInfo.patientId, updateObj).subscribe({
       next: () => {
+        this.aiReportAccepted = true;
         Swal.fire({
           icon: 'success',
           title: 'AI Report Accepted',
           text: 'The AI report has been accepted and saved successfully.'
-        }).then(() => {
-          this.router.navigate(['/labtechnician/dashboard/requests/all-requests']);
         });
       },
       error: () => {
