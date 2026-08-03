@@ -56,5 +56,11 @@ export class TestResultService {
       updatedData
     );
   }
+
+  getUserFullReport(patientId: number): Observable<any> {
+    return this.http.get<any>(
+      `${this.api}/PatientAIReports/patients/${patientId}/full-report`
+    );
+  }
 }
 
