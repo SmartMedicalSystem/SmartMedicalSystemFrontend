@@ -53,12 +53,8 @@ export class TestResults {
     RequestDate: '',
     sessionId: 0
   };
-  testElements: any[] = [{
-    elementName: "Fasting Blood Glucose",
-    id: 21,
-    normalMax: 99,
-    normalMin: 70, unit: "mg/dL",
-  }];
+  testElements: any[] = [
+  ];
 
   loadPatientInfo(): void {
     const id = Number(this.router.url.split('/').pop());
@@ -167,6 +163,7 @@ export class TestResults {
     };
     this.testResultService.submitPatientResults(resultObj).pipe(
       switchMap((patientResult) => {
+        console.log(patientResult);
         const patientResultId = patientResult.id;
         if (!patientResultId) {
           return throwError(() => new Error('Invalid Patient Result Id'));
@@ -183,7 +180,8 @@ export class TestResults {
         return forkJoin(requests);
       })
     ).subscribe({
-      next: () => {
+      next: (res) => {
+        console.log(res);
         Swal.fire({
           icon: 'success',
           title: 'Success',
@@ -205,7 +203,6 @@ export class TestResults {
 
   verifyWithAI(): void {
     this.loadingAI = true;
-
     this.testResultService.generateAIReport(this.patientResultId).subscribe({
 
       next: (res) => {
