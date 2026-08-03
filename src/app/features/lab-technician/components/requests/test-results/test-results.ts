@@ -2,12 +2,13 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { forkJoin, switchMap } from 'rxjs';
+import { forkJoin, switchMap, throwError } from 'rxjs';
 import { TestResultService } from '../../../../../core/services/test-result-service';
 import { PatientResult } from '../../../../../shared/interfaces/LabTechnician/PatientResult';
 import { PatientResultElement } from '../../../../../shared/interfaces/LabTechnician/PatientResultElement';
 import { PatientAIReport } from '../../../../../shared/interfaces/LabTechnician/PatientAIReport';
 import { Router } from '@angular/router';
+import { AuthenticationService } from '../../../../../core/services/authenticationService';
 
 
 @Component({
@@ -29,7 +30,7 @@ export class TestResults {
 
   patientResultId = 1;
   labTestId = 0;
-  constructor(private testResultService: TestResultService, private router: Router) {
+  constructor(private testResultService: TestResultService, private router: Router, private authService: AuthenticationService) {
     this.labTestId = Number(localStorage.getItem('labTestsId'));
   }
 
@@ -52,7 +53,12 @@ export class TestResults {
     RequestDate: '',
     sessionId: 0
   };
-  testElements: any[] = [];
+  testElements: any[] = [{
+    elementName: "Fasting Blood Glucose",
+    id: 21,
+    normalMax: 99,
+    normalMin: 70, unit: "mg/dL",
+  }];
 
   loadPatientInfo(): void {
     const id = Number(this.router.url.split('/').pop());
@@ -109,33 +115,93 @@ export class TestResults {
   }
 
   submitResults(): void {
-    const resultyObj = {
+    if (this.testElements.length === 0) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'No Test Elements',
+        text: 'There are no test elements to submit.'
+      });
+      return;
+    }
+    const hasEmptyValues = this.testElements.some(
+      (item: any) =>
+        item.resultValue === null ||
+        item.resultValue === undefined ||
+        item.resultValue === ''
+    );
+    if (hasEmptyValues) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Missing Values',
+        text: 'Please enter all test result values.'
+      });
+      return;
+    }
+    const hasInvalidValues = this.testElements.some(
+      (item: any) => Number.isNaN(Number(item.resultValue))
+    );
+    if (hasInvalidValues) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Values',
+        text: 'Please enter valid numeric values.'
+      });
+      return;
+    }
+    const techId = this.authService.getUserId();
+    if (!techId) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Authentication Error',
+        text: 'Invalid technician account.'
+      });
+      return;
+    }
+    const resultObj = {
       patientId: this.requestInfo.patientId,
       sessionId: this.requestInfo.sessionId,
       labTestId: this.labTestId,
       summary: '',
       aiClassifiedReport: '',
       aiSuggestion: ''
-    }
-    this.testResultService.submitPatientResults(resultyObj).subscribe({
+    };
+    this.testResultService.submitPatientResults(resultObj).pipe(
+      switchMap((patientResult) => {
+        const patientResultId = patientResult.id;
+        if (!patientResultId) {
+          return throwError(() => new Error('Invalid Patient Result Id'));
+        }
+        const requests = this.testElements.map((item: any) => {
+          const body = {
+            patientResultId,
+            testElementId: item.id,
+            value: Number(item.resultValue),
+            techId
+          };
+          return this.testResultService.submitPatientResultElements(body);
+        });
+        return forkJoin(requests);
+      })
+    ).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',
-          title: 'Test Results Submitted',
-          text: 'The test results have been submitted successfully.'
+          title: 'Success',
+          text: 'Test results submitted successfully.'
+        }).then(() => {
+          this.router.navigate(['/labtechnician/dashboard/requests/all-requests']);
         });
       },
-      error: () => {
+      error: (err) => {
+        console.error(err);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'Failed to submit test results.'
+          text: err?.message || 'Failed to submit test results.'
         });
       }
     });
   }
-
-
 
   verifyWithAI(): void {
     this.loadingAI = true;

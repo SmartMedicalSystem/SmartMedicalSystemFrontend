@@ -38,6 +38,10 @@ export class TestResultService {
     return this.http.post<any>(`${this.api}/PatientResults`, result);
   }
 
+  submitPatientResultElements(resultElements: any): Observable<any> {
+    return this.http.post<any>(`${this.api}/PatientResultElements`, resultElements);
+  }
+
 
   generateAIReport(patientResultId: number): Observable<PatientAIReport> {
     return this.http.post<PatientAIReport>(
