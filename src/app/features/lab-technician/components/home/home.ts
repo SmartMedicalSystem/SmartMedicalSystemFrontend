@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { faArrowRight, faBuilding, faFileCircleExclamation, faFlask, faFolderOpen, faHouse, faPlus, faUserDoctor, faUsersGear } from '@fortawesome/free-solid-svg-icons';
-import { RouterLink } from "@angular/router";
+import { Router, RouterLink } from "@angular/router";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import Swal from 'sweetalert2';
 import { LabTechService } from '../../../../core/services/lab-tech-service';
@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './home.css',
 })
 export class Home {
-  constructor(private labTechService: LabTechService) { }
+  constructor(private labTechService: LabTechService, private router: Router) { }
   patients = faFolderOpen;
   doctors = faUserDoctor;
   departments = faBuilding;
@@ -134,5 +134,10 @@ export class Home {
         });
       }
     });
+  }
+
+  goToRequestDetails(requestId: number, labTestsId: number): void {
+    localStorage.setItem('labTestsId', labTestsId.toString());
+    this.router.navigate(['labtechnician/dashboard/requests/test-results/', requestId]);
   }
 }
