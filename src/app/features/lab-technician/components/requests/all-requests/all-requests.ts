@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { RequestLabsService } from '../../../../../core/services/request-labs-service';
@@ -31,7 +31,9 @@ export class AllRequests {
 
   // ================================================
 
-  constructor(private requestLabsService: RequestLabsService) {
+  constructor(private requestLabsService: RequestLabsService , 
+    private router: Router
+  ) {
     this.LoadRequestLabs();
   }
 
@@ -102,6 +104,11 @@ export class AllRequests {
     return item.labTests
       .map((test: any) => test.testName)
       .join(', ');
+  }
+
+  goToRequestDetails(requestId: number, labTestsId: number): void {
+    localStorage.setItem('labTestsId', labTestsId.toString());
+    this.router.navigate(['labtechnician/dashboard/requests/test-results/', requestId]);
   }
 
 }
