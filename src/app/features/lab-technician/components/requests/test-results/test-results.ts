@@ -23,12 +23,13 @@ export class TestResults {
   patientResult!: PatientResult;
 
   analytes: PatientResultElement[] = [];
-
+  showAISection = false;
+  aiGenerated = false;
   aiReport?: PatientAIReport;
 
   loadingAI = false;
 
-  patientResultId = 1;
+  patientResultId = 0;
   labTestId = 0;
   constructor(private testResultService: TestResultService, private router: Router, private authService: AuthenticationService) {
     this.labTestId = Number(localStorage.getItem('labTestsId'));
@@ -56,6 +57,15 @@ export class TestResults {
   testElements: any[] = [
   ];
 
+  resultObj = {
+    patientId: 0,
+    sessionId: 0,
+    labTestId: 0,
+    summary: 'TestAI',
+    aiClassifiedReport: 'TestAI',
+    aiSuggestion: 'TestAI'
+  };
+
   loadPatientInfo(): void {
     const id = Number(this.router.url.split('/').pop());
     this.testResultService.getRequestInfo(id).subscribe({
@@ -75,7 +85,6 @@ export class TestResults {
           RequestDate: res.requestedAt,
           sessionId: res.sessionId
         };
-        console.log(res);
         console.log(this.requestInfo);
       },
       error: () => {
@@ -97,7 +106,6 @@ export class TestResults {
       })
     ).subscribe({
       next: (elements) => {
-        console.log(elements);
         this.testElements = elements;
       },
       error: (err) => {
@@ -109,7 +117,6 @@ export class TestResults {
       }
     });
   }
-
   submitResults(): void {
     if (this.testElements.length === 0) {
       Swal.fire({
@@ -153,24 +160,23 @@ export class TestResults {
       });
       return;
     }
-    const resultObj = {
+    this.resultObj = {
       patientId: this.requestInfo.patientId,
       sessionId: this.requestInfo.sessionId,
       labTestId: this.labTestId,
-      summary: '',
-      aiClassifiedReport: '',
-      aiSuggestion: ''
+      summary: 'TestAI',
+      aiClassifiedReport: 'TestAI',
+      aiSuggestion: 'TestAI'
     };
-    this.testResultService.submitPatientResults(resultObj).pipe(
+    this.testResultService.submitPatientResults(this.resultObj).pipe(
       switchMap((patientResult) => {
-        console.log(patientResult);
-        const patientResultId = patientResult.id;
-        if (!patientResultId) {
+        this.patientResultId = patientResult.id;
+        if (!this.patientResultId) {
           return throwError(() => new Error('Invalid Patient Result Id'));
         }
         const requests = this.testElements.map((item: any) => {
           const body = {
-            patientResultId,
+            patientResultId: this.patientResultId,
             testElementId: item.id,
             value: Number(item.resultValue),
             techId
@@ -181,13 +187,11 @@ export class TestResults {
       })
     ).subscribe({
       next: (res) => {
-        console.log(res);
+        this.showAISection = true;
         Swal.fire({
           icon: 'success',
-          title: 'Success',
-          text: 'Test results submitted successfully.'
-        }).then(() => {
-          this.router.navigate(['/labtechnician/dashboard/requests/all-requests']);
+          title: 'Results Submitted',
+          text: 'Results submitted successfully. You can now verify them with AI.'
         });
       },
       error: (err) => {
@@ -200,44 +204,58 @@ export class TestResults {
       }
     });
   }
-
   verifyWithAI(): void {
     this.loadingAI = true;
     this.testResultService.generateAIReport(this.patientResultId).subscribe({
-
       next: (res) => {
-
         this.aiReport = res;
-
-        // تحديث البيانات الظاهرة فى الصفحة
-        this.patientResult.summary = res.summary;
-        this.patientResult.aiClassifiedReport = res.aiClassifiedReport;
-        this.patientResult.aiSuggestion = res.aiSuggestion;
-
+        this.aiGenerated = true;
         this.loadingAI = false;
-
+        this.resultObj.summary = res.summary;
+        this.resultObj.aiClassifiedReport = res.aiClassifiedReport;
+        this.resultObj.aiSuggestion = res.aiSuggestion;
         Swal.fire({
           icon: 'success',
           title: 'AI Analysis Completed',
           text: 'The AI report has been generated successfully.'
         });
-
       },
-
       error: () => {
-
         this.loadingAI = false;
-
         Swal.fire({
           icon: 'error',
           title: 'AI Verification Failed',
           text: 'Unable to generate AI report.'
         });
+      }
+    });
+  }
 
+  acceptAIReport(): void {
+    const updateObj = {
+      summary: this.resultObj.summary,
+      aiClassifiedReport: this.resultObj.aiClassifiedReport,
+      aiSuggestion: this.resultObj.aiSuggestion
+    }
+    this.testResultService.updatePatientResult(this.requestInfo.patientId, updateObj).subscribe({
+      next: () => {
+        Swal.fire({
+          icon: 'success',
+          title: 'AI Report Accepted',
+          text: 'The AI report has been accepted and saved successfully.'
+        }).then(() => {
+          this.router.navigate(['/labtechnician/dashboard/requests/all-requests']);
+        });
+      },
+      error: () => {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Failed to accept AI report.'
+        });
       }
 
-    });
-
+    })
   }
 
   getPriorityClasses(priority: string): string {

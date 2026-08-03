@@ -49,5 +49,12 @@ export class TestResultService {
       {}
     );
   }
+
+  updatePatientResult(patientId: number, updatedData: any): Observable<any> {
+    return this.http.put<any>(
+      `${this.api}/PatientResults/${patientId}`,
+      updatedData
+    );
+  }
 }
 
