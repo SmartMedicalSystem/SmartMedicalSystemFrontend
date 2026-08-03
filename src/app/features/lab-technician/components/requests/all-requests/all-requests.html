@@ -154,7 +154,9 @@
             <div class="flex max-h-[72px] flex-wrap gap-2 overflow-hidden">
               <span
                 *ngFor="let test of item.labTests; trackBy: item.labTests.id"
+                *ngFor="let test of item.labTests; trackBy: item.labTests.id"
                 class="rounded-lg border border-[var(--color-primary)]/15 bg-[var(--color-primary)]/10 px-3 py-1 text-xs font-medium text-[var(--color-primary)]"
+                (click)="goToRequestDetails(item.id, test.id)"
                 (click)="goToRequestDetails(item.id, test.id)"
               >
                 {{ test.testName }}
