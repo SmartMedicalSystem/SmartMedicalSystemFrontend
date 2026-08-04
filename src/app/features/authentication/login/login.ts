@@ -1,10 +1,12 @@
 import { Component, ElementRef, signal, ViewChild } from '@angular/core';
-import { AuthenticationService } from '../../../core/services/authenticationService';
+import { AuthenticationService } from '../../../core/services/authenticationService.service';
 import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Loader } from "../../../shared/components/loader/loader";
 import Swal from 'sweetalert2';
+import { NotificationHubService } from '../../../core/services/notification-hub.service';
+import { NotificationStoreService } from '../../../core/services/notification-store.service';
 
 @Component({
   selector: 'app-login',
@@ -18,7 +20,9 @@ export class Login {
 
   constructor(
     private authService: AuthenticationService,
-    private router: Router
+    private router: Router,
+    private notificationHub: NotificationHubService,
+    private notificationStore: NotificationStoreService
   ) { }
 
   loginForm = new FormGroup({
@@ -88,6 +92,8 @@ export class Login {
             void this.router.navigate(['403']);
             break;
         }
+        this.notificationHub.startConnection();
+        this.notificationStore.loadInitialData();
       },
       error: (err) => {
         Swal.fire({

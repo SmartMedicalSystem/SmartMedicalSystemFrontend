@@ -2,8 +2,8 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { LabTechService } from '../../../../core/services/lab-tech-service';
-import { AuthenticationService } from '../../../../core/services/authenticationService';
+import { LabTechService } from '../../../../core/services/lab-tech-service.service';
+import { AuthenticationService } from '../../../../core/services/authenticationService.service';
 
 @Component({
   selector: 'app-profile',

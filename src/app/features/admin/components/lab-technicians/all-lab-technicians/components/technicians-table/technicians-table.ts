@@ -20,7 +20,7 @@ import {
 
 import { Pagination } from '../pagination/pagination';
 
-import { AdminService } from '../../../../../../../core/services/admin-service';
+import { AdminService } from '../../../../../../../core/services/admin-service.service';
 
 import { ILabTechnician } from '../../../../../../../shared/interfaces/Admin/ILabTechnician';
 
@@ -221,25 +221,25 @@ export class TechniciansTable
     this.loadTechnicians();
   }
 
-  
-getStatusClass(status: string | undefined): string {
 
-  switch (status) {
+  getStatusClass(status: string | undefined): string {
 
-    case 'FullTime':
-      return 'active';
+    switch (status) {
 
-    case 'PartTime':
-      return 'inactive';
+      case 'FullTime':
+        return 'active';
 
-    case 'Contract':
-      return 'vacation';
+      case 'PartTime':
+        return 'inactive';
 
-    default:
-      return '';
+      case 'Contract':
+        return 'vacation';
+
+      default:
+        return '';
+    }
+
   }
-
-}
 
   getFullName(
     technician: ILabTechnician

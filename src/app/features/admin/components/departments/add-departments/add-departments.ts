@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule, NgForm } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CreateDepartmentDto } from '../../../../../shared/interfaces/Department/CreateDepartmentDto';
-import { DepartmentService } from '../../../../../core/services/department-service';
+import { DepartmentService } from '../../../../../core/services/department-service.service';
 import { DoctorForSelect } from '../../../../../shared/interfaces/Department/DoctorForSelect';
 
 @Component({
@@ -45,7 +45,7 @@ export class AddDepartments implements OnInit {
   constructor(
     private departmentService: DepartmentService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadDoctors();

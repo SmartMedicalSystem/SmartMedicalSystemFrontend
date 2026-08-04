@@ -4,7 +4,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { faArrowRightFromBracket, faBuilding, faCircleQuestion, faFlask, faFolderOpen, faGaugeHigh, faGear, faHospital, faUserDoctor, faUsersGear } from '@fortawesome/free-solid-svg-icons';
-import { AuthenticationService } from '../../../core/services/authenticationService';
+import { AuthenticationService } from '../../../core/services/authenticationService.service';
 
 @Component({
   selector: 'app-sidebar',

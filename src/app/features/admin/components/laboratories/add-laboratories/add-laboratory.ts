@@ -4,7 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CreateLaboratoryDto } from '../../../../../shared/interfaces/Laboratory/CreateLaboratoryDto';
-import { LaboratoryService } from '../../../../../core/services/laboratory-service';
+import { LaboratoryService } from '../../../../../core/services/laboratory-service.service';
 import { TechnicianForSelect } from '../../../../../shared/interfaces/Laboratory/TechnicianForSelect';
 
 @Component({
@@ -68,7 +68,7 @@ export class AddLaboratory implements OnInit {
   constructor(
     private laboratoryService: LaboratoryService,
     private router: Router,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadDepartments();

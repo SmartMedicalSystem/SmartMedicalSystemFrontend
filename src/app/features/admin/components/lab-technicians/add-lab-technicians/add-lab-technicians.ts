@@ -16,7 +16,7 @@ import {
   RouterLink
 } from '@angular/router';
 
-import { AdminService } from '../../../../../core/services/admin-service';
+import { AdminService } from '../../../../../core/services/admin-service.service';
 import Swal from 'sweetalert2';
 
 @Component({

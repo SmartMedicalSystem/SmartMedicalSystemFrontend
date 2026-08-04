@@ -18,7 +18,7 @@ import {
 
 import { CommonModule } from '@angular/common';
 
-import { AdminService } from '../../../../../core/services/admin-service';
+import { AdminService } from '../../../../../core/services/admin-service.service';
 // NOTE: adjust this import path to wherever ILabTechnician actually lives in your project.
 import { ILabTechnician } from '../../../../../shared/interfaces/Admin/ILabTechnician';
 import Swal from 'sweetalert2';

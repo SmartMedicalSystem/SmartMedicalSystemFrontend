@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { DepartmentService } from '../../../../../core/services/department-service';
+import { DepartmentService } from '../../../../../core/services/department-service.service';
 import { UpdateDepartmentDto } from '../../../../../shared/interfaces/Department/UpdateDepartmentDto';
 import { DoctorAtDepartment } from '../../../../../shared/interfaces/Department/DoctorAtDepartment ';
 
@@ -73,7 +73,7 @@ export class EditDepartments implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private departmentService: DepartmentService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.departmentId = Number(this.route.snapshot.paramMap.get('id'));

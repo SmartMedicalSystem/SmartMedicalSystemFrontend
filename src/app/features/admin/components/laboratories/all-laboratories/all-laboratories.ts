@@ -5,8 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 
 import { Laboratory } from '../../../../../shared/interfaces/Laboratory/Laboratory';
-import { LaboratoryService } from '../../../../../core/services/laboratory-service';
-import { ConfirmationService } from '../../../../../core/services/Confirmation-service';
+import { LaboratoryService } from '../../../../../core/services/laboratory-service.service';
+import { ConfirmationService } from '../../../../../core/services/Confirmation-service.service';
 
 @Component({
   selector: 'app-all-laboratories',

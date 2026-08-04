@@ -3,12 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { forkJoin, switchMap, throwError } from 'rxjs';
-import { TestResultService } from '../../../../../core/services/test-result-service';
+import { TestResultService } from '../../../../../core/services/test-result-service.service';
 import { PatientResult } from '../../../../../shared/interfaces/LabTechnician/PatientResult';
 import { PatientResultElement } from '../../../../../shared/interfaces/LabTechnician/PatientResultElement';
 import { PatientAIReport } from '../../../../../shared/interfaces/LabTechnician/PatientAIReport';
 import { Router, RouterLink } from '@angular/router';
-import { AuthenticationService } from '../../../../../core/services/authenticationService';
+import { AuthenticationService } from '../../../../../core/services/authenticationService.service';
 
 
 @Component({

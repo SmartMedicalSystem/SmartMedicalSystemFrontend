@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { DepartmentService } from '../../../../../core/services/department-service';
+import { DepartmentService } from '../../../../../core/services/department-service.service';
 import { DepartmentDetails as DeptDetails } from '../../../../../shared/interfaces/Department/DepartmentDetails';
 import { DoctorAtDepartment } from '../../../../../shared/interfaces/Department/DoctorAtDepartment ';
 

@@ -1,7 +1,7 @@
 import { Component, inject, signal } from '@angular/core';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router, RouterLink } from "@angular/router";
-import { AuthenticationService } from '../../../core/services/authenticationService';
+import { AuthenticationService } from '../../../core/services/authenticationService.service';
 import Swal from 'sweetalert2';
 
 @Component({

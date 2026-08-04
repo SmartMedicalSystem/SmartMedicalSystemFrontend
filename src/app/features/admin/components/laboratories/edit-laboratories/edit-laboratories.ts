@@ -4,7 +4,7 @@ import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { UpdateLaboratoryDto } from '../../../../../shared/interfaces/Laboratory/UpdateLaboratoryDto';
-import { LaboratoryService } from '../../../../../core/services/laboratory-service';
+import { LaboratoryService } from '../../../../../core/services/laboratory-service.service';
 import { TechnicianForSelect } from '../../../../../shared/interfaces/Laboratory/TechnicianForSelect';
 
 @Component({
@@ -103,7 +103,7 @@ export class EditLaboratory implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private laboratoryService: LaboratoryService,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.laboratoryId = Number(this.route.snapshot.paramMap.get('id'));

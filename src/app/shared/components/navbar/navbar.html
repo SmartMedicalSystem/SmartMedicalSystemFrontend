@@ -23,16 +23,30 @@
     <!-- Right -->
     <div class="flex gap-4 items-center justify-between">
       <!-- Icons -->
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-4" appClickOutside (clickOutside)="closeNotifications()">
         <!-- Notification -->
-        <button class="cursor-pointer relative transition">
+        <button
+          (click)="$event.stopPropagation(); toggleNotifications()"
+          class="cursor-pointer relative transition"
+        >
           <fa-icon
             [icon]="bell"
             class="text-lg md:text-xl text-gray-700 hover:text-secondary transition-all"
           >
           </fa-icon>
-          <span class="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"> </span>
+          @if (unreadCount() > 0) {
+            <span
+              class="absolute -top-2 -right-2 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center"
+            >
+              {{ badgeCount() }}
+            </span>
+          }
         </button>
+        <div class="relative">
+          @if (isNotificationOpen()) {
+            <app-notification-dropdown />
+          }
+        </div>
       </div>
       <!-- User -->
       <div class="flex items-center gap-3">
@@ -45,7 +59,7 @@
           </p>
         </div>
 
-        <img src="{{ this.image() }}" alt="User" class="w-14 h-14 rounded-full object-cover" />
+        <img src="{{ this.image }}" alt="User" class="w-14 h-14 rounded-full object-cover" />
       </div>
     </div>
   </div>

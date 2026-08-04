@@ -73,6 +73,9 @@ export class AuthenticationService {
     this.userImage.set(
       `https://smartmedicalsystem.runasp.net/${decoded['photo_url'] ?? ''}`
     );
+    if (this.userImage() === 'https://smartmedicalsystem.runasp.net/') {
+      this.userImage.set('');
+    }
   }
 
   getAccessToken(): string | null {
@@ -111,6 +114,9 @@ export class AuthenticationService {
 
 
   getUserImage(): string {
+    if (this.userImage() === "" || this.userImage() === null) {
+      return 'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png';
+    }
     return this.userImage();
   }
 
