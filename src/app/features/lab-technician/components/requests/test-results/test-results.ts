@@ -237,7 +237,7 @@ export class TestResults {
       aiClassifiedReport: this.resultObj.aiClassifiedReport,
       aiSuggestion: this.resultObj.aiSuggestion
     }
-    this.testResultService.updatePatientResult(this.requestInfo.patientId, updateObj).subscribe({
+    this.testResultService.updatePatientResult(this.patientResultId, updateObj).subscribe({
       next: () => {
         this.aiReportAccepted = true;
         Swal.fire({
