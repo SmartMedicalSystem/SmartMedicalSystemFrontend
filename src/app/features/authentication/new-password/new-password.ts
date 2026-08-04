@@ -2,7 +2,7 @@ import { NgClass } from '@angular/common';
 import { Component, ElementRef, inject, signal, ViewChild } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { passwordValidator } from '../../../shared/Validators/password.validator';
-import { AuthenticationService } from '../../../core/services/authenticationService';
+import { AuthenticationService } from '../../../core/services/authenticationService.service';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 

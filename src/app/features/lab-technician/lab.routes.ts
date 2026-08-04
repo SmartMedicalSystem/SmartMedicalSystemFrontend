@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { laboratoryGuard } from '../../core/guards/laboratory-guard';
+import { NotificationPage } from '../../shared/components/notification-page/notification-page';
 
 export const laboratoryRoutes: Routes = [
   {
@@ -25,7 +26,6 @@ export const laboratoryRoutes: Routes = [
             redirectTo: 'home',
             pathMatch: 'full',
           },
-
           {
             path: 'home',
             loadComponent: () =>
@@ -39,7 +39,6 @@ export const laboratoryRoutes: Routes = [
               import('./components/profile/profile')
                 .then((m) => m.Profile),
           },
-
 
           {
             path: 'requests',
@@ -76,7 +75,10 @@ export const laboratoryRoutes: Routes = [
               import('./components/patient-full-report/patient-full-report')
                 .then((m) => m.PatientFullReport),
           },
-
+          {
+            path: 'notification',
+            component: NotificationPage
+          },
         ],
       },
     ],

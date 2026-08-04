@@ -6,7 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { LaboratoryDetails as LabDetails } from '../../../../../shared/interfaces/Laboratory/LaboratoryDetails';
 
 import { TechnicianDetails } from '../../../../../shared/interfaces/Laboratory/TechnicianDetails';
-import { LaboratoryService } from '../../../../../core/services/laboratory-service';
+import { LaboratoryService } from '../../../../../core/services/laboratory-service.service';
 import { LabTestDetails } from '../../../../../shared/interfaces/Laboratory/LabTestDetails';
 @Component({
   selector: 'app-laboratory-details',

@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { doctorGuard } from '../../core/guards/doctor-guard';
+import { NotificationPage } from '../../shared/components/notification-page/notification-page';
 export const doctorRoutes: Routes = [
   {
     path: 'doctor',
@@ -63,6 +64,10 @@ export const doctorRoutes: Routes = [
                     .then(m => m.LabTest)
               }
             ]
+          },
+          {
+            path: 'notification',
+            component: NotificationPage
           }
         ]
       }

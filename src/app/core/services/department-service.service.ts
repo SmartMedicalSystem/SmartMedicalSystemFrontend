@@ -6,7 +6,7 @@ import { Department } from '../../shared/interfaces/Department/Department';
 import { CreateDepartmentDto } from '../../shared/interfaces/Department/CreateDepartmentDto';
 import { UpdateDepartmentDto } from '../../shared/interfaces/Department/UpdateDepartmentDto';
 import { DoctorForSelect } from '../../shared/interfaces/Department/DoctorForSelect';
-import { AuthenticationService } from './authenticationService';
+import { AuthenticationService } from './authenticationService.service';
 import { DoctorAtDepartment } from '../../shared/interfaces/Department/DoctorAtDepartment ';
 
 @Injectable({
@@ -22,7 +22,7 @@ export class DepartmentService {
   constructor(
     private http: HttpClient,
     private auth: AuthenticationService,
-  ) {}
+  ) { }
 
   // ============================================================
   // Department APIs

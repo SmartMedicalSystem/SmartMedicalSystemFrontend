@@ -1,0 +1,114 @@
+<div
+  (click)="$event.stopPropagation()"
+  class="absolute right-5 top-5 z-50 w-[350px] overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-[0_20px_60px_rgba(0,0,0,0.15)] animate-notification"
+>
+  <!-- Arrow -->
+  <div
+    class="absolute -top-2 right-8 h-4 w-4 rotate-45 border-l border-t border-gray-200 bg-white"
+  ></div>
+
+  <!-- Header -->
+  <div class="border-b bg-gray-50 px-6 py-5">
+    <div class="flex items-center justify-between">
+      <div>
+        <h3 class="text-xl font-bold text-gray-800">Notifications</h3>
+
+        @if (notifications().length === 0) {
+          <p class="mt-1 text-sm text-gray-500">No notifications</p>
+        } @else {
+          <p class="mt-1 text-sm text-gray-500">
+            {{ unreadCount() }}
+            unread
+          </p>
+        }
+      </div>
+
+      @if (notifications().length > 0) {
+        <button
+          (click)="markAllAsRead()"
+          class="rounded-lg px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10"
+        >
+          Mark all
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Empty State -->
+
+  @if (notifications().length === 0) {
+    <div class="flex flex-col items-center justify-center px-8 py-10">
+      <div class="flex h-20 w-20 items-center justify-center rounded-full bg-primary">
+        <i class="fa-solid fa-bell text-4xl text-neutral"> </i>
+      </div>
+
+      <h4 class="mt-6 text-xl font-semibold text-gray-700">No Notifications</h4>
+
+      <p class="mt-3 text-center text-sm leading-6 text-gray-400">
+        You're all caught up.
+
+        <br />
+
+        New notifications will appear here.
+      </p>
+    </div>
+  }
+
+  <!-- Notifications -->
+
+  @else {
+    <div class="max-h-[430px] overflow-y-auto">
+      @for (notification of notifications(); track notification.id) {
+        <button
+          (click)="markAsRead(notification)"
+          class="group flex w-full items-start gap-4 border-b border-gray-100 px-6 py-5 text-left transition"
+          [class.unread]="!notification.isRead"
+          [class.bg-blue-50]="!notification.isRead"
+          [class.hover:bg-blue-100]="!notification.isRead"
+          [class.hover:bg-slate-50]="notification.isRead"
+        >
+          <!-- Icon -->
+
+          <div
+            class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-blue-100"
+          >
+            <i class="fa-solid fa-bell text-primary"> </i>
+          </div>
+
+          <!-- Content -->
+
+          <div class="flex-1">
+            <div class="flex items-start justify-between gap-3">
+              <div>
+                <p class="text-sm font-medium leading-6 text-gray-800">
+                  {{ notification.message }}
+                </p>
+
+                <p class="mt-2 text-xs text-gray-500">
+                  {{ notification.sentAt | relativeTime }}
+                </p>
+              </div>
+
+              @if (!notification.isRead) {
+                <span class="mt-2 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-primary"> </span>
+              }
+            </div>
+          </div>
+        </button>
+      }
+    </div>
+  }
+
+  <!-- Footer -->
+
+  @if (notifications().length > 0) {
+    <div class="border-t bg-gray-50 p-4">
+      <button
+        routerLink="notification"
+        class="h-11 w-full rounded-xl border border-primary font-medium text-primary transition hover:bg-primary hover:text-white"
+      >
+        View all notifications →
+      </button>
+    </div>
+  }
+</div>

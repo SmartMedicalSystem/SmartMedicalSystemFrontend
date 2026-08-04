@@ -11,7 +11,7 @@ import {
   throwError
 } from 'rxjs';
 
-import { AuthenticationService } from '../services/authenticationService';
+import { AuthenticationService } from '../services/authenticationService.service';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const authService = inject(AuthenticationService);

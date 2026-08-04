@@ -15,7 +15,7 @@ import {
 
 import { Router } from '@angular/router';
 
-import { AdminService } from '../../../../core/services/admin-service';
+import { AdminService } from '../../../../core/services/admin-service.service';
 
 @Component({
   selector: 'app-home',
@@ -79,7 +79,7 @@ export class Home implements OnInit {
   constructor(
     private adminService: AdminService,
     private router: Router
-  ) {}
+  ) { }
 
 
   // =========================

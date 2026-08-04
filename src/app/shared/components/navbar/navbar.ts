@@ -11,15 +11,20 @@ import {
   faChartColumn,
   faBars
 } from '@fortawesome/free-solid-svg-icons';
-import { AuthenticationService } from '../../../core/services/authenticationService';
+import { AuthenticationService } from '../../../core/services/authenticationService.service';
 import { jwtDecode } from 'jwt-decode';
+import { NotificationHubService } from '../../../core/services/notification-hub.service';
+import { NotificationDropdown } from '../notification-dropdown/notification-dropdown';
+import { ClickOutsideDirective } from '../../directives/click-outside';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [
     CommonModule,
-    FontAwesomeModule
+    FontAwesomeModule,
+    NotificationDropdown,
+    ClickOutsideDirective
   ],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css'
@@ -35,11 +40,20 @@ export class Navbar {
   message = faComment;
 
   authServ = inject(AuthenticationService);
-
+  notificationHub = inject(NotificationHubService);
+  readonly notifications =
+    this.notificationHub.getNotifications();
+  readonly unreadCount =
+    this.notificationHub.getUnreadCount();
+  badgeCount(): string {
+    return this.unreadCount() > 99
+      ? '99+'
+      : this.unreadCount().toString();
+  }
   // Buttons
   export = faFileExport;
   aiScan = faChartColumn;
-  image = this.authServ.userImageSignal;
+  image: string = '';
 
   role: string = '';
   userName: string = '';
@@ -49,22 +63,24 @@ export class Navbar {
     this.role = this.authServ.getUserRole() || '';
     this.userName =
       decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-
-    if (!this.authServ.getUserImage()) {
-      this.authServ.setUserImage(
-        'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png'
-      );
-    }
+    this.image = this.authServ.getUserImage();
+    console.log(this.image);
   }
-
-
-
 
   bars = faBars;
   @Output() toggleSidebar = new EventEmitter();
 
   openSidebar(): void {
     this.toggleSidebar.emit();
+  }
+
+  isNotificationOpen = signal(false);
+  toggleNotifications(): void {
+    this.isNotificationOpen.update(value => !value);
+  }
+
+  closeNotifications(): void {
+    this.isNotificationOpen.set(false);
   }
 
 }

@@ -3,10 +3,10 @@ import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { DepartmentService } from '../../../../../core/services/department-service';
+import { DepartmentService } from '../../../../../core/services/department-service.service';
 import { Department } from '../../../../../shared/interfaces/Department/Department';
 import Swal from 'sweetalert2';
-import { ConfirmationService } from '../../../../../core/services/Confirmation-service';
+import { ConfirmationService } from '../../../../../core/services/Confirmation-service.service';
 
 @Component({
   selector: 'app-all-departments',
@@ -16,7 +16,7 @@ import { ConfirmationService } from '../../../../../core/services/Confirmation-s
   styleUrls: ['./all-departments.css'],
 })
 export class AllDepartments implements OnInit {
-  constructor(private departmentService: DepartmentService) {}
+  constructor(private departmentService: DepartmentService) { }
 
   // ==========================
   // Data

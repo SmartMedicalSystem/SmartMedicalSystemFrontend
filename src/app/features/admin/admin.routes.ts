@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { adminGuard } from '../../core/guards/admin-guard';
+import { NotificationPage } from '../../shared/components/notification-page/notification-page';
 
 export const adminRoutes: Routes = [
   {
@@ -196,6 +197,10 @@ export const adminRoutes: Routes = [
             path: 'settings',
             loadComponent: () => import('./components/settings/settings').then((m) => m.Settings),
           },
+          {
+            path: 'notification',
+            component: NotificationPage
+          }
         ],
       },
     ],

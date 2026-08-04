@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { TestResultService } from '../../../../core/services/test-result-service';
+import { TestResultService } from '../../../../core/services/test-result-service.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 

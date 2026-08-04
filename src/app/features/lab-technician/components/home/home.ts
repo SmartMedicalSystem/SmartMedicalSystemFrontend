@@ -3,7 +3,7 @@ import { faArrowRight, faBuilding, faFileCircleExclamation, faFlask, faFolderOpe
 import { Router, RouterLink } from "@angular/router";
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import Swal from 'sweetalert2';
-import { LabTechService } from '../../../../core/services/lab-tech-service';
+import { LabTechService } from '../../../../core/services/lab-tech-service.service';
 import { CommonModule } from '@angular/common';
 
 @Component({

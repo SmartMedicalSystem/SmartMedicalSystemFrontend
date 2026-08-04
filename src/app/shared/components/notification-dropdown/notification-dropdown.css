@@ -1,0 +1,91 @@
+/* ==========================================
+   Notification Dropdown
+========================================== */
+
+:host {
+  display: block;
+}
+
+/* Scrollbar */
+
+.max-h-\[430px\]::-webkit-scrollbar {
+  width: 6px;
+}
+
+.max-h-\[430px\]::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.max-h-\[430px\]::-webkit-scrollbar-thumb {
+  background: #d1d5db;
+  border-radius: 999px;
+}
+
+.max-h-\[430px\]::-webkit-scrollbar-thumb:hover {
+  background: #9ca3af;
+}
+
+/* Firefox */
+
+.max-h-\[430px\] {
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
+}
+
+/* ==========================================
+   Animation
+========================================== */
+
+@keyframes notificationDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-notification {
+  animation: notificationDropdown 0.18s ease-out;
+}
+
+/* ==========================================
+   Smooth Hover
+========================================== */
+
+button {
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+/* ==========================================
+   Unread Notification
+========================================== */
+
+.unread {
+  position: relative;
+}
+
+.unread::before {
+  content: '';
+
+  position: absolute;
+
+  left: 0;
+  top: 15%;
+
+  width: 4px;
+  height: 70%;
+
+  border-radius: 999px;
+
+  background: #2563eb;
+}
