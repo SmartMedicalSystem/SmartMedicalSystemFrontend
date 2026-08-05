@@ -9,6 +9,7 @@ import { ILoginResponse } from '../../shared/interfaces/Authentication/ILoginRes
 import { IRefreshTokenResponse } from '../../shared/interfaces/Authentication/irefresh-token-response';
 import { IRefreshTokenRequest } from '../../shared/interfaces/Authentication/irefresh-token-request';
 import { IResetPassword } from '../../shared/interfaces/Authentication/i-reset-password';
+import { NotificationHubService } from './notification-hub.service';
 
 @Injectable({
   providedIn: 'root',
@@ -18,8 +19,10 @@ export class AuthenticationService {
 
   private readonly REFRESH_KEY = 'refreshToken';
   private readonly accessToken = signal<string | null>(null);
-  private userImage = signal('');
-  userImageSignal = this.userImage.asReadonly();
+  private readonly defaultImage =
+    'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png';
+
+  readonly userImage = signal(this.defaultImage);
 
   constructor(
     private http: HttpClient,
@@ -73,9 +76,7 @@ export class AuthenticationService {
     this.userImage.set(
       `https://smartmedicalsystem.runasp.net/${decoded['photo_url'] ?? ''}`
     );
-    if (this.userImage() === 'https://smartmedicalsystem.runasp.net/') {
-      this.userImage.set('');
-    }
+
   }
 
   getAccessToken(): string | null {
@@ -108,14 +109,18 @@ export class AuthenticationService {
     return decoded['base_person_id'] ?? null;
   }
 
-  setUserImage(url: string) {
-    this.userImage.set(url);
+  setUserImage(url: string | null | undefined) {
+    this.userImage.set(
+      !url || url === 'https://smartmedicalsystem.runasp.net/'
+        ? this.defaultImage
+        : url
+    );
   }
 
 
   getUserImage(): string {
     if (this.userImage() === "" || this.userImage() === null) {
-      return 'https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png';
+      this.userImage.set('https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png');
     }
     return this.userImage();
   }

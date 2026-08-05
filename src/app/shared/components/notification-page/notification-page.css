@@ -17,3 +17,22 @@
     transform: translateY(0);
   }
 }
+
+.notification-new {
+  animation: newNotification 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes newNotification {
+  0% {
+    opacity: 0;
+
+    transform: translateY(-28px) scale(0.95);
+  }
+  60% {
+    transform: translateY(4px) scale(1.01);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

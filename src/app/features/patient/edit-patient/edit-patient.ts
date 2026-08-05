@@ -1,58 +1,138 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import {
+  AbstractControl,
+  FormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PatientsService } from '../../../core/services/patient-service.service';
+import { UpdatePatientDto } from '../../../shared/interfaces/Patient/update-patient.dto';
+import { AlertService } from '../../../core/services/alert-service.service';
 
-interface PatientSummary {
-  name: string;
-  avatar: string;
-  patientId: string;
-  nationalId: string;
-  status: 'Active' | 'Critical' | 'Discharged';
-  registeredDate: string;
+const NATIONAL_ID_PATTERN = /^\d{14}$/;
+
+function notInFutureValidator(control: AbstractControl): ValidationErrors | null {
+  if (!control.value) return null;
+
+  const inputDate = new Date(control.value);
+  const today = new Date();
+  today.setHours(23, 59, 59, 999);
+
+  return inputDate > today ? { futureDate: true } : null;
 }
+
 @Component({
   selector: 'app-edit-patient',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './edit-patient.html',
   styleUrl: './edit-patient.css',
 })
-export class EditPatient {
+export class EditPatient implements OnInit {
   private fb = inject(FormBuilder);
+  private patientService = inject(PatientsService);
+  private alertService = inject(AlertService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  patient = signal<PatientSummary>({
-    name: 'Leo Walker',
-    avatar: 'https://i.pravatar.cc/80?img=15',
-    patientId: '#P-88219',
-    nationalId: '667-210-4491',
+  patientId!: number;
+  submitted = signal(false);
+
+  patient = signal({
+    name: '',
+    patientId: '',
+    nationalId: '',
     status: 'Active',
-    registeredDate: 'Jan 02, 2024'
+    registeredDate: '',
   });
 
-  modifiedFields = signal<Set<string>>(new Set(['occupation']));
+  modifiedFields = signal<Set<string>>(new Set());
 
+  // nationalId is editable now — same as add-patient — just with a stricter
+  // pattern check since we already know the expected format.
   form = this.fb.group({
-    // Basic Information
-    firstName: ['Leo', Validators.required],
-    lastName: ['Walker', Validators.required],
-    dateOfBirth: ['1982-05-14', Validators.required],
-    gender: ['Male', Validators.required],
-    occupation: ['Software Architect'],
-    patientNumber: [{ value: 'P-88219', disabled: true }],
+    firstName: ['', Validators.required],
+    lastName: ['', Validators.required],
+    nationalId: ['', [Validators.required, Validators.pattern(NATIONAL_ID_PATTERN)]],
+    dateOfBirth: ['', [Validators.required, notInFutureValidator]],
+    gender: ['', Validators.required],
+    mobileNumber: ['', Validators.required],
+    address: [''],
+    bloodType: ['', Validators.required],
+    email: ['', [Validators.required, Validators.email]],
 
-    // Contact Information
-    countryCode: ['+1'],
-    phoneNumber: ['202-555-0143', Validators.required],
-    email: ['leo.walker82@example.com', Validators.email],
-    address: ['482 Oakwood Ave, San Francisco, CA 94110'],
-
-    // Hospital Information
-    assignedDepartment: ['Neurology'],
-    primaryPhysician: ['Dr. Julian Vance'],
-    patientStatus: ['Active'],
-    registrationDate: [{ value: 'Jan 02, 2024', disabled: true }]
+    // UI Only
+    patientNumber: [{ value: '', disabled: true }],
+    registrationDate: [{ value: '', disabled: true }],
+    assignedDepartment: [''],
+    primaryPhysician: [''],
   });
 
   originalValue = this.form.getRawValue();
+
+  ngOnInit(): void {
+    this.patientId = Number(this.route.snapshot.paramMap.get('id'));
+
+    if (this.patientId) {
+      this.loadPatient();
+    }
+  }
+
+  loadPatient(): void {
+    this.patientService.getPatientById(this.patientId).subscribe({
+      next: (patient) => {
+        this.patient.set({
+          name: `${patient.firstName} ${patient.lastName}`,
+          patientId: patient.id.toString(),
+          nationalId: patient.nationalId ?? '',
+          status: 'Active',
+          registeredDate: '',
+        });
+
+        this.form.patchValue({
+          firstName: patient.firstName,
+          lastName: patient.lastName,
+          nationalId: patient.nationalId ?? '',
+          dateOfBirth: patient.dateOfBirth.substring(0, 10),
+          gender: patient.gender,
+          mobileNumber: patient.mobileNumber.toString(),
+          address: patient.address,
+          email: patient.email,
+          bloodType: patient.bloodType,
+          patientNumber: patient.id.toString(),
+          registrationDate: '',
+        });
+
+        this.originalValue = this.form.getRawValue();
+      },
+      error: (err) => {
+        console.error(err);
+        this.alertService.error('Failed to load patient');
+      },
+    });
+  }
+
+  isInvalid(controlName: string): boolean {
+    const control = this.form.get(controlName);
+    return !!control && control.invalid && (control.touched || this.submitted());
+  }
+
+  errorMessage(controlName: string, label: string): string {
+    const control = this.form.get(controlName);
+    if (!control || !control.errors) return '';
+
+    if (control.hasError('required')) return `${label} is required`;
+    if (control.hasError('email')) return 'Invalid email address';
+    if (control.hasError('futureDate')) return `${label} cannot be in the future`;
+    if (control.hasError('pattern')) {
+      if (controlName === 'nationalId') return 'National ID must be exactly 14 digits';
+      return `${label} is invalid`;
+    }
+    return '';
+  }
 
   isModified(controlName: string): boolean {
     return this.modifiedFields().has(controlName);
@@ -68,10 +148,11 @@ export class EditPatient {
     } else {
       next.delete(controlName);
     }
+
     this.modifiedFields.set(next);
   }
 
-  statusClasses(status: PatientSummary['status']): string {
+  statusClasses(status: string): string {
     switch (status) {
       case 'Active':
         return 'bg-secondary/10 text-secondary';
@@ -79,38 +160,81 @@ export class EditPatient {
         return 'bg-tertiary/10 text-tertiary';
       case 'Discharged':
         return 'bg-gray-100 text-gray-500';
+      default:
+        return '';
     }
   }
 
   onCancel() {
-    this.form.reset(this.originalValue);
-    this.modifiedFields.set(new Set());
+    this.alertService
+      .confirm('Discard any unsaved changes and leave this page?', 'Cancel editing?')
+      .then((result) => {
+        if (!result.isConfirmed) return;
+
+        this.form.reset(this.originalValue);
+        this.modifiedFields.set(new Set());
+        this.router.navigate(['/admin/dashboard/patients/all-patients']);
+      });
   }
 
   onResetChanges() {
-    this.form.reset(this.originalValue);
-    this.modifiedFields.set(new Set());
+    this.alertService
+      .confirm('Reset all fields back to their last saved values?', 'Reset changes?')
+      .then((result) => {
+        if (!result.isConfirmed) return;
+
+        this.form.reset(this.originalValue);
+        this.modifiedFields.set(new Set());
+      });
   }
 
   onSaveAndContinue() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
-      return;
-    }
-    console.log('Save & continue editing:', this.form.getRawValue());
-    this.originalValue = this.form.getRawValue();
-    this.modifiedFields.set(new Set());
+    this.onSaveChanges();
   }
 
   onSaveChanges() {
+    this.submitted.set(true);
+
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       return;
     }
-    console.log('Save changes:', this.form.getRawValue());
+
+    this.alertService
+      .confirm('Save changes to this patient record?', 'Confirm save')
+      .then((result) => {
+        if (!result.isConfirmed) return;
+
+        const value = this.form.getRawValue();
+
+        const dto: UpdatePatientDto = {
+          firstName: value.firstName!,
+          lastName: value.lastName!,
+          nationalId: value.nationalId!,
+          email: value.email!,
+          dateOfBirth: value.dateOfBirth!,
+          gender: Number(value.gender),
+          mobileNumber: value.mobileNumber!,
+          address: value.address ?? '',
+          bloodType: Number(value.bloodType),
+        };
+
+        this.patientService.updatePatientById(this.patientId, dto).subscribe({
+          next: () => {
+            this.alertService.success('Patient updated successfully');
+            this.originalValue = this.form.getRawValue();
+            this.modifiedFields.set(new Set());
+            this.router.navigate(['/admin/dashboard/patients/all-patients']);
+          },
+          error: (err) => {
+            console.error(err);
+            this.alertService.error(err.error?.message ?? 'Failed to update patient');
+          },
+        });
+      });
   }
 
   onArchivePatient() {
-    console.log('Archive patient:', this.patient().patientId);
+    console.log('Archive patient');
   }
 }
