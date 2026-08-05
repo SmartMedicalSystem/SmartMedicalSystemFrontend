@@ -1,157 +1,190 @@
-import { Component, computed, Signal, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { finalize } from 'rxjs';
+import { DoctorService } from '../../../core/services/doctor-service.service';
+import { Patient as ApiPatient } from '../../../shared/interfaces/Doctor/patient.interface';
 
+// TODO: تأكد من ترتيب enum BloodType الفعلي في الباك (Domain.Enums.BloodType)
+// وعدّل الترتيب هنا لو مختلف — نفس الملاحظة المتكررة في patient-details.ts
+const BLOOD_TYPE_MAP: Record<number, string> = {
+  0: 'A+',
+  1: 'A-',
+  2: 'B+',
+  3: 'B-',
+  4: 'AB+',
+  5: 'AB-',
+  6: 'O+',
+  7: 'O-',
+};
 
-type PendingStatus = 'pending' | 'none';
-
-interface Patient {
-  id: string;
+interface DisplayPatient {
+  id: number;
   name: string;
   avatarInitials: string;
   ssn: string;
   age: number;
-  gender: 'Male' | 'Female';
-  lastVisit: string;
-  pendingStatus: PendingStatus;
+  gender: string;
+  bloodType: string;
 }
+
 @Component({
   selector: 'app-all-patients',
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './all-patients.html',
   styleUrl: './all-patients.css',
 })
-export class AllPatients {
-  urlContainsDoctor: boolean = false;
-  constructor(private router: Router) {
+export class AllPatients implements OnInit {
+
+  urlContainsDoctor = false;
+
+  constructor(
+    private router: Router,
+    private doctorService: DoctorService
+  ) {
     this.urlContainsDoctor = this.router.url.includes('doctor');
   }
 
-
-
-  totalPatients = 1248;
+  loading = signal(true);
+  loadError = signal<string | null>(null);
 
   searchTerm = '';
   genderFilter = 'All Genders';
   ageGroupFilter = 'All Ages';
-  lastVisitFilter = 'Any Time';
-  statusFilter = 'All Statuses';
 
   genderOptions = ['All Genders', 'Male', 'Female'];
   ageGroupOptions = ['All Ages', '0-18', '19-35', '36-55', '56+'];
-  lastVisitOptions = ['Any Time', 'Last 7 days', 'Last 30 days', 'Last 90 days'];
-  statusOptions = ['All Statuses', 'Pending Reports', 'No Pending Reports'];
 
   rowsPerPage = signal(10);
   currentPage = signal(1);
+  totalCount = signal(0);
+  totalPages = signal(1);
 
-  patients = signal<Patient[]>([
-    {
-      id: '#44920',
-      name: 'Sarah J. Miller',
-      avatarInitials: 'SM',
-      ssn: '**-**-5821',
-      age: 42,
-      gender: 'Female',
-      lastVisit: 'Oct 24, 2023',
-      pendingStatus: 'pending',
-    },
-    {
-      id: '#44831',
-      name: 'Robert H. Dawson',
-      avatarInitials: 'RD',
-      ssn: '**-**-9912',
-      age: 78,
-      gender: 'Male',
-      lastVisit: 'Oct 22, 2023',
-      pendingStatus: 'none',
-    },
-    {
-      id: '#44820',
-      name: 'Kevin T. Wu',
-      avatarInitials: 'KW',
-      ssn: '**-**-2204',
-      age: 29,
-      gender: 'Male',
-      lastVisit: 'Oct 21, 2023',
-      pendingStatus: 'pending',
-    },
-    {
-      id: '#44771',
-      name: 'Elena Rodriguez',
-      avatarInitials: 'ER',
-      ssn: '**-**-1109',
-      age: 36,
-      gender: 'Female',
-      lastVisit: 'Oct 19, 2023',
-      pendingStatus: 'none',
-    },
-    {
-      id: '#44755',
-      name: 'Martha Stevens',
-      avatarInitials: 'MS',
-      ssn: '**-**-8433',
-      age: 69,
-      gender: 'Female',
-      lastVisit: 'Oct 18, 2023',
-      pendingStatus: 'none',
-    },
-  ]);
+  patients = signal<DisplayPatient[]>([]);
 
   totalRowsLabel = computed(() => {
+    if (this.totalCount() === 0) return '0 of 0';
     const start = (this.currentPage() - 1) * this.rowsPerPage() + 1;
-    const end = Math.min(this.currentPage() * this.rowsPerPage(), this.totalPatients);
-    return `${start} - ${end} of ${this.totalPatients}`;
+    const end = Math.min(this.currentPage() * this.rowsPerPage(), this.totalCount());
+    return `${start} - ${end} of ${this.totalCount()}`;
   });
 
-  applyFilters(): void {
-    console.log('Applying filters', {
-      search: this.searchTerm,
-      gender: this.genderFilter,
-      ageGroup: this.ageGroupFilter,
-      lastVisit: this.lastVisitFilter,
-      status: this.statusFilter,
+  ngOnInit(): void {
+    this.fetchPatients();
+  }
+
+  fetchPatients(): void {
+    this.loading.set(true);
+    this.loadError.set(null);
+
+    this.doctorService.getAllPatients(
+      this.currentPage(),
+      this.rowsPerPage(),
+      this.searchTerm || undefined,
+      this.genderFilter === 'All Genders' ? undefined : this.genderFilter,
+      this.getMinAge(),
+      this.getMaxAge()
+    )
+    .pipe(finalize(() => this.loading.set(false)))
+    .subscribe({
+      next: (res) => {
+        this.patients.set(res.items.map(p => this.toDisplayPatient(p)));
+        this.totalCount.set(res.totalCount);
+        this.totalPages.set(res.totalPages || 1);
+      },
+      error: () => {
+        this.loadError.set('تعذر تحميل بيانات المرضى.');
+      }
     });
+  }
+
+  private toDisplayPatient(p: ApiPatient): DisplayPatient {
+    return {
+      id: p.id,
+      name: `${p.firstName} ${p.lastName}`,
+      avatarInitials: `${p.firstName.charAt(0)}${p.lastName.charAt(0)}`.toUpperCase(),
+      ssn: this.maskNationalId(p.nationalId),
+      age: p.age,
+      // الباك اند بيرجّع gender كـ string جاهزة ("Male"/"Female")، فمفيش داعي
+      // لأي تحويل رقمي هنا (patient.interface.ts: gender: string).
+      gender: p.gender,
+      bloodType: BLOOD_TYPE_MAP[p.bloodType] ?? 'Unknown',
+    };
+  }
+
+  private maskNationalId(id: number): string {
+    const str = String(id);
+    return str.length > 4 ? `**-**-${str.slice(-4)}` : str;
+  }
+
+  private getMinAge(): number | undefined {
+    switch (this.ageGroupFilter) {
+      case '0-18': return 0;
+      case '19-35': return 19;
+      case '36-55': return 36;
+      case '56+': return 56;
+      default: return undefined;
+    }
+  }
+
+  private getMaxAge(): number | undefined {
+    switch (this.ageGroupFilter) {
+      case '0-18': return 18;
+      case '19-35': return 35;
+      case '36-55': return 55;
+      default: return undefined;
+    }
+  }
+
+  applyFilters(): void {
+    this.currentPage.set(1);
+    this.fetchPatients();
   }
 
   resetFilters(): void {
     this.searchTerm = '';
     this.genderFilter = 'All Genders';
     this.ageGroupFilter = 'All Ages';
-    this.lastVisitFilter = 'Any Time';
-    this.statusFilter = 'All Statuses';
+    this.currentPage.set(1);
+    this.fetchPatients();
   }
 
-  openPatient(patient: Patient): void {
-    console.log('Opening patient', patient.id);
-
-    this.router.navigate(['/doctor/dashboard/patients/patient-details']);
+  openPatient(patient: DisplayPatient): void {
+    this.router.navigate(['/doctor/dashboard/patients/patient-details', patient.id]);
   }
 
-  editPatient(patient: Patient): void {
-    console.log('Opening patient', patient.id);
-    this.router.navigate(['/admin/dashboard/patients/edit-patients']);
+  editPatient(patient: DisplayPatient): void {
+    this.router.navigate(['/admin/dashboard/patients/edit-patients', patient.id]);
   }
 
   onRowsPerPageChange(value: string): void {
     this.rowsPerPage.set(Number(value));
     this.currentPage.set(1);
+    this.fetchPatients();
   }
 
   goToFirstPage(): void {
+    if (this.currentPage() === 1) return;
     this.currentPage.set(1);
+    this.fetchPatients();
   }
 
   goToPrevPage(): void {
-    this.currentPage.update((p) => Math.max(1, p - 1));
+    if (this.currentPage() <= 1) return;
+    this.currentPage.update(p => p - 1);
+    this.fetchPatients();
   }
 
   goToNextPage(): void {
-    this.currentPage.update((p) => p + 1);
+    if (this.currentPage() >= this.totalPages()) return;
+    this.currentPage.update(p => p + 1);
+    this.fetchPatients();
   }
 
   goToLastPage(): void {
-    this.currentPage.set(Math.ceil(this.totalPatients / this.rowsPerPage()));
+    if (this.currentPage() === this.totalPages()) return;
+    this.currentPage.set(this.totalPages());
+    this.fetchPatients();
   }
 }

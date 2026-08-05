@@ -1,39 +1,83 @@
 <div class="min-h-screen bg-neutral p-3 sm:p-4 md:p-6">
   <div class="max-w-5xl mx-auto bg-white rounded-xl shadow-sm border border-gray-100">
 
+    <!-- ============ Loading State ============ -->
+    <div
+      *ngIf="loading()"
+      class="p-8 flex items-center justify-center gap-3"
+    >
+      <svg class="w-5 h-5 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <span class="text-sm text-gray-500">Loading profile...</span>
+    </div>
+
+    <!-- ============ Load Error ============ -->
+    <div
+      *ngIf="!loading() && loadError()"
+      class="m-4 sm:m-6 rounded-xl bg-tertiary/10 border border-tertiary/20 px-4 py-3"
+    >
+      <p class="text-sm text-tertiary">{{ loadError() }}</p>
+    </div>
+
+    <ng-container *ngIf="!loading() && !loadError()">
+
     <!-- ============ Profile Summary Card ============ -->
     <div class="flex flex-col items-center text-center px-4 sm:px-6 py-8 border-b border-gray-100">
       <div class="relative">
-        <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-primary/10 flex items-center justify-center ring-4 ring-primary/10">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-14 h-14 sm:w-16 sm:h-16 text-primary">
+        <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-primary/10 flex items-center justify-center ring-4 ring-primary/10 overflow-hidden">
+          <img
+            *ngIf="photoPreviewUrl() || currentPhotoUrl()"
+            [src]="photoPreviewUrl() || currentPhotoUrl()"
+            alt="Profile photo"
+            class="w-full h-full object-cover"
+          />
+          <svg
+            *ngIf="!photoPreviewUrl() && !currentPhotoUrl()"
+            xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-14 h-14 sm:w-16 sm:h-16 text-primary">
             <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0021.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 003.065 7.097A9.716 9.716 0 0012 21.75a9.716 9.716 0 006.685-2.653zm-12.54-1.285A7.486 7.486 0 0112 15a7.486 7.486 0 015.855 2.812A8.224 8.224 0 0112 20.25a8.224 8.224 0 01-5.855-2.438zM15.75 9a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" clip-rule="evenodd" />
           </svg>
         </div>
-        <button type="button"
-          class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md hover:bg-primary/90 transition-colors"
+
+        <!-- input الملف مخفي، وزرار الكاميرا هو اللي بيفتحه -->
+        <input
+          type="file"
+          accept="image/*"
+          id="photoInput"
+          class="hidden"
+          (change)="ChangePicture($event)"
+        />
+        <label
+          for="photoInput"
+          class="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center shadow-md hover:bg-primary/90 transition-colors cursor-pointer"
           aria-label="Change photo">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
             <path fill-rule="evenodd" d="M12 9a3.75 3.75 0 100 7.5A3.75 3.75 0 0012 9z" clip-rule="evenodd" />
             <path fill-rule="evenodd" d="M9.344 3.071a49.52 49.52 0 015.312 0c.967.052 1.83.585 2.332 1.39l.821 1.317c.24.383.645.643 1.11.71.386.054.77.113 1.152.177 1.432.239 2.429 1.493 2.429 2.909V18a3 3 0 01-3 3h-15a3 3 0 01-3-3V9.574c0-1.416.997-2.67 2.429-2.909.382-.064.766-.123 1.152-.178a1.56 1.56 0 001.11-.71l.822-1.315a2.942 2.942 0 012.332-1.39zM6.75 12.75a5.25 5.25 0 1110.5 0 5.25 5.25 0 01-10.5 0z" clip-rule="evenodd" />
           </svg>
-        </button>
+        </label>
       </div>
 
+      <p *ngIf="photoPreviewUrl()" class="mt-2 text-xs text-primary">
+        New photo selected — will be uploaded when you press "Save Changes"
+      </p>
+
       <h2 class="mt-4 text-lg sm:text-xl font-semibold text-gray-900">Dr. {{ form.firstName }} {{ form.lastName }}</h2>
-      <p class="text-sm text-secondary font-medium">{{ form.medicalSpecialty }} &middot; {{ form.department }} Dept.</p>
+      <p class="text-sm text-secondary font-medium">{{ form.specialization }} &middot; {{ form.departmentName }} Dept.</p>
 
       <div class="mt-2 flex flex-col sm:flex-row items-center gap-1 sm:gap-4 text-xs text-gray-500">
         <span class="flex items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
             <path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" />
           </svg>
-          St. Mary's Health &mdash; {{ form.city }}
+          {{ form.address }}
         </span>
         <span class="flex items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
             <path fill-rule="evenodd" d="M1.5 4.5a3 3 0 013-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 01-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 006.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 011.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 01-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5z" clip-rule="evenodd" />
           </svg>
-          {{ form.phone }}
+          {{ form.phoneNumber }}
         </span>
       </div>
 
@@ -57,32 +101,26 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="firstName">First Name</label>
-            <input id="firstName" type="text" name="firstName" [(ngModel)]="form.firstName"
+            <input id="firstName" type="text" name="firstName" [(ngModel)]="form.firstName" [ngModelOptions]="{ standalone: true }"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="lastName">Last Name</label>
-            <input id="lastName" type="text" name="lastName" [(ngModel)]="form.lastName"
+            <input id="lastName" type="text" name="lastName" [(ngModel)]="form.lastName" [ngModelOptions]="{ standalone: true }"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="gender">Gender</label>
-            <select id="gender" name="gender" [(ngModel)]="form.gender"
+            <select id="gender" name="gender" [(ngModel)]="form.gender" [ngModelOptions]="{ standalone: true }"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary">
               <option>Male</option>
               <option>Female</option>
-              <option>Other</option>
             </select>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="dob">Date of Birth</label>
-            <input id="dob" type="date" name="dob" [(ngModel)]="form.dateOfBirth"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-          </div>
-          <div class="sm:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="nationality">Nationality</label>
-            <input id="nationality" type="text" name="nationality" [(ngModel)]="form.nationality"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="dob" type="date" name="dob" [ngModel]="form.dateOfBirth" [ngModelOptions]="{ standalone: true }" disabled
+              class="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-400 cursor-not-allowed" />
           </div>
         </div>
       </section>
@@ -97,32 +135,17 @@
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="specialty">Medical Specialty</label>
-            <input id="specialty" type="text" name="specialty" [(ngModel)]="form.medicalSpecialty"
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="specialization">Specialization</label>
+            <input id="specialization" type="text" name="specialization" [(ngModel)]="form.specialization" [ngModelOptions]="{ standalone: true }"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="department">Department</label>
-            <input id="department" type="text" name="department" [(ngModel)]="form.department"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="license">Medical License Number</label>
-            <input id="license" type="text" name="license" [(ngModel)]="form.licenseNumber"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="experience">Years of Experience</label>
-            <input id="experience" type="number" name="experience" [(ngModel)]="form.yearsOfExperience"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-          </div>
-          <div class="sm:col-span-2">
-            <label class="block text-sm font-medium text-gray-400 mb-1" for="registration">
-              Registration ID (Read-only)
-            </label>
-            <input id="registration" type="text" name="registration" [ngModel]="form.registrationId" disabled
+            <label class="block text-sm font-medium text-gray-400 mb-1" for="department">Department</label>
+            <input id="department" type="text" name="department" [ngModel]="form.departmentName" [ngModelOptions]="{ standalone: true }" disabled
               class="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-400 cursor-not-allowed" />
           </div>
+
+          <!-- TODO: licenseNumber, yearsOfExperience, registrationId مش موجودين في أي DTO حاليًا -->
         </div>
       </section>
 
@@ -138,29 +161,21 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="sm:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1" for="email">Email Address</label>
-            <input id="email" type="email" name="email" [(ngModel)]="form.email"
+            <input id="email" type="email" name="email" [(ngModel)]="form.email" [ngModelOptions]="{ standalone: true }"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="phone">Phone Number</label>
-            <input id="phone" type="tel" name="phone" [(ngModel)]="form.phone"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="city">City</label>
-            <input id="city" type="text" name="city" [(ngModel)]="form.city"
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="phoneNumber">Phone Number</label>
+            <input id="phoneNumber" type="tel" name="phoneNumber" [(ngModel)]="form.phoneNumber" [ngModelOptions]="{ standalone: true }"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
           </div>
           <div class="sm:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1" for="address">Address</label>
-            <input id="address" type="text" name="address" [(ngModel)]="form.address"
+            <input id="address" type="text" name="address" [(ngModel)]="form.address" [ngModelOptions]="{ standalone: true }"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
           </div>
-          <div class="sm:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="country">Country</label>
-            <input id="country" type="text" name="country" [(ngModel)]="form.country"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-          </div>
+
+          <!-- TODO: city, country, nationality مش موجودين في أي DTO حاليًا -->
         </div>
       </section>
 
@@ -172,18 +187,8 @@
           </svg>
           <h3 class="text-base font-semibold text-gray-900">Account Settings</h3>
         </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1" for="username">Username (Read-only)</label>
-            <input id="username" type="text" name="username" [ngModel]="form.username" disabled
-              class="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-400 cursor-not-allowed" />
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-400 mb-1" for="pwdReadonly">Password (Read-only)</label>
-            <input id="pwdReadonly" type="password" value="********" disabled
-              class="w-full rounded-lg border border-gray-200 bg-gray-100 px-3 py-2 text-sm text-gray-400 cursor-not-allowed" />
-          </div>
-        </div>
+
+        <!-- TODO: username مش موجود في أي DTO حاليًا -->
 
         <div class="mt-4 flex items-start sm:items-center justify-between gap-4 rounded-lg border border-gray-200 px-4 py-3">
           <div>
@@ -198,76 +203,101 @@
           </button>
         </div>
       </section>
-
-      <!-- Change Password -->
-      <section>
-        <div class="flex items-center gap-2 mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
-            <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd" />
-          </svg>
-          <h3 class="text-base font-semibold text-gray-900">Change Password</h3>
-        </div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div class="sm:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="currentPassword">Current Password</label>
-            <div class="relative">
-              <input [type]="showCurrentPassword() ? 'text' : 'password'" id="currentPassword" name="currentPassword"
-                [(ngModel)]="currentPassword"
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-              <button type="button" (click)="toggleCurrentPassword()"
-                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                  <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                  <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.677-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="newPassword">New Password</label>
-            <div class="relative">
-              <input [type]="showNewPassword() ? 'text' : 'password'" id="newPassword" name="newPassword"
-                [(ngModel)]="newPassword"
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-              <button type="button" (click)="toggleNewPassword()"
-                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                  <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                  <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.677-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1" for="confirmPassword">Confirm Password</label>
-            <div class="relative">
-              <input [type]="showConfirmPassword() ? 'text' : 'password'" id="confirmPassword" name="confirmPassword"
-                [(ngModel)]="confirmPassword"
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-              <button type="button" (click)="toggleConfirmPassword()"
-                class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                  <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                  <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.677-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
     </form>
+
+    <!-- ============ Save Error / Success ============ -->
+    <div *ngIf="saveError()" class="mx-4 sm:mx-6 mb-4 rounded-xl bg-tertiary/10 border border-tertiary/20 px-4 py-3">
+      <p class="text-sm text-tertiary">{{ saveError() }}</p>
+    </div>
+    <div *ngIf="saveSuccess()" class="mx-4 sm:mx-6 mb-4 rounded-xl bg-secondary/10 border border-secondary/20 px-4 py-3">
+      <p class="text-sm text-secondary">Changes saved successfully.</p>
+    </div>
 
     <!-- ============ Footer Actions ============ -->
     <div class="flex flex-col-reverse sm:flex-row items-center justify-end gap-3 border-t border-gray-100 px-4 sm:px-6 py-4">
-      <button type="button" (click)="onReset()"
-        class="w-full sm:w-auto rounded-lg border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+      <button type="button" (click)="onReset()" [disabled]="saving()"
+        class="w-full sm:w-auto rounded-lg border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50">
         Reset
       </button>
-      <button type="button" (click)="onSaveChanges()"
-        class="w-full sm:w-auto rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
-        Save Changes
+      <button type="button" (click)="onSaveChanges()" [disabled]="saving()"
+        class="w-full sm:w-auto rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors disabled:opacity-50">
+        {{ saving() ? 'Saving...' : 'Save Changes' }}
       </button>
     </div>
+
+    <!-- ============ Change Password (separate section, own endpoint) ============ -->
+    <div class="border-t border-gray-100 px-4 sm:px-6 py-6 space-y-4">
+      <div class="flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
+          <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clip-rule="evenodd" />
+        </svg>
+        <h3 class="text-base font-semibold text-gray-900">Change Password</h3>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="sm:col-span-2">
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="currentPassword">Current Password</label>
+          <div class="relative">
+            <input [type]="showCurrentPassword() ? 'text' : 'password'" id="currentPassword" name="currentPassword"
+              [(ngModel)]="currentPassword" [ngModelOptions]="{ standalone: true }"
+              class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <button type="button" (click)="toggleCurrentPassword()"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.677-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="newPassword">New Password</label>
+          <div class="relative">
+            <input [type]="showNewPassword() ? 'text' : 'password'" id="newPassword" name="newPassword"
+              [(ngModel)]="newPassword" [ngModelOptions]="{ standalone: true }"
+              class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <button type="button" (click)="toggleNewPassword()"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.677-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1" for="confirmPassword">Confirm Password</label>
+          <div class="relative">
+            <input [type]="showConfirmPassword() ? 'text' : 'password'" id="confirmPassword" name="confirmPassword"
+              [(ngModel)]="confirmPassword" [ngModelOptions]="{ standalone: true }"
+              class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <button type="button" (click)="toggleConfirmPassword()"
+              class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.487 4.471-5.705 7.697-10.677 7.697-4.97 0-9.186-3.223-10.677-7.69a1.762 1.762 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="passwordError()" class="rounded-xl bg-tertiary/10 border border-tertiary/20 px-4 py-3">
+        <p class="text-sm text-tertiary">{{ passwordError() }}</p>
+      </div>
+      <div *ngIf="passwordSuccess()" class="rounded-xl bg-secondary/10 border border-secondary/20 px-4 py-3">
+        <p class="text-sm text-secondary">Password changed successfully.</p>
+      </div>
+
+      <div class="flex justify-end">
+        <button type="button" (click)="onChangePassword()" [disabled]="changingPassword()"
+          class="w-full sm:w-auto rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors disabled:opacity-50">
+          {{ changingPassword() ? 'Updating...' : 'Update Password' }}
+        </button>
+      </div>
+    </div>
+
+    </ng-container>
 
   </div>
 </div>

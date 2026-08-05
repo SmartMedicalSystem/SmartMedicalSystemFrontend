@@ -1,4 +1,4 @@
-<div class="min-h-screen bg-neutral">
+<div class="min-h-screen bg-neutral p-3 sm:p-4 md:p-6">
   <div class="max-w-6xl mx-auto space-y-5">
 
     <!-- ============ Breadcrumb ============ -->
@@ -17,85 +17,170 @@
     <!-- ============ Page Header ============ -->
     <div>
       <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Patient Details</h1>
-      <p class="text-sm text-gray-500 mt-1">See lab results, AI reports, and patient medical history.</p>
+      <p class="text-sm text-gray-500 mt-1">See lab results, AI reports, and patient session history.</p>
     </div>
+
+    <!-- ============ Loading State ============ -->
+    <div
+      *ngIf="loading()"
+      class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 flex items-center justify-center gap-3"
+    >
+      <svg class="w-5 h-5 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+      </svg>
+      <span class="text-sm text-gray-500">Loading patient...</span>
+    </div>
+
+    <!-- ============ Load Error ============ -->
+    <div
+      *ngIf="!loading() && loadError()"
+      class="rounded-xl bg-tertiary/10 border border-tertiary/20 px-4 py-3"
+    >
+      <p class="text-sm text-tertiary">{{ loadError() }}</p>
+    </div>
+
+    <ng-container *ngIf="!loading() && !loadError()">
 
     <!-- ================= Patient Header ================= -->
-<div class="grid grid-cols-1 xl:grid-cols-4 gap-5">
+    <div class="grid grid-cols-1 xl:grid-cols-4 gap-5">
 
-  <!-- ================= Patient Info Card ================= -->
-  <div class="xl:col-span-3 bg-white border border-gray-200 rounded-xl shadow-sm p-5">
+      <!-- ================= Patient Info Card ================= -->
+      <div class="xl:col-span-3 bg-white border border-gray-200 rounded-xl shadow-sm p-5">
 
-    <div class="flex flex-col md:flex-row gap-5">
+        <div class="flex flex-col md:flex-row gap-5">
 
-      <!-- Avatar -->
-      <div
-        class="w-24 h-24 rounded-xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary shrink-0">
-        SM
-      </div>
+          <!-- Avatar -->
+          <div
+            class="w-24 h-24 rounded-xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary shrink-0">
+            {{ avatarInitials() }}
+          </div>
 
-      <!-- Content -->
-      <div class="flex-1">
+          <!-- Content -->
+          <div class="flex-1">
 
-        <!-- Header -->
-        <div
-          class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-3">
+            <!-- Header -->
+            <div
+              class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-3">
 
-          <div class="flex items-center gap-3 flex-wrap">
-            <h2 class="text-2xl font-bold text-gray-900">
-              {{ patient.name }}
-            </h2>
+              <div class="flex items-center gap-3 flex-wrap">
+                <h2 class="text-2xl font-bold text-gray-900">
+                  {{ patient().name }}
+                </h2>
 
-            <span
-              class="px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
-              {{ patient.status }}
-            </span>
+                <!-- بيبان بس لما يكون فيه session نشطة للمريض ده -->
+                <span
+                  *ngIf="activeSessionId() !== null"
+                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+                >
+                  <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                  Session #{{ activeSessionId() }} Active
+                </span>
+              </div>
+
+            </div>
+
+            <!-- Information -->
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-8 mt-5">
+
+              <div>
+                <p class="text-xs text-gray-500">National ID</p>
+                <p class="font-medium">{{ patient().ssn }}</p>
+              </div>
+
+              <div>
+                <p class="text-xs text-gray-500">Age / Gender</p>
+                <p class="font-medium">
+                  {{ patient().age }} / {{ patient().gender }}
+                </p>
+              </div>
+
+              <div>
+                <p class="text-xs text-gray-500">Blood Group</p>
+                <p class="font-medium text-red-600">
+                  {{ patient().bloodGroup }}
+                </p>
+              </div>
+
+              <div>
+                <p class="text-xs text-gray-500">Phone</p>
+                <p class="font-medium">
+                  {{ patient().phone }}
+                </p>
+              </div>
+
+              <!-- Doctor الحالي اللي فاتح ملف المريض ده - من التوكن -->
+              <div>
+                <p class="text-xs text-gray-500">Doctor</p>
+                <p class="font-medium">
+                  {{ currentDoctorName() || '—' }}
+                </p>
+              </div>
+
+              <!-- Last Visit حقيقية - من آخر Session فعلية للمريض -->
+              <div>
+                <p class="text-xs text-gray-500">Last Visit</p>
+                <p class="font-medium">
+                  <span *ngIf="!loadingSessions()">{{ lastVisitLabel() }}</span>
+                  <span *ngIf="loadingSessions()" class="inline-block w-16 h-4 rounded bg-gray-100 animate-pulse"></span>
+                </p>
+              </div>
+
+            </div>
+
           </div>
 
         </div>
 
-        <!-- Information -->
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-8 mt-5">
+      </div>
 
-          <div>
-            <p class="text-xs text-gray-500">SSN</p>
-            <p class="font-medium">{{ patient.ssn }}</p>
-          </div>
+      <!-- ================= Quick Actions ================= -->
+      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
 
-          <div>
-            <p class="text-xs text-gray-500">Age / Gender</p>
-            <p class="font-medium">
-              {{ patient.age }} / {{ patient.gender }}
-            </p>
-          </div>
+        <h3 class="text-lg font-semibold mb-5">
+          Quick Actions
+        </h3>
 
-          <div>
-            <p class="text-xs text-gray-500">Blood Group</p>
-            <p class="font-medium text-red-600">
-              {{ patient.bloodGroup }}
-            </p>
-          </div>
+        <div class="space-y-3">
 
-          <div>
-            <p class="text-xs text-gray-500">Phone</p>
-            <p class="font-medium">
-              {{ patient.phone }}
-            </p>
-          </div>
+          <!-- مفيش session نشطة → لازم نبدأ واحدة الأول -->
+          <button
+            *ngIf="activeSessionId() === null"
+            (click)="createSession()"
+            class="w-full flex items-center justify-center gap-2 rounded-lg bg-secondary py-3 text-white font-medium hover:bg-secondary/90 transition">
 
-          <div>
-            <p class="text-xs text-gray-500">Assigned Doctor</p>
-            <p class="font-medium">
-              {{ patient.assignedDoctor }}
-            </p>
-          </div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            </svg>
 
-          <div>
-            <p class="text-xs text-gray-500">Last Visit</p>
-            <p class="font-medium">
-              {{ patient.lastVisit }}
-            </p>
-          </div>
+            Start New Session
+          </button>
+
+          <!-- فيه session نشطة → الإجراءات اللي جواها -->
+          <ng-container *ngIf="activeSessionId() !== null">
+            <button
+              (click)="requestLabTest()"
+              class="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-3 text-white font-medium hover:bg-primary/90 transition">
+
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+
+              Request Laboratory Test
+            </button>
+
+            <button
+              (click)="closeSession()"
+              class="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 font-medium text-gray-700 hover:bg-gray-50 transition">
+
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+
+              Close Session
+            </button>
+          </ng-container>
 
         </div>
 
@@ -103,65 +188,8 @@
 
     </div>
 
-  </div>
-
-  <!-- ================= Quick Actions ================= -->
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-
-    <h3 class="text-lg font-semibold mb-5">
-      Quick Actions
-    </h3>
-
-    <div class="space-y-3">
-
-      <button
-        (click)="requestLabTest()"
-        class="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-3 text-white font-medium hover:bg-primary/90 transition">
-
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-5 h-5"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor">
-
-          <path stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4v16m8-8H4"/>
-        </svg>
-
-        Request Laboratory Test
-
-      </button>
-
-      <button
-        (click)="exportReport()"
-        class="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 font-medium text-gray-700 hover:bg-gray-50 transition">
-
-        <svg xmlns="http://www.w3.org/2000/svg"
-             class="w-5 h-5"
-             fill="none"
-             viewBox="0 0 24 24"
-             stroke="currentColor">
-
-          <path stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 16v-8m0 8l3-3m-3 3l-3-3M5 20h14"/>
-        </svg>
-
-        Export Patient Report (PDF)
-
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
-    <!-- ============ Stats Row ============ -->
-    <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <!-- ============ Stats Row (كل الأرقام هنا محسوبة من بيانات حقيقية) ============ -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
       <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
@@ -169,7 +197,7 @@
           </svg>
         </div>
         <div>
-          <p class="text-lg font-bold text-gray-900">{{ stats.totalLabTests }}</p>
+          <p class="text-lg font-bold text-gray-900">{{ labResults().length }}</p>
           <p class="text-xs text-gray-500">Total Lab Tests</p>
         </div>
       </div>
@@ -180,30 +208,19 @@
           </svg>
         </div>
         <div>
-          <p class="text-lg font-bold text-gray-900">{{ stats.pendingAiReports }}</p>
-          <p class="text-xs text-gray-500">Pending AI Reports</p>
+          <p class="text-lg font-bold text-gray-900">{{ pendingAiAnalysisCount() }}</p>
+          <p class="text-xs text-gray-500">Pending AI Analysis</p>
         </div>
       </div>
       <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
         <div class="w-9 h-9 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-lg font-bold text-gray-900">{{ stats.approvedReports }}</p>
-          <p class="text-xs text-gray-500">Approved Reports</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
             <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
           </svg>
         </div>
         <div>
-          <p class="text-lg font-bold text-gray-900">{{ stats.lastResultDate }}</p>
-          <p class="text-xs text-gray-500">Last Result Date</p>
+          <p class="text-lg font-bold text-gray-900">{{ sessions().length }}</p>
+          <p class="text-xs text-gray-500">Total Sessions</p>
         </div>
       </div>
     </div>
@@ -228,24 +245,56 @@
         </button>
 
         <div *ngIf="isOpen('personal')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-            <div>
-              <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Contact Details</h4>
-              <p class="text-sm text-gray-800">{{ contactDetails.address }}</p>
-              <p class="text-sm text-gray-800 mt-1">{{ contactDetails.phone }}</p>
-              <p class="text-sm text-primary mt-1">{{ contactDetails.email }}</p>
-            </div>
-            <div>
-              <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Insurance &amp; Identification</h4>
-              <p class="text-sm text-gray-800">{{ insurance.provider }}</p>
-              <p class="text-sm text-gray-500 mt-1">Policy No: {{ insurance.policyNumber }}</p>
-            </div>
-            <div>
-              <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Emergency Contact</h4>
-              <p class="text-sm text-gray-800">{{ patient.emergencyContactName }} ({{ patient.emergencyContactRelation }})</p>
-              <p class="text-sm text-gray-500 mt-1">{{ patient.emergencyContactPhone }}</p>
-            </div>
+          <div>
+            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Contact Details</h4>
+            <p class="text-sm text-gray-800">{{ patient().address }}</p>
+            <p class="text-sm text-gray-800 mt-1">{{ patient().phone }}</p>
           </div>
+        </div>
+      </div>
+
+      <!-- ---- Sessions History (جديدة، بيانات حقيقية، مش مكررة من أي صفحة تانية) ---- -->
+      <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+        <button type="button" (click)="toggleSection('sessions')"
+          class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left">
+          <span class="flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
+              <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
+            </svg>
+            <span class="text-sm font-semibold text-gray-900">Sessions History</span>
+            <span class="text-xs text-gray-400">({{ sessions().length }})</span>
+          </span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+            class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('sessions') ? 'rotate-180' : ''">
+            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
+          </svg>
+        </button>
+
+        <div *ngIf="isOpen('sessions')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
+
+          <div *ngIf="loadingSessions()" class="flex items-center justify-center gap-2 py-6">
+            <svg class="w-4 h-4 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <span class="text-sm text-gray-500">Loading sessions...</span>
+          </div>
+
+          <div *ngIf="!loadingSessions() && sessions().length === 0" class="text-sm text-gray-400 text-center py-6">
+            No sessions recorded for this patient yet.
+          </div>
+
+          <ol *ngIf="!loadingSessions() && sessions().length > 0" class="relative border-l-2 border-gray-100 ml-2 space-y-6">
+            <li *ngFor="let s of sessions()" class="ml-4">
+              <span class="absolute -left-[7px] w-3 h-3 rounded-full bg-primary"></span>
+              <p class="text-xs text-gray-400">{{ s.sessionDate | date }}</p>
+              <p class="text-sm font-semibold text-gray-900 mt-0.5">
+                Session #{{ s.id }}
+                <span *ngIf="s.doctorName" class="font-normal text-gray-500">&middot; {{ s.doctorName }}</span>
+              </p>
+              <p class="text-sm text-gray-700 mt-1" *ngIf="s.notes">{{ s.notes }}</p>
+            </li>
+          </ol>
         </div>
       </div>
 
@@ -267,46 +316,54 @@
         </button>
 
         <div *ngIf="isOpen('lab')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
-          <div class="flex items-center justify-between mb-3">
-            <button type="button" (click)="viewHistoricalTrends()" class="text-xs font-medium text-primary hover:underline">
-              View Historical Trends
-            </button>
-            <button type="button" (click)="requestNewAnalysis()"
-              class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
-                <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
-              </svg>
-              New Analysis
-            </button>
+
+          <div *ngIf="loadingResults()" class="flex items-center justify-center gap-2 py-6">
+            <svg class="w-4 h-4 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+            </svg>
+            <span class="text-sm text-gray-500">Loading lab results...</span>
           </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm">
-              <thead>
-                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-100">
-                  <th class="py-2 pr-4">Laboratory Test</th>
-                  <th class="py-2 pr-4">Laboratory</th>
-                  <th class="py-2 pr-4">Date</th>
-                  <th class="py-2 pr-4">Status</th>
-                  <th class="py-2 text-right">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr *ngFor="let result of labResults()" class="border-b border-gray-50 last:border-0">
-                  <td class="py-3 pr-4 font-medium text-gray-900 whitespace-nowrap">{{ result.test }}</td>
-                  <td class="py-3 pr-4 text-gray-600 whitespace-nowrap">{{ result.lab }}</td>
-                  <td class="py-3 pr-4 text-gray-600 whitespace-nowrap">{{ result.date }}</td>
-                  <td class="py-3 pr-4 whitespace-nowrap">
-                    <span *ngIf="result.status === 'critical'" class="inline-flex items-center rounded-full bg-tertiary/10 text-tertiary text-xs font-medium px-2.5 py-1">Critical</span>
-                    <span *ngIf="result.status === 'normal'" class="inline-flex items-center rounded-full bg-secondary/10 text-secondary text-xs font-medium px-2.5 py-1">Normal</span>
-                    <span *ngIf="result.status === 'pending'" class="inline-flex items-center rounded-full bg-gray-100 text-gray-500 text-xs font-medium px-2.5 py-1">Pending</span>
-                  </td>
-                  <td class="py-3 text-right">
-                    <button type="button" (click)="viewLabResult(result)" class="text-xs font-medium text-primary hover:underline whitespace-nowrap">View Result</button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+
+          <div *ngIf="!loadingResults() && resultsError()" class="text-sm text-tertiary text-center py-6">
+            {{ resultsError() }}
           </div>
+
+          <div *ngIf="!loadingResults() && !resultsError() && labResults().length === 0" class="text-sm text-gray-400 text-center py-6">
+            No lab results available yet.
+          </div>
+
+          <div *ngIf="!loadingResults() && !resultsError() && labResults().length > 0" class="space-y-4">
+            <div *ngFor="let result of labResults()" class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
+              <div class="flex items-center justify-between mb-3">
+                <p class="text-sm font-semibold text-gray-900">{{ getTestName(result.labTestId) }}</p>
+                <span class="text-xs text-gray-400">Session #{{ result.sessionId }}</span>
+              </div>
+
+              <div class="space-y-3">
+                <div>
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Summary</p>
+                  <p class="text-sm text-gray-700 mt-0.5">{{ result.summary }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Classification</p>
+                  <p class="text-sm text-gray-700 mt-0.5">{{ result.aiClassifiedReport }}</p>
+                </div>
+                <div>
+                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Suggestion</p>
+                  <p class="text-sm text-gray-700 mt-0.5">{{ result.aiSuggestion }}</p>
+                </div>
+              </div>
+
+              <div class="flex items-center justify-end mt-3">
+                <button type="button" (click)="generateAnalysisFor(result)" [disabled]="generatingResultId() === result.id"
+                  class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors disabled:opacity-50">
+                  {{ generatingResultId() === result.id ? 'Generating...' : 'Generate AI Analysis' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
 
@@ -319,7 +376,6 @@
               <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3.03 5.47a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-2.25-2.25a.75.75 0 111.06-1.06l1.72 1.72 3.97-3.97a.75.75 0 011.06 0z" clip-rule="evenodd" />
             </svg>
             <span class="text-sm font-semibold text-gray-900">AI Reports</span>
-            <span class="text-xs text-tertiary font-medium">({{ aiReports().length }} Pending)</span>
           </span>
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
             class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('ai') ? 'rotate-180' : ''">
@@ -327,121 +383,174 @@
           </svg>
         </button>
 
-        <div *ngIf="isOpen('ai')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4 space-y-4">
-          <div *ngFor="let report of aiReports()" class="rounded-lg border border-tertiary/20 bg-tertiary/5 p-4">
-            <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-              <div>
-                <p class="text-sm font-semibold text-gray-900">{{ report.title }}</p>
-                <p class="text-xs text-gray-500">{{ report.subtitle }} &middot; {{ report.reportId }}</p>
-              </div>
-              <div class="flex items-center gap-2 shrink-0">
-                <span class="text-xs text-gray-500">Confidence: <span class="font-semibold text-gray-800">{{ report.confidence }}%</span></span>
-                <span class="inline-flex items-center rounded-full bg-tertiary/10 text-tertiary text-xs font-medium px-2.5 py-1">Pending</span>
-              </div>
-            </div>
+        <div *ngIf="isOpen('ai')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
 
-            <p class="text-sm text-gray-700 mt-3 leading-relaxed">{{ report.summary }}</p>
-
-            <div class="mt-3">
-              <label class="block text-xs font-medium text-gray-500 mb-1">Doctor Verification Notes</label>
-              <textarea rows="2" [(ngModel)]="report.doctorNotes" [ngModelOptions]="{ standalone: true }"
-                placeholder="Add your assessment or validation comments..."
-                class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"></textarea>
-            </div>
-
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mt-3">
-              <p class="text-xs text-gray-400">Generated on: {{ report.generatedOn }}</p>
-              <div class="flex gap-2">
-                <button type="button" (click)="rejectAiReport(report)"
-                  class="rounded-lg border border-tertiary/30 px-4 py-1.5 text-xs font-medium text-tertiary hover:bg-tertiary/10 transition-colors">
-                  Reject Report
-                </button>
-                <button type="button" (click)="approveAiReport(report)"
-                  class="rounded-lg bg-secondary px-4 py-1.5 text-xs font-medium text-white hover:bg-secondary/90 transition-colors">
-                  Approve AI Analysis
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- ---- Medical Notes ---- -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <button type="button" (click)="toggleSection('notes')"
-          class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
-              <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z" clip-rule="evenodd" />
+          <div *ngIf="loadingAiReport()" class="flex items-center justify-center gap-2 py-6">
+            <svg class="w-4 h-4 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
             </svg>
-            <span class="text-sm font-semibold text-gray-900">Medical Notes</span>
-          </span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-            class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('notes') ? 'rotate-180' : ''">
-            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
-          </svg>
-        </button>
-
-        <div *ngIf="isOpen('notes')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4 space-y-4">
-          <div class="flex flex-col sm:flex-row gap-2">
-            <input type="text" [(ngModel)]="newNoteText" [ngModelOptions]="{ standalone: true }"
-              placeholder="Write a new clinical note..."
-              class="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
-            <button type="button" (click)="addNewNote()"
-              class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-xs font-medium text-white hover:bg-primary/90 transition-colors whitespace-nowrap">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
-                <path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />
-              </svg>
-              Add New Note
-            </button>
+            <span class="text-sm text-gray-500">Loading AI report...</span>
           </div>
 
-          <div class="space-y-4">
-            <div *ngFor="let note of medicalNotes()" class="flex gap-3">
-              <div class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
-                {{ note.doctorName.split(' ')[1]?.charAt(0) }}{{ note.doctorName.split(' ')[2]?.charAt(0) }}
-              </div>
-              <div class="flex-1 border-b border-gray-50 pb-4 last:border-0">
-                <div class="flex flex-wrap items-baseline gap-x-2">
-                  <p class="text-sm font-semibold text-gray-900">{{ note.doctorName }}</p>
-                  <p class="text-xs text-gray-400">{{ note.specialty }} &middot; {{ note.date }}</p>
-                </div>
-                <p class="text-sm text-gray-700 mt-1 leading-relaxed">{{ note.text }}</p>
-              </div>
+          <div *ngIf="!loadingAiReport() && aiReportError()" class="text-sm text-tertiary text-center py-6">
+            {{ aiReportError() }}
+          </div>
+
+          <div *ngIf="!loadingAiReport() && !aiReportError() && aiReport()" class="space-y-4">
+            <div *ngIf="aiReport()?.overallAISummary" class="rounded-lg border border-tertiary/20 bg-tertiary/5 p-4">
+              <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Overall Summary</p>
+              <p class="text-sm text-gray-700 leading-relaxed">{{ aiReport()?.overallAISummary }}</p>
+            </div>
+
+            <div *ngIf="(aiReport()?.results?.length ?? 0) === 0" class="text-sm text-gray-400 text-center py-6">
+              No AI analysis generated yet for this patient's results.
+            </div>
+
+            <div *ngFor="let analysis of aiReport()?.results" class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
+              <p class="text-xs text-gray-400 mb-2">Result #{{ analysis.patientResultId }}</p>
+              <p class="text-sm text-gray-700 leading-relaxed">{{ analysis.aiClassifiedReport }}</p>
+              <p class="text-sm text-gray-700 leading-relaxed mt-2">{{ analysis.aiSuggestion }}</p>
             </div>
           </div>
-        </div>
-      </div>
 
-      <!-- ---- Patient History ---- -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <button type="button" (click)="toggleSection('history')"
-          class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
-              <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 000-1.5h-3.75V6z" clip-rule="evenodd" />
-            </svg>
-            <span class="text-sm font-semibold text-gray-900">Patient History</span>
-          </span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-            class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('history') ? 'rotate-180' : ''">
-            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
-          </svg>
-        </button>
-
-        <div *ngIf="isOpen('history')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
-          <ol class="relative border-l-2 border-gray-100 ml-2 space-y-6">
-            <li *ngFor="let entry of historyEntries()" class="ml-4">
-              <span class="absolute -left-[7px] w-3 h-3 rounded-full bg-primary"></span>
-              <p class="text-xs text-gray-400">{{ entry.date }}</p>
-              <p class="text-sm font-semibold text-gray-900 mt-0.5">{{ entry.title }}</p>
-              <p class="text-xs text-gray-500">{{ entry.doctor }}</p>
-              <p class="text-sm text-gray-700 mt-1">{{ entry.description }}</p>
-            </li>
-          </ol>
         </div>
       </div>
 
     </div>
+
+    <!-- ============ Floating AI Chat ============ -->
+
+<div class="fixed bottom-6 right-6 z-50">
+
+  <!-- Chat Window -->
+  <div
+    *ngIf="chatOpen()"
+    class="mb-4 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+  >
+
+    <!-- Header -->
+    <div
+      class="bg-primary text-white px-4 py-3 flex items-center justify-between"
+    >
+      <div>
+        <h3 class="font-semibold text-sm">
+          Medical AI Assistant
+        </h3>
+
+        <p class="text-xs opacity-80">
+          Patient #{{ patientId }}
+        </p>
+      </div>
+
+      <button
+        type="button"
+        (click)="toggleChat()"
+        class="text-white text-xl leading-none"
+      >
+        ×
+      </button>
+    </div>
+
+
+    <!-- Messages -->
+    <div
+      class="h-80 overflow-y-auto p-4 space-y-3 bg-gray-50"
+    >
+
+      <div
+        *ngFor="let message of chatMessages()"
+        class="flex"
+        [ngClass]="message.role === 'user'
+          ? 'justify-end'
+          : 'justify-start'"
+      >
+
+        <div
+          class="max-w-[80%] rounded-xl px-3 py-2 text-sm"
+          [ngClass]="message.role === 'user'
+            ? 'bg-primary text-white'
+            : 'bg-white border border-gray-200 text-gray-700'"
+        >
+
+          {{ message.content }}
+
+        </div>
+
+      </div>
+
+
+      <!-- AI Loading -->
+      <div
+        *ngIf="chatLoading()"
+        class="text-xs text-gray-400"
+      >
+        AI is thinking...
+      </div>
+
+    </div>
+
+
+    <!-- Input -->
+    <div
+      class="p-3 border-t border-gray-100 flex gap-2 bg-white"
+    >
+
+      <input
+        type="text"
+        placeholder="Ask about patient..."
+        class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+        [ngModel]="chatInput()"
+        (ngModelChange)="chatInput.set($event)"
+        (keyup.enter)="sendChatMessage()"
+      />
+
+
+      <button
+        type="button"
+        (click)="sendChatMessage()"
+        [disabled]="chatLoading()"
+        class="px-3 rounded-lg bg-primary text-white text-sm disabled:opacity-50"
+      >
+        Send
+      </button>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Floating Button -->
+  <button
+    type="button"
+    (click)="toggleChat()"
+    class="w-14 h-14 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-105 transition"
+  >
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="w-7 h-7"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8L3 21l1.8-4.2A7.8 7.8 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+      />
+
+    </svg>
+
+  </button>
+
+</div>
+
+
+    </ng-container>
+
   </div>
 </div>
