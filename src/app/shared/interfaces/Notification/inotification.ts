@@ -3,4 +3,5 @@ export interface INotification {
   message: string;
   sentAt: string;
   isRead: boolean;
+  isNew?: boolean;
 }

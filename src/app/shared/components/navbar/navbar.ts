@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, inject, output, Output, signal } from '@angular/core';
+import { Component, computed, EventEmitter, inject, output, Output, signal } from '@angular/core';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import {
@@ -53,7 +53,9 @@ export class Navbar {
   // Buttons
   export = faFileExport;
   aiScan = faChartColumn;
-  image: string = '';
+  image = computed(() => this.authServ.userImage());
+
+  isRealImage: boolean = false;
 
   role: string = '';
   userName: string = '';
@@ -63,9 +65,15 @@ export class Navbar {
     this.role = this.authServ.getUserRole() || '';
     this.userName =
       decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'];
-    this.image = this.authServ.getUserImage();
-    console.log(this.image);
+
+    if (this.image() === 'https://smartmedicalsystem.runasp.net/') {
+      this.isRealImage = false;
+    } else {
+      this.isRealImage = true;
+    }
+
   }
+
 
   bars = faBars;
   @Output() toggleSidebar = new EventEmitter();

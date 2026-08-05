@@ -58,8 +58,15 @@
             {{ this.role }}
           </p>
         </div>
-
-        <img src="{{ this.image }}" alt="User" class="w-14 h-14 rounded-full object-cover" />
+        @if (isRealImage) {
+          <img [src]="image()" alt="User" class="w-14 h-14 rounded-full object-cover" />
+        } @else {
+          <img
+            src="https://w7.pngwing.com/pngs/340/946/png-transparent-avatar-user-computer-icons-software-developer-avatar-child-face-heroes.png"
+            alt="User"
+            class="w-14 h-14 rounded-full object-cover"
+          />
+        }
       </div>
     </div>
   </div>

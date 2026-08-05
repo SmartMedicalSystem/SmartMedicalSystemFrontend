@@ -62,7 +62,8 @@
         <button
           (click)="markAsRead(notification)"
           class="group flex w-full items-start gap-4 border-b border-gray-100 px-6 py-5 text-left transition"
-          [class.unread]="!notification.isRead"
+          [class.notification-new]="notification.isNew"
+          [class.notification-unread]="!notification.isRead"
           [class.bg-blue-50]="!notification.isRead"
           [class.hover:bg-blue-100]="!notification.isRead"
           [class.hover:bg-slate-50]="notification.isRead"

@@ -16,6 +16,9 @@ export class AllRequests {
 
   requests: any[] = [];
 
+  pendingRequests: any[] = [];
+  completedRequests: any[] = [];
+
   // ================= Used by HTML =================
 
   totalCount = 0;
@@ -31,23 +34,29 @@ export class AllRequests {
 
   // ================================================
 
-  constructor(private requestLabsService: RequestLabsService, private router: Router) {
+  constructor(
+    private requestLabsService: RequestLabsService,
+    private router: Router
+  ) {
     this.LoadRequestLabs();
   }
 
   LoadRequestLabs(): void {
     this.requestLabsService.RequestLabsTable().subscribe({
       next: (res: any) => {
-        console.log(res);
         this.requests = res.items ?? [];
         this.totalCount = res.totalCount ?? this.requests.length;
-
+        this.pendingRequests = this.requests.filter((request: any) =>
+          request.requestLabTests?.some((test: any) => test.status === 'Pending')
+        );
+        this.completedRequests = this.requests.filter((request: any) =>
+          request.requestLabTests?.length > 0 &&
+          request.requestLabTests.every((test: any) => test.status === 'Completed')
+        );
         this.calculateStats();
       },
 
       error: (err: any) => {
-        console.error(err);
-
         Swal.fire({
           icon: 'error',
           title: 'Oops...',
@@ -62,14 +71,9 @@ export class AllRequests {
 
   private calculateStats(): void {
     const today = new Date().toDateString();
-
-    this.stats.pending = this.requests.filter(
-      (item: any) => item.status === 'Pending'
-    ).length;
-
-    this.stats.completedToday = this.requests.filter(
+    this.stats.pending = this.pendingRequests.length;
+    this.stats.completedToday = this.completedRequests.filter(
       (item: any) =>
-        item.status === 'Completed' &&
         item.completedAt &&
         new Date(item.completedAt).toDateString() === today
     ).length;
@@ -106,7 +110,9 @@ export class AllRequests {
 
   goToRequestDetails(requestId: number, labTestsId: number): void {
     localStorage.setItem('labTestsId', labTestsId.toString());
-    this.router.navigate(['labtechnician/dashboard/requests//test-results/', requestId]);
+    this.router.navigate([
+      'labtechnician/dashboard/requests/test-results',
+      requestId
+    ]);
   }
-
 }

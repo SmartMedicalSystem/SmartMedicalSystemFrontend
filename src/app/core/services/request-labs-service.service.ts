@@ -28,11 +28,4 @@ export class RequestLabsService {
       `${this.baseUrl}/by-session/${sessionId}`
     );
   }
-
-  UpdateRequestStatus(id: number, data: any): Observable<any> {
-    return this.http.put(
-      `${this.baseUrl}/${id}/status`,
-      data
-    );
-  }
 }

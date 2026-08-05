@@ -62,5 +62,13 @@ export class TestResultService {
       `${this.api}/PatientAIReports/patients/${patientId}/full-report`
     );
   }
+
+  PatchRequestStatus(requestLabId: number, labTestId: number, data: any): Observable<any> {
+    return this.http.patch(
+      `${this.api}/request-labs/${requestLabId}/lab-tests/${labTestId}/status`,
+      data
+    );
+  }
+
 }
 
