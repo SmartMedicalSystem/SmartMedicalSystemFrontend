@@ -8,16 +8,21 @@ import { Patient as ApiPatient } from '../../../shared/interfaces/Doctor/patient
 
 // TODO: تأكد من ترتيب enum BloodType الفعلي في الباك (Domain.Enums.BloodType)
 // وعدّل الترتيب هنا لو مختلف — نفس الملاحظة المتكررة في patient-details.ts
-const BLOOD_TYPE_MAP: Record<number, string> = {
-  0: 'A+',
-  1: 'A-',
-  2: 'B+',
-  3: 'B-',
-  4: 'AB+',
-  5: 'AB-',
-  6: 'O+',
-  7: 'O-',
+const BLOOD_TYPE_MAP: Record<string, string> = {
+  APositive: 'A+',
+  ANegative: 'A-',
+  BPositive: 'B+',
+  BNegative: 'B-',
+  ABPositive: 'AB+',
+  ABNegative: 'AB-',
+  OPositive: 'O+',
+  ONegative: 'O-',
 };
+
+function displayBloodType(raw: string | null | undefined): string {
+  if (!raw) return 'Unknown';
+  return BLOOD_TYPE_MAP[raw] ?? raw;
+}
 
 interface DisplayPatient {
   id: number;

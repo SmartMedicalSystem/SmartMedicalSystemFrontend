@@ -15,6 +15,7 @@ import {
   DoctorReadDto,
   DoctorCreateDto,
   DoctorUpdateDto,
+  Doctor,
 } from '../../shared/interfaces/Doctor/doctor.interface';
 import {
   AIChatRequestDto,
@@ -40,6 +41,9 @@ import {
   UserUpdateDto,
   ChangePasswordRequestDto,
 } from '../../shared/interfaces/Doctor/profile.interface';
+import { CreateDoctorDto } from '../../shared/interfaces/Doctor/create-doctor.interface';
+import { UpdateDoctorDto } from '../../shared/interfaces/Doctor/update-doctor.interface';
+import { DoctorResponse } from '../../shared/interfaces/Doctor/doctor-response.interface';
 
 // إعادة تصدير الأنواع دي عشان أي ملف قديم بيستوردها من doctor-service ما ينكسرش
 // (زي ما حصل قبل كده مع Patient). لو كل الأماكن اتظبطت تستورد من shared/interfaces
@@ -83,7 +87,7 @@ export type {
 })
 export class DoctorService {
 
-  private readonly apiUrl =
+  private readonly apiUrlP =
     'https://smartmedicalsystem.runasp.net/api/Patients';
 
   private readonly requestLabsApiUrl =
@@ -151,14 +155,14 @@ export class DoctorService {
       params = params.set('maxAge', maxAge);
     }
 
-    return this.http.get<PaginatedResponse<Patient>>(this.apiUrl, {
+    return this.http.get<PaginatedResponse<Patient>>(this.apiUrlP, {
       params,
     });
   }
 
   // مطابقة لـ PatientsController.GetById
   getPatientById(id: number): Observable<Patient> {
-    return this.http.get<Patient>(`${this.apiUrl}/by-id/${id}`);
+    return this.http.get<Patient>(`${this.apiUrlP}/by-id/${id}`);
   }
 
   // ============ Request Labs ============
@@ -415,4 +419,31 @@ askPatientAI(
   );
 
 }
+
+private apiUrl = 'https://smartmedicalsystem.runasp.net/api/Doctors';
+
+  // ================= GET BY SSN (nationalId) =================
+  getDoctorBySSN(ssn: string): Observable<Doctor> {
+    return this.http.get<Doctor>(`${this.apiUrl}/${ssn}`);
+  }
+
+  // ================= CREATE =================
+  addDoctor(dto: CreateDoctorDto): Observable<Doctor> {
+    return this.http.post<Doctor>(`${this.apiUrl}/create`, dto);
+  }
+
+  // ================= DELETE (بالـ id) =================
+  deleteDoctor(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/by-id/${id}`);
+  }
+
+  updateDoctorY(id: number, dto: UpdateDoctorDto): Observable<Doctor> {
+    return this.http.put<Doctor>(`${this.apiUrl}/by-id/${id}`, dto);
+  }
+  getAllDoctorsY(pageNumber: number = 1, pageSize: number = 10): Observable<DoctorResponse> {
+    return this.http.get<DoctorResponse>(
+      `${this.apiUrl}?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    );
+  }
+
 }

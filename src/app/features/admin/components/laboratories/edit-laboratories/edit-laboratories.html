@@ -206,7 +206,7 @@
                 [(ngModel)]="laboratory.departmentId"
                 name="departmentId"
               >
-                <option [ngValue]="null">Select a department...</option>
+                <option [ngValue]="null">Not Assigned</option>
                 @if (isLoadingDepartments) {
                   <option disabled>Loading departments...</option>
                 } @else {
@@ -266,7 +266,7 @@
                 [(ngModel)]="laboratory.headTechnicianId"
                 name="headTechnicianId"
               >
-                <option [ngValue]="null">Select a technician...</option>
+                <option [ngValue]="null">Not Assigned</option>
                 @if (isLoadingTechnicians) {
                   <option disabled>Loading technicians...</option>
                 } @else {

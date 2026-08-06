@@ -5,6 +5,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 import { faArrowRightFromBracket, faBuilding, faCircleQuestion, faFlask, faFolderOpen, faGaugeHigh, faGear, faHospital, faUserDoctor, faUsersGear } from '@fortawesome/free-solid-svg-icons';
 import { AuthenticationService } from '../../../core/services/authenticationService.service';
+import { NotificationHubService } from '../../../core/services/notification-hub.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -31,7 +32,7 @@ export class Sidebar {
 
   role: string = '';
 
-  constructor(private authServ: AuthenticationService) {
+  constructor(private notificationHub: NotificationHubService, private authServ: AuthenticationService) {
     this.role = this.authServ.getUserRole() || '';
   }
 
@@ -44,6 +45,8 @@ export class Sidebar {
 
 
   logoutFN(): void {
+    this.notificationHub.stopConnection();
+    this.notificationHub.clear();
     this.authServ.logout();
   }
 

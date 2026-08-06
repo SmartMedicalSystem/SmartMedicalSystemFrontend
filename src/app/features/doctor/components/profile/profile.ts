@@ -143,7 +143,7 @@ export class Profile implements OnInit {
     const token = this.authService.getAccessToken();
     const id = getCurrentDoctorIdFromToken(token);
     // fallback أول تحميل لحد ما رد GetMyProfile يوصل (وده المصدر الأساسي فعليًا)
-    const tokenPhotoUrl = this.authService.userImageSignal() || null;
+    const tokenPhotoUrl = this.authService.userImage() || null;
 
     if (!id) {
       this.loadError.set('Could not determine the current doctor from the session, please sign in again.');

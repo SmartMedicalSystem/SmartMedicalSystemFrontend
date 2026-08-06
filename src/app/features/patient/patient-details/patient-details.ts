@@ -30,17 +30,28 @@ interface DisplayPatient {
 
 type SectionId = 'personal' | 'lab' | 'ai' | 'sessions';
 
-// TODO: تأكد من ترتيب enum BloodType الفعلي في الباك (Domain.Enums.BloodType)
-const BLOOD_TYPE_MAP: Record<number, string> = {
-  0: 'A+',
-  1: 'A-',
-  2: 'B+',
-  3: 'B-',
-  4: 'AB+',
-  5: 'AB-',
-  6: 'O+',
-  7: 'O-',
+// ⚠️ bloodType بيرجع من الباك كـ string (اسم الـ enum زي gender بالظبط)، مش
+// رقم. المفاتيح هنا لازم تتأكد إنها مطابقة تمامًا لأسامي Domain.Enums.BloodType
+// الحقيقية (خمّنت الأسامي الشائعة: APositive/ANegative/... إلخ - لو مختلفة
+// عندك، عدّل المفاتيح بس، مش القيم).
+const BLOOD_TYPE_MAP: Record<string, string> = {
+  APositive: 'A+',
+  ANegative: 'A-',
+  BPositive: 'B+',
+  BNegative: 'B-',
+  ABPositive: 'AB+',
+  ABNegative: 'AB-',
+  OPositive: 'O+',
+  ONegative: 'O-',
 };
+
+// لو مالقتش القيمة في الماب فوق (اسم مختلف عن المتوقع)، نعرض القيمة الخام
+// اللي راجعة من الباك بدل "Unknown" علشان الداتا الحقيقية تفضل بايظة على
+// الشاشة وتكون سهلة نلاحظها ونصلح المفتاح المطابق بدل ما تختفي تمامًا.
+function displayBloodType(raw: string | null | undefined): string {
+  if (!raw) return 'Unknown';
+  return BLOOD_TYPE_MAP[raw] ?? raw;
+}
 
 @Component({
   selector: 'app-patient-details',
@@ -272,7 +283,8 @@ export class PatientDetails implements OnInit {
       ssn: this.maskNationalId(p.nationalId),
       age: p.age,
       gender: p.gender,
-      bloodGroup: BLOOD_TYPE_MAP[p.bloodType] ?? 'Unknown',
+      // bloodType هنا نوعه string دلوقتي (اسم enum) مش number
+      bloodGroup: displayBloodType(p.bloodType as unknown as string),
       phone: String(p.mobileNumber),
       address: p.address,
     };

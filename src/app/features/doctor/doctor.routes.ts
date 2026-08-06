@@ -29,6 +29,12 @@ export const doctorRoutes: Routes = [
                 .then(m => m.Home)
           },
           {
+            path: 'notification',
+            loadComponent: () =>
+              import('../../shared/components/notification-page/notification-page')
+                .then(m => m.NotificationPage)
+          },
+          {
             path: 'profile',
             loadComponent: () =>
               import('./components/profile/profile')

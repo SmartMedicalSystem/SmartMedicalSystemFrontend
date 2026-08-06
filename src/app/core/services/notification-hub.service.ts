@@ -1,8 +1,8 @@
 import { Injectable, signal } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 
-import { AuthenticationService } from './authenticationService.service';
 import { INotification } from '../../shared/interfaces/Notification/inotification';
+import { AuthenticationService } from './authenticationService.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,13 +29,29 @@ export class NotificationHubService {
       .withAutomaticReconnect()
       .build();
 
+    // Register events once
+    this.registerEvents();
+
+    // Connection lifecycle
+    this.hubConnection.onreconnecting(error => {
+      console.warn('🔄 SignalR Reconnecting...', error);
+    });
+
+    this.hubConnection.onreconnected(connectionId => {
+      console.log('✅ SignalR Reconnected', connectionId);
+    });
+
+    this.hubConnection.onclose(error => {
+      console.warn('❌ SignalR Closed', error);
+    });
+
   }
 
-  // =============================
-  // SignalR Connection
-  // =============================
+  // ==========================================
+  // Connection
+  // ==========================================
 
-  startConnection(): void {
+  async startConnection(): Promise<void> {
 
     if (
       this.hubConnection.state !==
@@ -44,32 +60,43 @@ export class NotificationHubService {
       return;
     }
 
-    this.hubConnection
-      .start()
-      .then(() => {
+    try {
 
-        console.log('✅ SignalR Connected');
+      await this.hubConnection.start();
 
-        this.registerEvents();
+      console.log(
+        '✅ SignalR Connected',
+        this.hubConnection.connectionId
+      );
 
-      })
-      .catch(error => {
+    } catch (error) {
 
-        console.error('❌ SignalR Error', error);
+      console.error('❌ SignalR Error', error);
 
-      });
+      throw error;
 
-  }
-
-  stopConnection(): Promise<void> {
-
-    return this.hubConnection.stop();
+    }
 
   }
 
-  // =============================
+  async stopConnection(): Promise<void> {
+
+    if (
+      this.hubConnection.state ===
+      signalR.HubConnectionState.Disconnected
+    ) {
+      return;
+    }
+
+    await this.hubConnection.stop();
+
+    console.log('🛑 SignalR Disconnected');
+
+  }
+
+  // ==========================================
   // SignalR Events
-  // =============================
+  // ==========================================
 
   private registerEvents(): void {
 
@@ -79,15 +106,19 @@ export class NotificationHubService {
       'ReceiveNotification',
       (message: string, sentAt: string) => {
 
+        console.log('📢 Notification Received');
+
         const notification: INotification = {
 
-          id: Date.now(), // مؤقتًا لحد ما الباك يرجع Id الحقيقي
+          id: Date.now(),
 
           message,
 
           sentAt,
 
-          isRead: false
+          isRead: false,
+
+          isNew: true
 
         };
 
@@ -98,13 +129,26 @@ export class NotificationHubService {
 
         this.unreadCount.update(count => count + 1);
 
+        setTimeout(() => {
+          this.notifications.update(list =>
+            list.map(n =>
+              n.id === notification.id
+                ? {
+                  ...n,
+                  isNew: false
+                }
+                : n
+            )
+          );
+
+        }, 1800);
       });
 
   }
 
-  // =============================
-  // Getters
-  // =============================
+  // ==========================================
+  // Signals
+  // ==========================================
 
   getNotifications() {
     return this.notifications.asReadonly();
@@ -114,9 +158,9 @@ export class NotificationHubService {
     return this.unreadCount.asReadonly();
   }
 
-  // =============================
-  // Setters
-  // =============================
+  // ==========================================
+  // State
+  // ==========================================
 
   setNotifications(
     notifications: INotification[]
@@ -134,9 +178,9 @@ export class NotificationHubService {
 
   }
 
-  // =============================
-  // Update Notification
-  // =============================
+  // ==========================================
+  // Read
+  // ==========================================
 
   markAsRead(
     notificationId: number
@@ -172,13 +216,16 @@ export class NotificationHubService {
 
   }
 
-  // =============================
+  // ==========================================
   // Clear
-  // =============================
+  // ==========================================
 
   clear(): void {
+
     this.notifications.set([]);
+
     this.unreadCount.set(0);
+
   }
 
 }

@@ -123,12 +123,12 @@
             name="headDoctorId"
             (ngModelChange)="onHeadDoctorChange($event)"
           >
-            <option [value]="null">Select a doctor...</option>
+            <option [ngValue]="null">Not Assigned </option>
             @if (isLoadingDoctors) {
               <option disabled>Loading doctors...</option>
             } @else {
               @for (doctor of doctors; track doctor.id) {
-                <option [value]="doctor.id">{{ doctor.name }} - {{ doctor.specialization }}</option>
+                <option [ngValue]="doctor.id">{{ doctor.name }} - {{ doctor.specialization }}</option>
               }
             }
           </select>
@@ -194,7 +194,7 @@
           name="status"
         >
           @for (status of statuses; track status) {
-            <option [value]="status">{{ status }}</option>
+            <option [ngValue]="status">{{ status }}</option>
           }
         </select>
       </div>

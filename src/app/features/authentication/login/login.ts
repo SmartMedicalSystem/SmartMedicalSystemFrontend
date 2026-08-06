@@ -62,48 +62,74 @@ export class Login {
     }
 
     const loginObj = {
-      userNameOrEmail: this.loginForm.get('userNameOrEmail')?.value || '',
-      password: this.loginForm.get('password')?.value || ''
+      userNameOrEmail: this.loginForm.get('userNameOrEmail')?.value ?? '',
+      password: this.loginForm.get('password')?.value ?? ''
     };
 
     this.isLoading.set(true);
 
     this.authService.login(loginObj).subscribe({
-      next: (res) => {
+
+      next: async (res) => {
+
         Swal.fire({
           icon: 'success',
           text: res.message,
           showConfirmButton: true
-        }).then(() => {
-          this.isLoading.set(false);
-        })
+        });
+
         const role = this.authService.getUserRole();
+
         switch (role) {
+
           case 'Doctor':
-            void this.router.navigate(['doctor']);
+            await this.router.navigate(['doctor']);
             break;
+
           case 'Admin':
-            void this.router.navigate(['admin']);
+            await this.router.navigate(['admin']);
             break;
+
           case 'LabTechnician':
-            void this.router.navigate(['labtechnician']);
+            await this.router.navigate(['labtechnician']);
             break;
+
           default:
-            void this.router.navigate(['403']);
+            await this.router.navigate(['403']);
             break;
+
         }
-        this.notificationHub.startConnection();
-        this.notificationStore.loadInitialData();
+
+        try {
+
+          await this.notificationHub.startConnection();
+
+          this.notificationStore.loadInitialData();
+
+        } catch (error) {
+
+          console.error('SignalR failed to connect', error);
+
+        }
+
+        this.isLoading.set(false);
+
       },
+
       error: (err) => {
+
         Swal.fire({
           icon: 'error',
           text: err.error.Message,
           showConfirmButton: true
-        })
+        });
+
         this.isLoading.set(false);
+
       }
+
     });
+
   }
 
   // ================= Password =================

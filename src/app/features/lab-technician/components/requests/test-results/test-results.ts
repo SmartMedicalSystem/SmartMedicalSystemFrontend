@@ -70,6 +70,7 @@ export class TestResults {
     const id = Number(this.router.url.split('/').pop());
     this.testResultService.getRequestInfo(id).subscribe({
       next: (res) => {
+        console.log(res);
         this.requestInfo = {
           patientId: res.patientId,
           doctorId: res.doctorId,
@@ -79,13 +80,12 @@ export class TestResults {
           doctorName: res.doctorName,
           doctorDepartment: res.doctorDepartment,
           labTestName:
-            res.labTests?.find((test: any) => test.id === this.labTestId)?.testName ?? '',
+            res.requestLabTests?.find((test: any) => test.labTestId === this.labTestId)?.labTestName ?? '',
           labTestpriority: res.priority,
-          status: res.status,
+          status: res.requestLabTests?.find((test: any) => test.labTestId === this.labTestId)?.status ?? '',
           RequestDate: res.requestedAt,
           sessionId: res.sessionId
         };
-        console.log(this.requestInfo);
       },
       error: () => {
         Swal.fire({
@@ -117,7 +117,9 @@ export class TestResults {
       }
     });
   }
+
   submitResults(): void {
+    const id = Number(this.router.url.split('/').pop());
     if (this.testElements.length === 0) {
       Swal.fire({
         icon: 'warning',
@@ -186,13 +188,13 @@ export class TestResults {
         return forkJoin(requests);
       })
     ).subscribe({
-      next: (res) => {
+      next: () => {
         this.showAISection = true;
         Swal.fire({
           icon: 'success',
           title: 'Results Submitted',
           text: 'Results submitted successfully. You can now verify them with AI.'
-        });
+        })
       },
       error: (err) => {
         console.error(err);
@@ -204,6 +206,7 @@ export class TestResults {
       }
     });
   }
+
   verifyWithAI(): void {
     this.loadingAI = true;
     this.testResultService.generateAIReport(this.patientResultId).subscribe({
@@ -232,6 +235,7 @@ export class TestResults {
   }
 
   acceptAIReport(): void {
+    const id = Number(this.router.url.split('/').pop());
     const updateObj = {
       summary: this.resultObj.summary,
       aiClassifiedReport: this.resultObj.aiClassifiedReport,
@@ -244,6 +248,19 @@ export class TestResults {
           icon: 'success',
           title: 'AI Report Accepted',
           text: 'The AI report has been accepted and saved successfully.'
+        }).then(() => {
+          this.testResultService.PatchRequestStatus(id, this.labTestId, { status: 'Completed' }).subscribe(
+            () => {
+              this.loadPatientInfo();
+            },
+            (err) => {
+              console.error(err);
+              Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err?.message || 'Failed to update request status.'
+              });
+            });
         });
       },
       error: () => {

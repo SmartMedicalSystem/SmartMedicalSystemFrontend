@@ -40,7 +40,7 @@ export const adminRoutes: Routes = [
                   import('../patient/all-patients/all-patients').then((m) => m.AllPatients),
               },
               {
-                path: 'edit-patients', // :id
+                path: 'edit-patients/:id', // :id
                 loadComponent: () =>
                   import('../patient/edit-patient/edit-patient').then((m) => m.EditPatient),
               },
@@ -66,7 +66,7 @@ export const adminRoutes: Routes = [
                   import('./components/doctors/all-doctors/all-doctors').then((m) => m.AllDoctors),
               },
               {
-                path: 'edit-doctors', // :id
+                path: 'edit-doctors/:id', // :id
                 loadComponent: () =>
                   import('./components/doctors/edit-doctors/edit-doctors').then(
                     (m) => m.EditDoctors,

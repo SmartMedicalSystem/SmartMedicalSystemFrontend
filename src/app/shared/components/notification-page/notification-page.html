@@ -162,6 +162,7 @@
         <div
           (click)="markAsRead(notification.id)"
           class="notification-item flex cursor-pointer gap-5 border-b border-gray-100 p-7 transition hover:bg-slate-50"
+          [class.notification-new]="notification.isNew"
           [class.notification-unread]="!notification.isRead"
           [class.bg-blue-50]="!notification.isRead"
         >
