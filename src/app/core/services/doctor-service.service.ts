@@ -84,7 +84,7 @@ export type {
 export class DoctorService {
 
   private readonly apiUrl =
-    'https://localhost:7099/api/Patients';
+    'https://smartmedicalsystem.runasp.net/api/Patients';
 
   private readonly requestLabsApiUrl =
     'https://smartmedicalsystem.runasp.net/api/RequestLabs';

@@ -56,6 +56,33 @@ export class CreateSession implements OnInit {
   submitting = signal(false);
   submitError = signal<string | null>(null);
 
+   // ========== AI Chat ==========
+
+  chatOpen = signal(false);
+  chatLoading = signal(false);
+  chatInput = signal('');
+
+  chatMessages = signal<
+    {
+      role: 'user' | 'ai';
+      content: string;
+    }[]
+  >([
+    {
+      role: 'ai',
+      content: 'Hello, I am your AI medical assistant. Ask me anything about this patient.'
+    }
+  ]);
+
+
+  loading = signal(true);
+
+  loadError = signal<string | null>(null);
+
+
+
+  // الـ session النشطة الحالية (لو اتعملت) — بتحدد شكل الـ Quick Actions
+  activeSessionId = signal<number | null>(null);
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('patientId');
     const id = idParam ? Number(idParam) : NaN;
@@ -162,4 +189,78 @@ export class CreateSession implements OnInit {
       },
     });
   }
+
+   // ========== AI Chat Methods ==========
+
+toggleChat(): void {
+  this.chatOpen.update(value => !value);
+}
+
+
+sendChatMessage(): void {
+
+  const question = this.chatInput().trim();
+
+
+  if (!question || this.chatLoading()) {
+    return;
+  }
+
+
+  // إضافة سؤال الدكتور للشات
+  this.chatMessages.update(messages => [
+    ...messages,
+    {
+      role: 'user',
+      content: question
+    }
+  ]);
+
+
+  // تفريغ الـ input
+  this.chatInput.set('');
+
+
+  // تشغيل loading
+  this.chatLoading.set(true);
+
+
+  this.doctorService
+    .askPatientAI({
+      patientId: this.patientId,
+      question: question
+    })
+    .pipe(
+      finalize(() => this.chatLoading.set(false))
+    )
+    .subscribe({
+
+      next: (response) => {
+
+        this.chatMessages.update(messages => [
+          ...messages,
+          {
+            role: 'ai',
+            content: response.answer
+          }
+        ]);
+
+      },
+
+
+      error: () => {
+
+        this.chatMessages.update(messages => [
+          ...messages,
+          {
+            role: 'ai',
+            content: 'Sorry, something went wrong while contacting AI.'
+          }
+        ]);
+
+      }
+
+    });
+
+}
 }

@@ -120,6 +120,25 @@ export class Profile implements OnInit {
     username: '',
   };
 
+   // ========== AI Chat ==========
+    // ملحوظة: هنا بس patientId بتتبعت null دايمًا (مش مربوطة بمريض معين)،
+    // عكس نفس الشات في patient-details اللي بتبعت patientId حقيقي.
+    chatOpen = signal(false);
+    chatLoading = signal(false);
+    chatInput = signal('');
+  
+    chatMessages = signal<
+      {
+        role: 'user' | 'ai';
+        content: string;
+      }[]
+    >([
+      {
+        role: 'ai',
+        content: 'Hello, I am your AI medical assistant. Ask me anything.',
+      },
+    ]);
+
   ngOnInit(): void {
     const token = this.authService.getAccessToken();
     const id = getCurrentDoctorIdFromToken(token);
@@ -338,6 +357,58 @@ export class Profile implements OnInit {
           this.onReset();
         },
         error: () => this.passwordError.set('Failed to change password, check your current password and try again.'),
+      });
+  }
+
+  // ========== AI Chat Methods ==========
+
+  toggleChat(): void {
+    this.chatOpen.update((value) => !value);
+  }
+
+  sendChatMessage(): void {
+    const question = this.chatInput().trim();
+
+    if (!question || this.chatLoading()) {
+      return;
+    }
+
+    this.chatMessages.update((messages) => [
+      ...messages,
+      {
+        role: 'user',
+        content: question,
+      },
+    ]);
+
+    this.chatInput.set('');
+    this.chatLoading.set(true);
+
+    this.doctorService
+      .askPatientAI({
+        patientId: null, // ← الفرق الوحيد عن patient-details: هنا دايمًا null
+        question: question,
+      })
+      .pipe(finalize(() => this.chatLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.chatMessages.update((messages) => [
+            ...messages,
+            {
+              role: 'ai',
+              content: response.answer,
+            },
+          ]);
+        },
+        error: () => {
+          this.chatMessages.update((messages) => [
+            ...messages,
+            {
+              role: 'ai',
+              content: 'Sorry, something went wrong while contacting AI.',
+            },
+          ]);
+        },
       });
   }
 }
