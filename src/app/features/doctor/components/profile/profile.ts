@@ -29,6 +29,12 @@ interface ProfileForm {
   address: string;
   departmentId: number;
   departmentName: string;
+  // ⚠️ GetDoctorById مبيرجعش city/country خالص، لكن DoctorUpdateDto الحقيقي
+  // بيطلبهم كـ required - فمعندناش قيمة قديمة نحمّلها، والدكتور لازم يدخلهم
+  // بنفسه أول مرة (وبعدين هيترحّلوا تلقائيًا مع أي Update تاني).
+  city: string;
+  country: string;
+  postalCode: string;
 }
 
 @Component({
@@ -98,6 +104,9 @@ export class Profile implements OnInit {
     address: '',
     departmentId: 0,
     departmentName: '',
+    city: '',
+    country: 'Egypt',
+    postalCode: '',
   };
 
   // TODO: الحقول دي مش موجودة في أي DTO حاليًا — placeholder لحد ما الباك يضيفها
@@ -136,7 +145,7 @@ export class Profile implements OnInit {
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
         next: ({ doctor, profile }) => {
-          this.nationalId = doctor.nationalId ?? '';
+          this.nationalId = doctor.encryptedNationalId ?? '';
           this.form = {
             firstName: profile.firstName ?? '',
             lastName: profile.lastName ?? '',
@@ -145,10 +154,15 @@ export class Profile implements OnInit {
             specialization: doctor.specialization,
             contact: doctor.contact,
             email: profile.email ?? doctor.email,
-            phoneNumber: profile.phoneNumber ?? String(doctor.mobileNumber ?? ''),
+            phoneNumber: profile.phoneNumber ?? doctor.phoneNumber ?? '',
             address: profile.address ?? doctor.address,
             departmentId: doctor.departmentId,
             departmentName: doctor.departmentName ?? '',
+            // مش راجعين من GetDoctorById - بنسيبهم زي ما هما (فاضيين/الديفولت)
+            // لحد ما الدكتور يدخلهم بنفسه في الفورم.
+            city: this.form.city,
+            country: this.form.country,
+            postalCode: this.form.postalCode,
           };
           // profile.photoUrl (من الداتابيز، عن طريق GetMyProfile) هو المصدر الأساسي
           // للصورة لأنه الأحدث دايمًا. لو رجع فاضي (مثلاً استجابة ناقصة)، بنرجع
@@ -202,6 +216,11 @@ export class Profile implements OnInit {
       return;
     }
 
+    if (!this.form.city.trim() || !this.form.country.trim()) {
+      this.saveError.set('City and Country are required.');
+      return;
+    }
+
     const profileDto: ProfileUpdateDto = {
       firstName: this.form.firstName,
       lastName: this.form.lastName,
@@ -217,11 +236,17 @@ export class Profile implements OnInit {
       contact: this.form.contact,
       dateOfBirth: this.form.dateOfBirth,
       email: this.form.email,
-      mobileNumber: Number(this.form.phoneNumber) || 0,
+      // ⚠️ الباك اند بيستقبل MobileNumber كـ string مش رقم (الخطأ كان:
+      // "The JSON value could not be converted to System.String")، فمبنحولوش
+      // لرقم هنا زي ما كنا بنعمل قبل كده.
+      mobileNumber: this.form.phoneNumber,
       address: this.form.address,
       gender: this.form.gender,
       nationalId: this.nationalId,
       departmentId: this.form.departmentId,
+      city: this.form.city,
+      country: this.form.country,
+      postalCode: this.form.postalCode || undefined,
     };
 
     this.saving.set(true);
@@ -243,12 +268,17 @@ export class Profile implements OnInit {
             specialization: doctor.specialization,
             contact: doctor.contact,
             email: profile.email ?? doctor.email,
-            phoneNumber: profile.phoneNumber ?? String(doctor.mobileNumber ?? ''),
+            phoneNumber: profile.phoneNumber ?? doctor.phoneNumber ?? '',
             address: profile.address ?? doctor.address,
             departmentId: doctor.departmentId,
             departmentName: doctor.departmentName ?? '',
+            // الرد مبيرجعش city/country (زي GetDoctorById بالظبط)، فبنسيب اللي
+            // إحنا بعتناه لأنه أصبح دلوقتي القيمة المحفوظة فعليًا في الداتابيز.
+            city: this.form.city,
+            country: this.form.country,
+            postalCode: this.form.postalCode,
           };
-          this.nationalId = doctor.nationalId ?? this.nationalId;
+          this.nationalId = doctor.encryptedNationalId ?? this.nationalId;
           // بعد الحفظ بنعتمد على رد الـ API مباشرة (فيه الصورة الجديدة لو
           // اتغيّرت)، مش على التوكن، لأن التوكن نفسه لسه شايل القيمة القديمة
           // لحد ما يتعمل refresh-token/login جديد.
@@ -257,7 +287,22 @@ export class Profile implements OnInit {
           this.photoPreviewUrl.set(null);
           this.saveSuccess.set(true);
         },
-        error: () => this.saveError.set('Failed to save changes, please try again.'),
+        error: (err) => {
+          // بنطبع الـ body الكامل بتاع الخطأ في الـ console + بنوريه في الشاشة
+          // عشان نعرف الحقل اللي الباك اند رافضه بالظبط من غير ما ندوّر يدوي
+          // في Network tab. شايفين شكلين مختلفين من الباك اند لحد دلوقتي:
+          // { Message: "..." } وكمان [{ field, message }] كـ array مباشرة.
+          console.error('Save changes failed - full error body:', err?.error);
+          const body = err?.error;
+          const backendMessage =
+            body?.Message ||
+            body?.title ||
+            body?.detail ||
+            (Array.isArray(body) ? body.map((e: any) => e.message ?? JSON.stringify(e)).join(' | ') : null) ||
+            (body?.errors ? JSON.stringify(body.errors) : null) ||
+            (typeof body === 'string' ? body : null);
+          this.saveError.set(backendMessage ?? 'Failed to save changes, please try again.');
+        },
       });
   }
 

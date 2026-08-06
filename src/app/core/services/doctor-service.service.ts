@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
+import { skipLoading } from '../tokens/skip-loading.token';
 // كل الانترفيسات اتشالت من هنا وبقت كل واحدة في ملفها الخاص جوه shared/interfaces
 import { Patient } from '../../shared/interfaces/Doctor/patient.interface';
 import { PaginatedResponse } from  '../../shared/interfaces/Doctor/paginated-response.interface';
@@ -113,6 +113,11 @@ export class DoctorService {
 
   private readonly profileApiUrl =
     'https://smartmedicalsystem.runasp.net/api/Profile';
+
+    private readonly GENDER_TO_ENUM: Record<string, number> = {
+  Male: 0,
+  Female: 1,
+};
 
   constructor(private http: HttpClient) {}
 
@@ -252,8 +257,12 @@ export class DoctorService {
 
   // مطابقة لـ DoctorsController.UpdateById -> [HttpPut("by-id/{id:int}")]
   updateDoctor(id: number, dto: DoctorUpdateDto): Observable<DoctorReadDto> {
-    return this.http.put<DoctorReadDto>(`${this.doctorsApiUrl}/by-id/${id}`, dto);
-  }
+  const payload = {
+    ...dto,
+    gender: this.GENDER_TO_ENUM[dto.gender] ?? dto.gender,
+  };
+  return this.http.put<DoctorReadDto>(`${this.doctorsApiUrl}/by-id/${id}`, payload);
+}
 
   // // مطابقة لـ DoctorsController.DeleteById -> [HttpDelete("by-id/{id:int}")]
   // deleteDoctor(id: number): Observable<void> {
@@ -401,7 +410,9 @@ askPatientAI(
 
   return this.http.post<AIChatResponseDto>(
     this.aiChatApiUrl,
-    dto
+    dto,
+    { context: skipLoading() }
   );
+
 }
 }

@@ -1,5 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { finalize, forkJoin } from 'rxjs';
 import { DoctorService, DoctorReadDto } from '../../../../core/services/doctor-service.service';
@@ -8,7 +9,7 @@ import { getCurrentDoctorIdFromToken } from '../../../../core/utils/jwt-utils';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -24,6 +25,25 @@ export class Home implements OnInit {
   doctor = signal<DoctorReadDto | null>(null);
   totalPatients = signal<number | null>(null);
   totalLabTests = signal<number | null>(null);
+
+  // ========== AI Chat ==========
+  // ملحوظة: هنا بس patientId بتتبعت null دايمًا (مش مربوطة بمريض معين)،
+  // عكس نفس الشات في patient-details اللي بتبعت patientId حقيقي.
+  chatOpen = signal(false);
+  chatLoading = signal(false);
+  chatInput = signal('');
+
+  chatMessages = signal<
+    {
+      role: 'user' | 'ai';
+      content: string;
+    }[]
+  >([
+    {
+      role: 'ai',
+      content: 'Hello, I am your AI medical assistant. Ask me anything.',
+    },
+  ]);
 
   ngOnInit(): void {
     const token = this.authService.getAccessToken();
@@ -53,6 +73,58 @@ export class Home implements OnInit {
           this.totalLabTests.set(labTests.totalCount);
         },
         error: () => this.loadError.set('Failed to load dashboard data.'),
+      });
+  }
+
+  // ========== AI Chat Methods ==========
+
+  toggleChat(): void {
+    this.chatOpen.update((value) => !value);
+  }
+
+  sendChatMessage(): void {
+    const question = this.chatInput().trim();
+
+    if (!question || this.chatLoading()) {
+      return;
+    }
+
+    this.chatMessages.update((messages) => [
+      ...messages,
+      {
+        role: 'user',
+        content: question,
+      },
+    ]);
+
+    this.chatInput.set('');
+    this.chatLoading.set(true);
+
+    this.doctorService
+      .askPatientAI({
+        patientId: null, // ← الفرق الوحيد عن patient-details: هنا دايمًا null
+        question: question,
+      })
+      .pipe(finalize(() => this.chatLoading.set(false)))
+      .subscribe({
+        next: (response) => {
+          this.chatMessages.update((messages) => [
+            ...messages,
+            {
+              role: 'ai',
+              content: response.answer,
+            },
+          ]);
+        },
+        error: () => {
+          this.chatMessages.update((messages) => [
+            ...messages,
+            {
+              role: 'ai',
+              content: 'Sorry, something went wrong while contacting AI.',
+            },
+          ]);
+        },
       });
   }
 }

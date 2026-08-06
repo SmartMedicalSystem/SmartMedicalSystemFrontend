@@ -502,7 +502,7 @@
         class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
         [ngModel]="chatInput()"
         (ngModelChange)="chatInput.set($event)"
-        (keyup.enter)="sendChatMessage()"
+        (keydown.enter)="$event.preventDefault(); sendChatMessage()"
       />
 
 
@@ -554,3 +554,4 @@
 
   </div>
 </div>
+

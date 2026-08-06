@@ -174,8 +174,21 @@
             <input id="address" type="text" name="address" [(ngModel)]="form.address" [ngModelOptions]="{ standalone: true }"
               class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
           </div>
-
-          <!-- TODO: city, country, nationality مش موجودين في أي DTO حاليًا -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="city">City</label>
+            <input id="city" type="text" name="city" [(ngModel)]="form.city" [ngModelOptions]="{ standalone: true }" required
+              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="country">Country</label>
+            <input id="country" type="text" name="country" [(ngModel)]="form.country" [ngModelOptions]="{ standalone: true }" required
+              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="block text-sm font-medium text-gray-700 mb-1" for="postalCode">Postal Code (optional)</label>
+            <input id="postalCode" type="text" name="postalCode" [(ngModel)]="form.postalCode" [ngModelOptions]="{ standalone: true }"
+              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+          </div>
         </div>
       </section>
 
