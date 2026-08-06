@@ -38,7 +38,31 @@ interface HistoryEntry {
   description: string;
 }
 
-type SectionId = 'personal' | 'lab' | 'ai' | 'notes' | 'history';
+type SectionId = 'personal' | 'lab' | 'ai' | 'sessions';
+
+// ⚠️ bloodType بيرجع من الباك كـ string (اسم الـ enum زي gender بالظبط)، مش
+// رقم. المفاتيح هنا لازم تتأكد إنها مطابقة تمامًا لأسامي Domain.Enums.BloodType
+// الحقيقية (خمّنت الأسامي الشائعة: APositive/ANegative/... إلخ - لو مختلفة
+// عندك، عدّل المفاتيح بس، مش القيم).
+const BLOOD_TYPE_MAP: Record<string, string> = {
+  APositive: 'A+',
+  ANegative: 'A-',
+  BPositive: 'B+',
+  BNegative: 'B-',
+  ABPositive: 'AB+',
+  ABNegative: 'AB-',
+  OPositive: 'O+',
+  ONegative: 'O-',
+};
+
+// لو مالقتش القيمة في الماب فوق (اسم مختلف عن المتوقع)، نعرض القيمة الخام
+// اللي راجعة من الباك بدل "Unknown" علشان الداتا الحقيقية تفضل بايظة على
+// الشاشة وتكون سهلة نلاحظها ونصلح المفتاح المطابق بدل ما تختفي تمامًا.
+function displayBloodType(raw: string | null | undefined): string {
+  if (!raw) return 'Unknown';
+  return BLOOD_TYPE_MAP[raw] ?? raw;
+}
+
 @Component({
   selector: 'app-patient-details',
   imports: [CommonModule, FormsModule],
@@ -46,8 +70,8 @@ type SectionId = 'personal' | 'lab' | 'ai' | 'notes' | 'history';
   styleUrl: './patient-details.css',
 })
 export class PatientDetails {
-  constructor(private router: Router) {}
-  
+  constructor(private router: Router) { }
+
   // ---------- Patient summary ----------
   patient = {
     name: 'Sarah J. Miller',
@@ -149,9 +173,139 @@ export class PatientDetails {
     });
   }
 
+  ngOnInit(): void {
+    const idParam = this.route.snapshot.paramMap.get('id');
+    const id = idParam ? Number(idParam) : NaN;
+
+    if (!id) {
+      this.loadError.set('Invalid patient ID.');
+      this.loading.set(false);
+      this.loadingResults.set(false);
+      this.loadingAiReport.set(false);
+      this.loadingSessions.set(false);
+      return;
+    }
+
+    this.patientId = id;
+    this.activeSessionId.set(getActiveSessionId(id));
+
+    this.loading.set(true);
+    this.loadError.set(null);
+
+    this.doctorService
+      .getPatientById(id)
+      .pipe(finalize(() => this.loading.set(false)))
+      .subscribe({
+        next: (p) => this.patient.set(this.toDisplayPatient(p)),
+        error: () => this.loadError.set('Failed to load patient data.'),
+      });
+
+    this.loadCurrentDoctorName();
+    this.loadLabTestNames();
+    this.loadPatientResults(id);
+    this.loadAiReport(id);
+    this.loadSessions(id);
+  }
+
+  private loadCurrentDoctorName(): void {
+    const token = this.authService.getAccessToken();
+    const doctorId = getCurrentDoctorIdFromToken(token);
+    if (!doctorId) return;
+
+    this.doctorService.getDoctorById(doctorId).subscribe({
+      next: (d) => this.currentDoctorName.set(d.name),
+      error: () => {
+        // مش حرج - لو فشل هنسيب الحقل فاضي بدل ما نكسر باقي الصفحة
+      },
+    });
+  }
+
+  private loadSessions(patientId: number): void {
+    this.loadingSessions.set(true);
+    this.doctorService
+      .getSessionsByPatient(patientId, 1, 20)
+      .pipe(finalize(() => this.loadingSessions.set(false)))
+      .subscribe({
+        next: (res) => this.sessions.set(res.items),
+        error: () => {
+          // مش حرج - lastVisitLabel هيرجع "No visits yet" لو الليست فاضية
+        },
+      });
+  }
+
+  private loadLabTestNames(): void {
+    this.doctorService.getLabTests(1, 100).subscribe({
+      next: (res) => {
+        const map: Record<number, string> = {};
+        res.items.forEach((t) => (map[t.id] = t.testName));
+        this.labTestNames.set(map);
+      },
+      error: () => { },
+    });
+  }
+
+  private loadPatientResults(patientId: number): void {
+    this.loadingResults.set(true);
+    this.resultsError.set(null);
+
+    this.doctorService
+      .getPatientResultsByPatient(patientId)
+      .pipe(finalize(() => this.loadingResults.set(false)))
+      .subscribe({
+        next: (res) => this.labResults.set(res.items),
+        error: () => this.resultsError.set('Failed to load lab results.'),
+      });
+  }
+
+  private loadAiReport(patientId: number): void {
+    this.loadingAiReport.set(true);
+    this.aiReportError.set(null);
+
+    this.doctorService
+      .getFullPatientAIReport(patientId)
+      .pipe(finalize(() => this.loadingAiReport.set(false)))
+      .subscribe({
+        next: (report) => this.aiReport.set(report),
+        error: () => this.aiReportError.set('Failed to load the AI report.'),
+      });
+  }
+
+  generateAnalysisFor(result: PatientResultReadDto): void {
+    this.generatingResultId.set(result.id);
+    this.doctorService
+      .generateAIAnalysisForResult(result.id)
+      .pipe(finalize(() => this.generatingResultId.set(null)))
+      .subscribe({
+        next: () => this.loadAiReport(this.patientId),
+        error: () => this.aiReportError.set('Failed to generate AI analysis for this result.'),
+      });
+  }
+
+  analysisForResult(labResultId: number): PatientResultAIAnalysisDto | undefined {
+    return this.aiReport()?.results.find((r) => r.patientResultId === labResultId);
+  }
+
+  private toDisplayPatient(p: ApiPatient): DisplayPatient {
+    return {
+      name: `${p.firstName} ${p.lastName}`,
+      ssn: this.maskNationalId(p.nationalId),
+      age: p.age,
+      gender: p.gender,
+      // bloodType هنا نوعه string دلوقتي (اسم enum) مش number
+      bloodGroup: displayBloodType(p.bloodType as unknown as string),
+      phone: String(p.mobileNumber),
+      address: p.address,
+    };
+  }
+
+  private maskNationalId(id: number): string {
+    const str = String(id);
+    return str.length > 4 ? `**-**-${str.slice(-4)}` : str;
+  }
+
   // ---------- Actions ----------
   requestLabTest(): void {
-  this.router.navigate(['/doctor/dashboard/patients/new-lab-test']);
+    this.router.navigate(['/doctor/dashboard/patients/new-lab-test']);
   }
 
   exportReport(): void {
@@ -174,20 +328,61 @@ export class PatientDetails {
     console.log('Viewing historical trends');
   }
 
-  rejectAiReport(report: AiReport): void {
-    console.log('Rejecting AI report', report.title);
-  }
 
-  approveAiReport(report: AiReport): void {
-    console.log('Approving AI report', report.title);
-  }
+  // إضافة سؤال الدكتور للشات
+  this.chatMessages.update(messages => [
+    ...messages,
+    {
+      role: 'user',
+      content: question
+    }
+  ]);
 
-  addNewNote(): void {
-    if (!this.newNoteText.trim()) return;
-    this.medicalNotes.update((notes) => [
-      { doctorName: 'Dr. Julian Vance', specialty: 'Clinical Oncologist', date: 'Today', text: this.newNoteText },
-      ...notes,
-    ]);
-    this.newNoteText = '';
-  }
+
+// تفريغ الـ input
+this.chatInput.set('');
+
+
+// تشغيل loading
+this.chatLoading.set(true);
+
+
+this.doctorService
+  .askPatientAI({
+    patientId: this.patientId,
+    question: question
+  })
+  .pipe(
+    finalize(() => this.chatLoading.set(false))
+  )
+  .subscribe({
+
+    next: (response) => {
+
+      this.chatMessages.update(messages => [
+        ...messages,
+        {
+          role: 'ai',
+          content: response.answer
+        }
+      ]);
+
+    },
+
+
+    error: () => {
+
+      this.chatMessages.update(messages => [
+        ...messages,
+        {
+          role: 'ai',
+          content: 'Sorry, something went wrong while contacting AI.'
+        }
+      ]);
+
+    }
+
+  });
+
+}
 }

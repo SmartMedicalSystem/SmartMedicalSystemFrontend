@@ -174,12 +174,12 @@
             [(ngModel)]="laboratory.departmentId"
             name="departmentId"
           >
-            <option [value]="null">Select a department...</option>
+            <option [ngValue]="null">Select a department...</option>
             @if (isLoadingDepartments) {
               <option disabled>Loading departments...</option>
             } @else {
               @for (dept of departments; track dept.id) {
-                <option [value]="dept.id">{{ dept.name }}</option>
+                <option [ngValue]="dept.id">{{ dept.name }}</option>
               }
             }
           </select>
@@ -233,12 +233,12 @@
             [(ngModel)]="laboratory.headTechnicianId"
             name="headTechnicianId"
           >
-            <option [value]="null">Select a technician...</option>
+            <option [ngValue]="null">Not Assigned</option>
             @if (isLoadingTechnicians) {
               <option disabled>Loading technicians...</option>
             } @else {
               @for (tech of technicians; track tech.id) {
-                <option [value]="tech.id">{{ tech.name }} {{ tech.laboratoryName }}</option>
+                <option [ngValue]="tech.id">{{ tech.name }} {{ tech.laboratoryName }}</option>
               }
             }
           </select>
@@ -291,7 +291,7 @@
           name="status"
         >
           @for (status of statuses; track status) {
-            <option [value]="status">{{ status }}</option>
+            <option [ngValue]="status">{{ status }}</option>
           }
         </select>
       </div>
