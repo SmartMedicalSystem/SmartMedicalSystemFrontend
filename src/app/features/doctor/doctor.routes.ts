@@ -29,6 +29,12 @@ export const doctorRoutes: Routes = [
                 .then(m => m.Home)
           },
           {
+            path: 'notification',
+            loadComponent: () =>
+              import('../../shared/components/notification-page/notification-page')
+                .then(m => m.NotificationPage)
+          },
+          {
             path: 'profile',
             loadComponent: () =>
               import('./components/profile/profile')
@@ -52,22 +58,24 @@ export const doctorRoutes: Routes = [
                     .then(m => m.AllPatients)
               },
               {
-                path: 'patient-details', //:id
+                path: 'patient-details/:id',
                 loadComponent: () =>
                   import('../patient/patient-details/patient-details')
                     .then(m => m.PatientDetails)
               },
               {
-                path: 'new-lab-test',
+                path: 'new-lab-test/:id',
                 loadComponent: () =>
                   import('./components/lab-test/lab-test')
                     .then(m => m.LabTest)
+              },
+              {
+                path: 'create-session/:patientId',
+                loadComponent: () =>
+                  import('./components/create-session/create-session')
+                    .then(m => m.CreateSession)
               }
             ]
-          },
-          {
-            path: 'notification',
-            component: NotificationPage
           }
         ]
       }

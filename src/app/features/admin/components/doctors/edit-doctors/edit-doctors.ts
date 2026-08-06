@@ -213,7 +213,7 @@ export class EditDoctors implements OnInit {
           nationalId: this.originalNationalId,
         };
 
-        this.doctorService.updateDoctor(this.doctorId, dto).subscribe({
+        this.doctorService.updateDoctorY(this.doctorId, dto).subscribe({
           next: (res) => {
             this.alertService.success('Doctor updated successfully');
             this.router.navigate(['/admin/dashboard/doctors/all-doctors']);

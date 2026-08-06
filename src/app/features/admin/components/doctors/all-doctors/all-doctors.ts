@@ -64,7 +64,7 @@ export class AllDoctors implements OnInit {
 
   loadDoctors() {
     this.doctorService
-      .getAllDoctors(this.currentPage(), this.rowsPerPage())
+      .getAllDoctorsY(this.currentPage(), this.rowsPerPage())
       .subscribe({
         next: (response) => {
           this.rawDoctors.set(response.items);
