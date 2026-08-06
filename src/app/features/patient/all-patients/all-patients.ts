@@ -36,7 +36,6 @@ interface DisplayPatient {
 
 @Component({
   selector: 'app-all-patients',
-  standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './all-patients.html',
   styleUrl: './all-patients.css',
@@ -168,7 +167,6 @@ export class AllPatients implements OnInit {
   }
 
   resetFilters(): void {
-
     this.searchTerm = '';
     this.genderFilter = 'All Genders';
     this.ageGroupFilter = 'All Ages';
