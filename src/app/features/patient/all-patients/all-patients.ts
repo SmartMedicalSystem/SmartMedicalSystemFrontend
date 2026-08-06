@@ -36,7 +36,6 @@ interface DisplayPatient {
 
 @Component({
   selector: 'app-all-patients',
-  standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './all-patients.html',
   styleUrl: './all-patients.css',
@@ -58,14 +57,14 @@ export class AllPatients implements OnInit {
   searchTerm = '';
   genderFilter = 'All Genders';
   ageGroupFilter = 'All Ages';
-  lastVisitFilter = 'Any Time';
-  statusFilter = 'All Statuses';
 
   genderOptions = ['All Genders', 'Male', 'Female'];
   ageGroupOptions = ['All Ages', '0-18', '19-35', '36-55', '56+'];
 
   rowsPerPage = signal(10);
   currentPage = signal(1);
+  totalCount = signal(0);
+  totalPages = signal(1);
 
   patients = signal<DisplayPatient[]>([]);
 
@@ -168,7 +167,6 @@ export class AllPatients implements OnInit {
   }
 
   resetFilters(): void {
-
     this.searchTerm = '';
     this.genderFilter = 'All Genders';
     this.ageGroupFilter = 'All Ages';

@@ -58,22 +58,24 @@ export const doctorRoutes: Routes = [
                     .then(m => m.AllPatients)
               },
               {
-                path: 'patient-details', //:id
+                path: 'patient-details/:id',
                 loadComponent: () =>
                   import('../patient/patient-details/patient-details')
                     .then(m => m.PatientDetails)
               },
               {
-                path: 'new-lab-test',
+                path: 'new-lab-test/:id',
                 loadComponent: () =>
                   import('./components/lab-test/lab-test')
                     .then(m => m.LabTest)
+              },
+              {
+                path: 'create-session/:patientId',
+                loadComponent: () =>
+                  import('./components/create-session/create-session')
+                    .then(m => m.CreateSession)
               }
             ]
-          },
-          {
-            path: 'notification',
-            component: NotificationPage
           }
         ]
       }

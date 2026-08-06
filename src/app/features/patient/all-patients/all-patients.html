@@ -11,15 +11,15 @@
       <div>
         @if (!this.urlContainsDoctor) {
           <button
+            type="button"
             routerLink="../add-patients"
-            class="bg-primary hover:bg-primary/90 text-white rounded-xl px-6 py-3 font-semibold shadow-lg transition"
+            class="rounded-xl text-md bg-primary px-6 py-3 font-medium text-white hover:bg-primary/90 transition-colors whitespace-nowrap"
           >
-            + Add New Patient
+            Add Patient
           </button>
         }
       </div>
     </div>
-  </div>
 
     <!-- ============ Search Row ============ -->
     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -54,22 +54,16 @@
     <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div>
-          <label class="text-sm font-medium text-slate-600"> Gender </label>
-
+          <label class="block text-xs font-medium text-gray-500 mb-1">Gender</label>
           <select
             [(ngModel)]="genderFilter"
-            (ngModelChange)="applyFilters()"
-            class="mt-2 w-full rounded-xl border px-4 py-3"
+            class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
           >
-            <option *ngFor="let item of genderOptions" [value]="item">
-              {{ item }}
-            </option>
+            <option *ngFor="let g of genderOptions" [value]="g">{{ g }}</option>
           </select>
         </div>
-
         <div>
-          <label class="text-sm font-medium text-slate-600"> Age </label>
-
+          <label class="block text-xs font-medium text-gray-500 mb-1">Age Group</label>
           <select
             [(ngModel)]="ageGroupFilter"
             class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
@@ -79,18 +73,33 @@
         </div>
       </div>
 
-        <div class="flex items-end gap-3">
-          <button
-            (click)="applyFilters()"
-            class="flex-1 bg-primary text-white rounded-xl py-3 hover:bg-primary/90 transition"
+      <div class="flex justify-end gap-3 mt-4">
+        <button
+          type="button"
+          (click)="resetFilters()"
+          class="rounded-full border border-gray-300 px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+        >
+          Reset
+        </button>
+        <button
+          type="button"
+          (click)="applyFilters()"
+          class="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            class="w-4 h-4"
           >
-            Search
-          </button>
-
-          <button (click)="resetFilters()" class="flex-1 border rounded-xl py-3 hover:bg-slate-100">
-            Reset
-          </button>
-        </div>
+            <path
+              fill-rule="evenodd"
+              d="M3.792 2.938A49.069 49.069 0 0112 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 011.541 1.836v1.044a3 3 0 01-.879 2.121l-6.182 6.182a1.5 1.5 0 00-.439 1.061v2.927a3 3 0 01-1.658 2.684l-1.757.878A.75.75 0 019.75 21v-6.62a1.5 1.5 0 00-.44-1.06L3.13 6.937a3 3 0 01-.879-2.121V3.774c0-.897.64-1.683 1.542-1.836z"
+              clip-rule="evenodd"
+            />
+          </svg>
+          Apply Filters
+        </button>
       </div>
     </div>
 
@@ -140,35 +149,33 @@
               <th class="px-4 sm:px-6 py-3 whitespace-nowrap text-right">Actions</th>
             </tr>
           </thead>
-
           <tbody>
+            <tr *ngIf="patients().length === 0">
+              <td colspan="6" class="px-4 sm:px-6 py-8 text-center text-sm text-gray-400">
+                No patients found.
+              </td>
+            </tr>
             <tr
               *ngFor="let patient of patients()"
-              class="border-t hover:bg-primary/5 transition duration-300"
+              class="border-b border-gray-50 last:border-0 hover:bg-neutral/60 transition-colors"
             >
-              <!-- Patient -->
-
-              <td class="px-6 py-5">
-                <div class="flex items-center gap-4">
+              <td class="px-4 sm:px-6 py-3">
+                <div class="flex items-center gap-3">
                   <div
-                    class="w-12 h-12 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg"
+                    class="w-9 h-9 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0"
                   >
-                    {{ patient.firstName.charAt(0) }}{{ patient.lastName.charAt(0) }}
+                    {{ patient.avatarInitials }}
                   </div>
-
                   <div>
                     <p class="font-medium text-gray-900 whitespace-nowrap">{{ patient.name }}</p>
                     <p class="text-xs text-gray-400">ID: #{{ patient.id }}</p>
                   </div>
                 </div>
               </td>
-
-              <!-- National ID -->
-
-              <td class="px-6 py-5">
-                <span class="font-medium">
-                  {{ patient.nationalId }}
-                </span>
+              <td class="px-4 sm:px-6 py-3 text-gray-600 whitespace-nowrap">{{ patient.ssn }}</td>
+              <td class="px-4 sm:px-6 py-3 text-gray-600 whitespace-nowrap">{{ patient.age }}</td>
+              <td class="px-4 sm:px-6 py-3 text-gray-600 whitespace-nowrap">
+                {{ patient.gender }}
               </td>
               <td class="px-4 sm:px-6 py-3 whitespace-nowrap">
                 <span
@@ -177,50 +184,46 @@
                   {{ patient.bloodType }}
                 </span>
               </td>
-
-              <!-- Actions -->
-
-              <td class="px-6 py-5">
-                <div class="flex justify-end gap-2">
-                  @if (urlContainsDoctor) {
-                    <button
-                      (click)="openPatient(patient)"
-                      class="px-4 py-2 rounded-xl bg-primary text-white hover:bg-primary/90 transition"
-                    >
-                      Open
-                    </button>
-                  } @else {
-                    <button
-                      (click)="editPatient(patient)"
-                      class="px-4 py-2 rounded-xl bg-secondary text-white hover:bg-secondary/90 transition"
-                    >
-                      Edit
-                    </button>
-                  }
-                </div>
+              <td class="px-4 sm:px-6 py-3 text-right">
+                @if (this.urlContainsDoctor) {
+                  <button
+                    type="button"
+                    (click)="openPatient(patient)"
+                    class="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Open Patient
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    (click)="editPatient(patient)"
+                    class="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors whitespace-nowrap"
+                  >
+                    Edit Patient
+                  </button>
+                }
               </td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
-    <!-- ================= Empty State ================= -->
 
-    <div *ngIf="patients().length === 0" class="py-20 flex flex-col items-center justify-center">
-      <div class="w-24 h-24 rounded-full bg-slate-100 flex items-center justify-center mb-6">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          class="w-12 h-12 text-slate-400"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="1.5"
-            d="M9 17v-2a4 4 0 014-4h4"
-          />
+      <!-- ============ Pagination Footer ============ -->
+      <div
+        class="flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-gray-100 px-4 sm:px-6 py-3"
+      >
+        <div class="flex items-center gap-2 text-xs text-gray-500">
+          <span>Rows per page:</span>
+          <select
+            [ngModel]="rowsPerPage()"
+            (ngModelChange)="onRowsPerPageChange($event)"
+            class="rounded-md border border-gray-300 px-2 py-1 text-xs text-gray-700 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+          >
+            <option value="10">10</option>
+            <option value="25">25</option>
+            <option value="50">50</option>
+          </select>
+        </div>
 
         <div class="flex items-center gap-3">
           <span class="text-xs text-gray-500 whitespace-nowrap">{{ totalRowsLabel() }}</span>
@@ -304,10 +307,6 @@
           </div>
         </div>
       </div>
-
-      <h2 class="text-2xl font-bold text-slate-700">No Patients Found</h2>
-
-      <p class="text-slate-500 mt-2">There are no registered patients to display.</p>
     </div>
 
     <p class="text-xs text-gray-400">
@@ -316,4 +315,129 @@
     </p>
     
   </div>
+  
 </div>
+
+<div class="fixed bottom-6 right-6 z-50">
+
+        <!-- Chat Window -->
+        <div
+          *ngIf="chatOpen()"
+          class="mb-4 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
+        >
+
+          <!-- Header -->
+          <div
+            class="bg-primary text-white px-4 py-3 flex items-center justify-between"
+          >
+            <div>
+              <h3 class="font-semibold text-sm">
+                Medical AI Assistant
+              </h3>
+            </div>
+
+            <button
+              type="button"
+              (click)="toggleChat()"
+              class="text-white text-xl leading-none"
+            >
+              ×
+            </button>
+          </div>
+
+
+          <!-- Messages -->
+          <div
+            class="h-80 overflow-y-auto p-4 space-y-3 bg-gray-50"
+          >
+
+            <div
+              *ngFor="let message of chatMessages()"
+              class="flex"
+              [ngClass]="message.role === 'user'
+                ? 'justify-end'
+                : 'justify-start'"
+            >
+
+              <div
+                class="max-w-[80%] rounded-xl px-3 py-2 text-sm"
+                [ngClass]="message.role === 'user'
+                  ? 'bg-primary text-white'
+                  : 'bg-white border border-gray-200 text-gray-700'"
+              >
+
+                {{ message.content }}
+
+              </div>
+
+            </div>
+
+
+            <!-- AI Loading -->
+            <div
+              *ngIf="chatLoading()"
+              class="text-xs text-gray-400"
+            >
+              AI is thinking...
+            </div>
+
+          </div>
+
+
+          <!-- Input -->
+          <div
+            class="p-3 border-t border-gray-100 flex gap-2 bg-white"
+          >
+
+            <input
+              type="text"
+              placeholder="Ask anything..."
+              class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              [ngModel]="chatInput()"
+              (ngModelChange)="chatInput.set($event)"
+              (keydown.enter)="$event.preventDefault(); sendChatMessage()"
+            />
+
+
+            <button
+              type="button"
+              (click)="sendChatMessage()"
+              [disabled]="chatLoading()"
+              class="px-3 rounded-lg bg-primary text-white text-sm disabled:opacity-50"
+            >
+              Send
+            </button>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Floating Button -->
+        <button
+          type="button"
+          (click)="toggleChat()"
+          class="w-14 h-14 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-105 transition"
+        >
+
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-7 h-7"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8L3 21l1.8-4.2A7.8 7.8 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+
+          </svg>
+
+        </button>
+
+      </div>

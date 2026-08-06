@@ -1,41 +1,31 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit, computed, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { finalize } from 'rxjs';
+import { DoctorService } from '../../../core/services/doctor-service.service';
+import { PatientResultReadDto } from '../../../shared/interfaces/Doctor/patient-result.interface';
+import {
+  PatientFullAIReportDto,
+  PatientResultAIAnalysisDto,
+} from '../../../shared/interfaces/Doctor/patient-ai-report.interface';
+import { Patient as ApiPatient } from '../../../shared/interfaces/Doctor/patient.interface';
+import { SessionReadDto } from '../../../shared/interfaces/Doctor/session.interface';
+import { AuthenticationService } from '../../../core/services/authenticationService.service';
+import { getCurrentDoctorIdFromToken } from '../../../core/utils/jwt-utils';
+import {
+  getActiveSessionId,
+  clearActiveSessionId,
+} from '../../../core/utils/active-session-storage';
 
-type LabStatus = 'critical' | 'normal' | 'pending';
-type AiReportStatus = 'pending' | 'verified';
-
-interface LabResult {
-  test: string;
-  lab: string;
-  date: string;
-  status: LabStatus;
-}
-
-interface AiReport {
-  title: string;
-  subtitle: string;
-  reportId: string;
-  confidence: number;
-  status: AiReportStatus;
-  summary: string;
-  generatedOn: string;
-  doctorNotes: string;
-}
-
-interface MedicalNote {
-  doctorName: string;
-  specialty: string;
-  date: string;
-  text: string;
-}
-
-interface HistoryEntry {
-  date: string;
-  title: string;
-  doctor: string;
-  description: string;
+interface DisplayPatient {
+  name: string;
+  ssn: string;
+  age: number;
+  gender: string;
+  bloodGroup: string;
+  phone: string;
+  address: string;
 }
 
 type SectionId = 'personal' | 'lab' | 'ai' | 'sessions';
@@ -69,106 +59,108 @@ function displayBloodType(raw: string | null | undefined): string {
   templateUrl: './patient-details.html',
   styleUrl: './patient-details.css',
 })
-export class PatientDetails {
-  constructor(private router: Router) { }
+export class PatientDetails implements OnInit {
+  constructor(
+    private router: Router,
+    private route: ActivatedRoute,
+    private doctorService: DoctorService,
+    private authService: AuthenticationService
+  ) {}
 
-  // ---------- Patient summary ----------
-  patient = {
-    name: 'Sarah J. Miller',
-    status: 'Active',
-    ssn: '**-***-9812',
-    age: 42,
-    gender: 'Female',
-    bloodGroup: 'B (Positive +)',
-    phone: '+1 (555) 234-5678',
-    assignedDoctor: 'Dr. Julian Vance',
-    lastVisit: 'Oct 12, 2023',
-    emergencyContactName: 'Robert Miller',
-    emergencyContactRelation: 'Husband',
-    emergencyContactPhone: '+1 (555) 987-6543',
-  };
 
-  stats = {
-    totalLabTests: 48,
-    pendingAiReports: 12,
-    approvedReports: 36,
-    lastResultDate: 'Oct 24, 2023',
-  };
+  // ========== AI Chat ==========
 
-  // ---------- Personal / Patient Information ----------
-  contactDetails = {
-    address: '432 Bridgeton Ave, Springfield, OH 63928',
-    phone: '+1 (555) 234-5678',
-    email: 's.miller@email.com',
-  };
+  chatOpen = signal(false);
+  chatLoading = signal(false);
+  chatInput = signal('');
 
-  insurance = {
-    provider: 'BlueShield Health Insurance',
-    policyNumber: 'BSH-4092-1123',
-  };
-
-  // ---------- Laboratory Results ----------
-  labResults = signal<LabResult[]>([
-    { test: 'Comprehensive Metabolic Panel (CMP)', lab: 'Central Medical Lab', date: 'Oct 24, 2023', status: 'critical' },
-    { test: 'Complete Blood Count (CBC)', lab: 'Central Medical Lab', date: 'Oct 20, 2023', status: 'normal' },
-    { test: 'Lipid Panel', lab: 'Central Medical Lab', date: 'Oct 15, 2023', status: 'pending' },
-  ]);
-
-  // ---------- AI Reports ----------
-  aiReports = signal<AiReport[]>([
+  chatMessages = signal<
     {
-      title: 'Neurology Scan AI',
-      subtitle: 'MRI Brain Scan Analysis',
-      reportId: 'Report ID: AI-SCAN-6382',
-      confidence: 94.2,
-      status: 'pending',
-      summary:
-        'AI has detected early-stage markers of neuro-inflammation in the hippocampal region. Comparing with historical scans from 2021, there is a 5% increase in density observed.',
-      generatedOn: 'Oct 25, 2023 - 11:03 PM',
-      doctorNotes: '',
-    },
-  ]);
-
-  // ---------- Medical Notes ----------
-  medicalNotes = signal<MedicalNote[]>([
+      role: 'user' | 'ai';
+      content: string;
+    }[]
+  >([
     {
-      doctorName: 'Dr. Adrian Thorne',
-      specialty: 'General Oncology',
-      date: 'Sep 22, 2023',
-      text: 'Patient reports occasional fatigue during physical activity, auscultation is clear. Blood pressure stable at 122/78. Continuing present regimen.',
-    },
-    {
-      doctorName: 'Dr. Melissa Sharp',
-      specialty: 'Laboratory Specialist',
-      date: 'Sep 15, 2023',
-      text: 'Some minor improvement noted. Adjusting supplement dosage to 40mg daily. Scheduled follow-up in 2 weeks.',
-    },
+      role: 'ai',
+      content: 'Hello, I am your AI medical assistant. Ask me anything about this patient.'
+    }
   ]);
 
-  newNoteText = '';
 
-  // ---------- Patient History ----------
-  historyEntries = signal<HistoryEntry[]>([
-    { date: 'Oct 12, 2023', title: 'Annual Check-up', doctor: 'Dr. Julian Vance', description: 'Routine physical exam, vitals within normal range.' },
-    { date: 'Jul 03, 2023', title: 'Follow-up Visit', doctor: 'Dr. Adrian Thorne', description: 'Reviewed lab results, adjusted medication dosage.' },
-    { date: 'Feb 18, 2023', title: 'Lab Test - Full Panel', doctor: 'Central Medical Lab', description: 'Comprehensive blood work requested for routine screening.' },
-  ]);
+  loading = signal(true);
+
+  loadError = signal<string | null>(null);
+
+  patientId!: number;
+
+  // الـ session النشطة الحالية (لو اتعملت) — بتحدد شكل الـ Quick Actions
+  activeSessionId = signal<number | null>(null);
+
+  // ---------- Patient summary (من PatientReadDto الحقيقي) ----------
+  patient = signal<DisplayPatient>({
+    name: '',
+    ssn: '',
+    age: 0,
+    gender: '',
+    bloodGroup: '',
+    phone: '',
+    address: '',
+  });
+
+  avatarInitials = computed(() => {
+    const name = this.patient().name.trim();
+    if (!name) return '';
+    const parts = name.split(' ');
+    return `${parts[0]?.charAt(0) ?? ''}${parts[1]?.charAt(0) ?? ''}`.toUpperCase();
+  });
+
+  // ---------- Doctor الحالي اللي فاتح ملف المريض ده (من التوكن) ----------
+  currentDoctorName = signal<string>('');
+
+  // ---------- Sessions (من SessionsController.GetByPatient) ----------
+  loadingSessions = signal(true);
+  sessions = signal<SessionReadDto[]>([]);
+
+  lastVisitLabel = computed(() => {
+    const list = this.sessions();
+    if (list.length === 0) return 'No visits yet';
+    const latest = [...list].sort(
+      (a, b) => new Date(b.sessionDate).getTime() - new Date(a.sessionDate).getTime()
+    )[0];
+    return new Date(latest.sessionDate).toLocaleDateString();
+  });
+
+  // ---------- Laboratory Results (من PatientResultsController) ----------
+  loadingResults = signal(true);
+  resultsError = signal<string | null>(null);
+  labResults = signal<PatientResultReadDto[]>([]);
+
+  private labTestNames = signal<Record<number, string>>({});
+  getTestName(labTestId: number): string {
+    return this.labTestNames()[labTestId] ?? `Lab Test #${labTestId}`;
+  }
+
+  // ---------- AI Reports (من PatientAIReportsController) ----------
+  loadingAiReport = signal(true);
+  aiReportError = signal<string | null>(null);
+  aiReport = signal<PatientFullAIReportDto | null>(null);
+  generatingResultId = signal<number | null>(null);
+
+  // عدد حقيقي محسوب: نتائج تحاليل لسه معملهاش AI analysis (مش placeholder)
+  pendingAiAnalysisCount = computed(() => {
+    const analyzedIds = new Set((this.aiReport()?.results ?? []).map((r) => r.patientResultId));
+    return this.labResults().filter((r) => !analyzedIds.has(r.id)).length;
+  });
 
   // ---------- Accordion state ----------
   openSections = signal<Set<SectionId>>(new Set<SectionId>(['personal']));
-
   isOpen(section: SectionId): boolean {
     return this.openSections().has(section);
   }
-
   toggleSection(section: SectionId): void {
     this.openSections.update((current) => {
       const next = new Set(current);
-      if (next.has(section)) {
-        next.delete(section);
-      } else {
-        next.add(section);
-      }
+      next.has(section) ? next.delete(section) : next.add(section);
       return next;
     });
   }
@@ -240,7 +232,7 @@ export class PatientDetails {
         res.items.forEach((t) => (map[t.id] = t.testName));
         this.labTestNames.set(map);
       },
-      error: () => { },
+      error: () => {},
     });
   }
 
@@ -305,27 +297,39 @@ export class PatientDetails {
 
   // ---------- Actions ----------
   requestLabTest(): void {
-    this.router.navigate(['/doctor/dashboard/patients/new-lab-test']);
+    const sessionId = this.activeSessionId();
+    if (sessionId) {
+      this.router.navigate(['/doctor/dashboard/patients/new-lab-test', sessionId]);
+    } else {
+      this.createSession();
+    }
   }
 
-  exportReport(): void {
-    console.log('Exporting patient report as PDF');
+  createSession(): void {
+    this.router.navigate(['/doctor/dashboard/patients/create-session', this.patientId]);
   }
 
-  viewFullHistory(): void {
-    console.log('Viewing full patient access history');
+  closeSession(): void {
+    clearActiveSessionId(this.patientId);
+    this.activeSessionId.set(null);
+    // بعد قفل الـ session، الجدول الحقيقي للـ Sessions اتغيّر - نعيد تحميله
+    this.loadSessions(this.patientId);
   }
 
-  viewLabResult(result: LabResult): void {
-    console.log('Viewing lab result', result.test);
-  }
+   // ========== AI Chat Methods ==========
 
-  requestNewAnalysis(): void {
-    console.log('Requesting new lab analysis');
-  }
+toggleChat(): void {
+  this.chatOpen.update(value => !value);
+}
 
-  viewHistoricalTrends(): void {
-    console.log('Viewing historical trends');
+
+sendChatMessage(): void {
+
+  const question = this.chatInput().trim();
+
+
+  if (!question || this.chatLoading()) {
+    return;
   }
 
 
@@ -339,50 +343,50 @@ export class PatientDetails {
   ]);
 
 
-// تفريغ الـ input
-this.chatInput.set('');
+  // تفريغ الـ input
+  this.chatInput.set('');
 
 
-// تشغيل loading
-this.chatLoading.set(true);
+  // تشغيل loading
+  this.chatLoading.set(true);
 
 
-this.doctorService
-  .askPatientAI({
-    patientId: this.patientId,
-    question: question
-  })
-  .pipe(
-    finalize(() => this.chatLoading.set(false))
-  )
-  .subscribe({
+  this.doctorService
+    .askPatientAI({
+      patientId: this.patientId,
+      question: question
+    })
+    .pipe(
+      finalize(() => this.chatLoading.set(false))
+    )
+    .subscribe({
 
-    next: (response) => {
+      next: (response) => {
 
-      this.chatMessages.update(messages => [
-        ...messages,
-        {
-          role: 'ai',
-          content: response.answer
-        }
-      ]);
+        this.chatMessages.update(messages => [
+          ...messages,
+          {
+            role: 'ai',
+            content: response.answer
+          }
+        ]);
 
-    },
+      },
 
 
-    error: () => {
+      error: () => {
 
-      this.chatMessages.update(messages => [
-        ...messages,
-        {
-          role: 'ai',
-          content: 'Sorry, something went wrong while contacting AI.'
-        }
-      ]);
+        this.chatMessages.update(messages => [
+          ...messages,
+          {
+            role: 'ai',
+            content: 'Sorry, something went wrong while contacting AI.'
+          }
+        ]);
 
-    }
+      }
 
-  });
+    });
 
 }
 }
