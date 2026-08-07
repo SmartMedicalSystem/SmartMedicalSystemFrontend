@@ -47,7 +47,7 @@ export class Profile implements OnInit {
   constructor(
     private doctorService: DoctorService,
     private authService: AuthenticationService
-  ) {}
+  ) { }
 
   // id الدكتور الحالي بيتجاب من claims التوكن (nameidentifier/sub) مش من الـ URL.
   private doctorId!: number;
@@ -120,24 +120,24 @@ export class Profile implements OnInit {
     username: '',
   };
 
-   // ========== AI Chat ==========
-    // ملحوظة: هنا بس patientId بتتبعت null دايمًا (مش مربوطة بمريض معين)،
-    // عكس نفس الشات في patient-details اللي بتبعت patientId حقيقي.
-    chatOpen = signal(false);
-    chatLoading = signal(false);
-    chatInput = signal('');
-  
-    chatMessages = signal<
-      {
-        role: 'user' | 'ai';
-        content: string;
-      }[]
-    >([
-      {
-        role: 'ai',
-        content: 'Hello, I am your AI medical assistant. Ask me anything.',
-      },
-    ]);
+  // ========== AI Chat ==========
+  // ملحوظة: هنا بس patientId بتتبعت null دايمًا (مش مربوطة بمريض معين)،
+  // عكس نفس الشات في patient-details اللي بتبعت patientId حقيقي.
+  chatOpen = signal(false);
+  chatLoading = signal(false);
+  chatInput = signal('');
+
+  chatMessages = signal<
+    {
+      role: 'user' | 'ai';
+      content: string;
+    }[]
+  >([
+    {
+      role: 'ai',
+      content: 'Hello, I am your AI medical assistant. Ask me anything.',
+    },
+  ]);
 
   ngOnInit(): void {
     const token = this.authService.getAccessToken();
@@ -305,6 +305,7 @@ export class Profile implements OnInit {
           this.selectedImage = null;
           this.photoPreviewUrl.set(null);
           this.saveSuccess.set(true);
+          this.authService.setUserImage(this.resolvePhotoUrl(profile.photoUrl) ?? this.currentPhotoUrl());
         },
         error: (err) => {
           // بنطبع الـ body الكامل بتاع الخطأ في الـ console + بنوريه في الشاشة
