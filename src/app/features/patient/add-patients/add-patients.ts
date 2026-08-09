@@ -37,8 +37,9 @@ export class AddPatients {
     mobileNumber: ['', Validators.required],
     address: [''],
 
-    // UI Only — مش موجودين في CreatePatientDto فمش هيتبعتوا للباك
-    city: [''],
+    city: ['', Validators.required],
+    country: ['', Validators.required],
+
     patientStatus: ['Active'],
     assignedDepartment: [''],
     assignedDoctor: [''],
@@ -88,6 +89,9 @@ export class AddPatients {
 
         const value = this.form.getRawValue();
 
+        // value.gender is guaranteed to be a real number now (ngValue on the
+        // <select>), but Number(...) is kept as a defensive cast in case the
+        // value ever arrives as a string from elsewhere.
         const dto: CreatePatientDto = {
           firstName: value.firstName!,
           lastName: value.lastName!,
@@ -95,6 +99,8 @@ export class AddPatients {
           dateOfBirth: value.dateOfBirth!,
           gender: Number(value.gender),
           email: value.email!,
+          city: value.city!,
+          country: value.country!,
 
           mobileNumber: value.mobileNumber!,
           address: value.address ?? '',
@@ -102,14 +108,16 @@ export class AddPatients {
         };
 
         this.patientService.addPatient(dto).subscribe({
-          next: (res) => {
+          next: () => {
             this.alertService.success('Patient added successfully');
             this.router.navigate(['/admin/dashboard/patients/all-patients']);
           },
 
           error: (err) => {
             console.error(err);
-            this.alertService.error(err.error?.message ?? 'Failed to add patient');
+            const backendMsg =
+              err.error?.errors?.[0]?.message ?? err.error?.Message ?? err.error?.message ?? 'Failed to add patient';
+            this.alertService.error(backendMsg);
           },
         });
       });

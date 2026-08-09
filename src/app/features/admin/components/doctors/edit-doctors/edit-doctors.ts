@@ -17,9 +17,6 @@ import { AlertService } from '../../../../../core/services/alert-service.service
 // Matches Guard.ValidatePhone in the backend: 010/011/012/015 + 8 digits
 const EGYPT_PHONE_PATTERN = /^(010|011|012|015)\d{8}$/;
 
-// Egyptian national ID: exactly 14 digits
-const NATIONAL_ID_PATTERN = /^\d{14}$/;
-
 function notInFutureValidator(control: AbstractControl): ValidationErrors | null {
   if (!control.value) return null;
 
@@ -86,20 +83,26 @@ export class EditDoctors implements OnInit {
     { id: 4, name: 'Oncology' },
   ]);
 
-  // nationalId stays disabled and read-only: the backend only exposes an
-  // encrypted value (encryptedNationalId), never the plaintext, so it can't
-  // be displayed or re-submitted from this form. It is intentionally left
-  // out of the patchValue call and out of the update DTO below.
+  // Personal Information fields (name, gender, dateOfBirth, nationalId) are
+  // no longer editable from the UI — that section was removed from
+  // edit-doctors.html entirely. These controls are kept here with NO
+  // validators (the user can never touch them, so there's nothing to
+  // validate) purely so the values loaded in loadDoctor() get echoed back
+  // unchanged inside the UpdateDoctorDto on save. The backend still requires
+  // them to be present on the request.
   form = this.fb.group({
-    name: ['', [Validators.required, Validators.maxLength(200)]],
-    gender: [null as number | null, Validators.required],
-    dateOfBirth: ['', [Validators.required, notInFutureValidator]],
+    name: [''],
+    gender: [null as number | null],
+    dateOfBirth: [''],
     nationalId: [{ value: '', disabled: true }],
+
     specialization: ['', [Validators.required, Validators.maxLength(100)]],
     departmentId: [null as number | null, Validators.required],
     mobileNumber: ['', [Validators.required, Validators.pattern(EGYPT_PHONE_PATTERN)]],
     email: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
     address: ['', Validators.maxLength(250)],
+    city: ['', Validators.required],
+    country: ['', Validators.required],
   });
 
   originalValue = this.form.getRawValue();
@@ -132,6 +135,8 @@ export class EditDoctors implements OnInit {
           mobileNumber: doctor.phoneNumber,
           email: doctor.email,
           address: doctor.address,
+          city: (doctor as any).city ?? '',
+          country: (doctor as any).country ?? '',
         });
 
         this.originalValue = this.form.getRawValue();
@@ -163,9 +168,6 @@ export class EditDoctors implements OnInit {
     if (control.hasError('pattern')) {
       if (controlName === 'mobileNumber') {
         return 'Mobile number must start with 010, 011, 012, or 015 followed by 8 digits';
-      }
-      if (controlName === 'nationalId') {
-        return 'National ID must be exactly 14 digits';
       }
       return `${label} is invalid`;
     }
@@ -206,6 +208,8 @@ export class EditDoctors implements OnInit {
           email: raw.email!,
           mobileNumber: raw.mobileNumber!,
           address: raw.address ?? '',
+          city: raw.city!,
+          country: raw.country!,
           gender: Number(raw.gender),
           departmentId: Number(raw.departmentId),
           // Echo back the exact value the backend gave us on load — the user
@@ -214,14 +218,16 @@ export class EditDoctors implements OnInit {
         };
 
         this.doctorService.updateDoctorY(this.doctorId, dto).subscribe({
-          next: (res) => {
+          next: () => {
             this.alertService.success('Doctor updated successfully');
             this.router.navigate(['/admin/dashboard/doctors/all-doctors']);
           },
 
           error: (err) => {
             console.error(err);
-            this.alertService.error(err.error?.message ?? 'Failed to update doctor');
+            const backendMsg =
+              err.error?.errors?.[0]?.message ?? err.error?.Message ?? err.error?.message ?? 'Failed to update doctor';
+            this.alertService.error(backendMsg);
           },
         });
       });
