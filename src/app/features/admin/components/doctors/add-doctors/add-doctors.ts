@@ -64,6 +64,8 @@ export class AddDoctors {
     mobileNumber: ['', [Validators.required, Validators.pattern(EGYPT_PHONE_PATTERN)]],
     personalEmail: ['', [Validators.required, Validators.email, Validators.maxLength(150)]],
     residentialAddress: ['', Validators.maxLength(250)],
+    city: ['', Validators.maxLength(100)],
+    country: ['', Validators.maxLength(100)],
 
     // Contact (محلي بس، مش بيتبعت للباك)
     contact: ['Clinic 101', Validators.required],
@@ -165,6 +167,8 @@ export class AddDoctors {
           mobileNumber: value.mobileNumber!,
           password: this.temporaryPassword(),
           address: value.residentialAddress ?? '',
+          city: value.city ?? '',
+          country: value.country ?? '',
           gender: Number(value.gender),
           nationalId: value.nationalId!,
           departmentId: Number(value.department),

@@ -81,37 +81,62 @@
         <input
           type="date"
           formControlName="dateOfBirth"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('dateOfBirth')"
+          [class.focus:ring-primary/40]="!isInvalid('dateOfBirth')"
+          [class.border-tertiary]="isInvalid('dateOfBirth')"
+          [class.focus:ring-tertiary/30]="isInvalid('dateOfBirth')" />
+        @if (isInvalid('dateOfBirth')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('dateOfBirth', 'Date of Birth') }}
+          </p>
+        }
       </div>
 
       <div class="flex flex-col gap-1">
         <label class="text-xs font-medium text-primary">Gender <span class="text-tertiary">*</span></label>
         <select formControlName="gender"
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
-          <option value="" disabled selected>Select gender</option>
-          <option [value]="0">Female</option>
-<option [value]="1">Male</option>
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('gender')"
+          [class.focus:ring-primary/40]="!isInvalid('gender')"
+          [class.border-tertiary]="isInvalid('gender')"
+          [class.focus:ring-tertiary/30]="isInvalid('gender')">
+          <option [ngValue]="null" disabled selected>Select gender</option>
+          <option [ngValue]="1">Female</option>
+          <option [ngValue]="0">Male</option>
         </select>
+        @if (isInvalid('gender')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('gender', 'Gender') }}
+          </p>
+        }
       </div>
 
       <div class="flex flex-col gap-1">
-      <label class="text-xs font-medium text-primary">Blood Group</label>
-<select formControlName="bloodType"
-  class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40">
-  <option [ngValue]="null" disabled selected>Select blood group</option>
-  <option [ngValue]="7">O+</option>
-  <option [ngValue]="8">O-</option>
-  <option [ngValue]="1">A+</option>
-  <option [ngValue]="2">A-</option>
-  <option [ngValue]="3">B+</option>
-  <option [ngValue]="4">B-</option>
-  <option [ngValue]="5">AB+</option>
-  <option [ngValue]="6">AB-</option>
-</select>
+        <label class="text-xs font-medium text-primary">Blood Group</label>
+        <select formControlName="bloodType"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('bloodType')"
+          [class.focus:ring-primary/40]="!isInvalid('bloodType')"
+          [class.border-tertiary]="isInvalid('bloodType')"
+          [class.focus:ring-tertiary/30]="isInvalid('bloodType')">
+          <option [ngValue]="null" disabled selected>Select blood group</option>
+          <option [ngValue]="7">O+</option>
+          <option [ngValue]="8">O-</option>
+          <option [ngValue]="1">A+</option>
+          <option [ngValue]="2">A-</option>
+          <option [ngValue]="3">B+</option>
+          <option [ngValue]="4">B-</option>
+          <option [ngValue]="5">AB+</option>
+          <option [ngValue]="6">AB-</option>
+        </select>
+        @if (isInvalid('bloodType')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('bloodType', 'Blood Group') }}
+          </p>
+        }
       </div>
     </div>
-
-   
 
     <hr class="border-gray-100 my-7" />
 
@@ -126,43 +151,68 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-  <div class="flex flex-col gap-1">
-    <input type="text" formControlName="mobileNumber" placeholder="Mobile Number *"
-      class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-      [class.border-gray-200]="!isInvalid('mobileNumber')"
-      [class.focus:ring-primary/40]="!isInvalid('mobileNumber')"
-      [class.border-tertiary]="isInvalid('mobileNumber')"
-      [class.focus:ring-tertiary/30]="isInvalid('mobileNumber')" />
-    @if (isInvalid('mobileNumber')) {
-      <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-        <span>⚠️</span> {{ errorMessage('mobileNumber', 'Mobile Number') }}
-      </p>
-    }
-  </div>
+      <div class="flex flex-col gap-1">
+        <input type="text" formControlName="mobileNumber" placeholder="Mobile Number *"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('mobileNumber')"
+          [class.focus:ring-primary/40]="!isInvalid('mobileNumber')"
+          [class.border-tertiary]="isInvalid('mobileNumber')"
+          [class.focus:ring-tertiary/30]="isInvalid('mobileNumber')" />
+        @if (isInvalid('mobileNumber')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('mobileNumber', 'Mobile Number') }}
+          </p>
+        }
+      </div>
 
-  <div class="flex flex-col gap-1">
-    <input type="email" formControlName="email" placeholder="Email *"
-      class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-      [class.border-gray-200]="!isInvalid('email')"
-      [class.focus:ring-primary/40]="!isInvalid('email')"
-      [class.border-tertiary]="isInvalid('email')"
-      [class.focus:ring-tertiary/30]="isInvalid('email')" />
-    @if (isInvalid('email')) {
-      <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-        <span>⚠️</span> {{ errorMessage('email', 'Email') }}
-      </p>
-    }
-  </div>
-
-
-    
+      <div class="flex flex-col gap-1">
+        <input type="email" formControlName="email" placeholder="Email *"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('email')"
+          [class.focus:ring-primary/40]="!isInvalid('email')"
+          [class.border-tertiary]="isInvalid('email')"
+          [class.focus:ring-tertiary/30]="isInvalid('email')" />
+        @if (isInvalid('email')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('email', 'Email') }}
+          </p>
+        }
+      </div>
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       <input type="text" formControlName="address" placeholder="Address"
         class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-      <input type="text" formControlName="city" placeholder="City"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+
+      <div class="flex flex-col gap-1">
+        <input type="text" formControlName="city" placeholder="City *"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('city')"
+          [class.focus:ring-primary/40]="!isInvalid('city')"
+          [class.border-tertiary]="isInvalid('city')"
+          [class.focus:ring-tertiary/30]="isInvalid('city')" />
+        @if (isInvalid('city')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('city', 'City') }}
+          </p>
+        }
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+      <div class="flex flex-col gap-1">
+        <input type="text" formControlName="country" placeholder="Country *"
+          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+          [class.border-gray-200]="!isInvalid('country')"
+          [class.focus:ring-primary/40]="!isInvalid('country')"
+          [class.border-tertiary]="isInvalid('country')"
+          [class.focus:ring-tertiary/30]="isInvalid('country')" />
+        @if (isInvalid('country')) {
+          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+            <span>⚠️</span> {{ errorMessage('country', 'Country') }}
+          </p>
+        }
+      </div>
     </div>
 
     <hr class="border-gray-100 my-7" />
@@ -183,11 +233,7 @@
           class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-100 text-gray-600 font-medium cursor-not-allowed" />
       </div>
 
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Registration Date (Read-only)</label>
-        <input type="text" [value]="registrationDate()" disabled
-          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm bg-gray-100 text-gray-600 cursor-not-allowed" />
-      </div>
+
 
       <div class="flex flex-col gap-1">
         <label class="text-xs font-medium text-gray-500">Patient Status</label>
@@ -213,13 +259,13 @@
       </div>
 
       <div class="flex flex-col gap-1">
-  <label class="text-xs font-medium text-primary">Assigned Doctor</label>
-  <input
-    type="text"
-    formControlName="assignedDoctor"
-    placeholder="Enter doctor name"
-    class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
-</div>
+        <label class="text-xs font-medium text-primary">Assigned Doctor</label>
+        <input
+          type="text"
+          formControlName="assignedDoctor"
+          placeholder="Enter doctor name"
+          class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary/40" />
+      </div>
     </div>
 
     <!-- ===================== Actions ===================== -->

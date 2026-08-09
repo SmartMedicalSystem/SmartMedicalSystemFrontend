@@ -10,4 +10,7 @@ export interface Patient {
   mobileNumber: string;
   address: string;
   bloodType: string;
+  city: string;
+    country: string;   
+
 }

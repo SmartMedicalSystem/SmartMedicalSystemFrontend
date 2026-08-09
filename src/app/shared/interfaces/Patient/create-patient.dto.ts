@@ -8,4 +8,7 @@ export interface CreatePatientDto {
   mobileNumber: string;
   address: string;
   bloodType: number;
+  city: string; 
+    country: string;   
+
 }

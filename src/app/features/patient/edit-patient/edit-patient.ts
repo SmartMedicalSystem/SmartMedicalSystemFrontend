@@ -24,6 +24,46 @@ function notInFutureValidator(control: AbstractControl): ValidationErrors | null
   return inputDate > today ? { futureDate: true } : null;
 }
 
+// The backend returns gender/bloodType as string enum names in GET responses
+// (e.g. "Male", "ANegative"), but expects numeric enum values on Create/Update
+// requests. These maps bridge that gap. Values pass through unchanged if they
+// already arrive as numbers (defensive — in case that ever changes).
+const GENDER_STRING_TO_NUMBER: Record<string, number> = {
+  Female: 0,
+  Male: 1,
+};
+
+// NOTE: this mapping is inferred from the <select> option order in the
+// templates (7=O+, 8=O-, 1=A+, 2=A-, 3=B+, 4=B-, 5=AB+, 6=AB-) combined with
+// the one confirmed sample ("ANegative" -> 2). Please confirm the remaining
+// string values (APositive, BPositive, BNegative, ABPositive, ABNegative,
+// OPositive, ONegative) against a few more patient records before relying on
+// this in production — if any of these don't match what the backend actually
+// sends, that blood type will map to null and fail validation the same way
+// gender did.
+const BLOOD_TYPE_STRING_TO_NUMBER: Record<string, number> = {
+  APositive: 1,
+  ANegative: 2,
+  BPositive: 3,
+  BNegative: 4,
+  ABPositive: 5,
+  ABNegative: 6,
+  OPositive: 7,
+  ONegative: 8,
+};
+
+function genderToNumber(value: string | number | null | undefined): number | null {
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'number') return value;
+  return GENDER_STRING_TO_NUMBER[value] ?? null;
+}
+
+function bloodTypeToNumber(value: string | number | null | undefined): number | null {
+  if (value === null || value === undefined || value === '') return null;
+  if (typeof value === 'number') return value;
+  return BLOOD_TYPE_STRING_TO_NUMBER[value] ?? null;
+}
+
 @Component({
   selector: 'app-edit-patient',
   standalone: true,
@@ -51,17 +91,23 @@ export class EditPatient implements OnInit {
 
   modifiedFields = signal<Set<string>>(new Set());
 
-  // nationalId is editable now — same as add-patient — just with a stricter
-  // pattern check since we already know the expected format.
+  // Personal info fields (firstName, lastName, nationalId, dateOfBirth, gender,
+  // bloodType) are no longer editable from the UI. They're kept in the form
+  // (with no validators, since the user can't touch them) purely so their
+  // loaded values still get sent back to the backend on update — the backend
+  // requires them to be present on the PUT request.
   form = this.fb.group({
-    firstName: ['', Validators.required],
-    lastName: ['', Validators.required],
-    nationalId: ['', [Validators.required, Validators.pattern(NATIONAL_ID_PATTERN)]],
-    dateOfBirth: ['', [Validators.required, notInFutureValidator]],
-    gender: ['', Validators.required],
+    firstName: [''],
+    lastName: [''],
+    nationalId: [''],
+    dateOfBirth: [''],
+    gender: [null as number | null],
+    bloodType: [null as number | null],
+
     mobileNumber: ['', Validators.required],
     address: [''],
-    bloodType: ['', Validators.required],
+    city: ['', Validators.required],
+    country: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
 
     // UI Only
@@ -97,11 +143,13 @@ export class EditPatient implements OnInit {
           lastName: patient.lastName,
           nationalId: patient.nationalId ?? '',
           dateOfBirth: patient.dateOfBirth.substring(0, 10),
-          gender: patient.gender,
+          gender: genderToNumber(patient.gender),
           mobileNumber: patient.mobileNumber.toString(),
           address: patient.address,
+          city: patient.city ?? '',
+          country: patient.country ?? '',
           email: patient.email,
-          bloodType: patient.bloodType,
+          bloodType: bloodTypeToNumber(patient.bloodType),
           patientNumber: patient.id.toString(),
           registrationDate: '',
         });
@@ -216,6 +264,8 @@ export class EditPatient implements OnInit {
           gender: Number(value.gender),
           mobileNumber: value.mobileNumber!,
           address: value.address ?? '',
+          city: value.city!,
+          country: value.country!,
           bloodType: Number(value.bloodType),
         };
 
@@ -228,7 +278,9 @@ export class EditPatient implements OnInit {
           },
           error: (err) => {
             console.error(err);
-            this.alertService.error(err.error?.message ?? 'Failed to update patient');
+            const backendMsg =
+              err.error?.errors?.[0]?.message ?? err.error?.Message ?? err.error?.message ?? 'Failed to update patient';
+            this.alertService.error(backendMsg);
           },
         });
       });
