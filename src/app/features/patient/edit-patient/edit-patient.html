@@ -53,127 +53,7 @@
       <h2 class="font-semibold text-gray-800">Basic Information</h2>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">First Name</label>
-        <input type="text" formControlName="firstName" (input)="onFieldChange('firstName')"
-          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-          [class.border-gray-200]="!isInvalid('firstName')"
-          [class.focus:ring-primary/40]="!isInvalid('firstName')"
-          [class.border-tertiary]="isInvalid('firstName')"
-          [class.focus:ring-tertiary/30]="isInvalid('firstName')" />
-        @if (isInvalid('firstName')) {
-          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-            <span>⚠️</span> {{ errorMessage('firstName', 'First Name') }}
-          </p>
-        } @else if (isModified('firstName')) {
-          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-        }
-      </div>
 
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Last Name</label>
-        <input type="text" formControlName="lastName" (input)="onFieldChange('lastName')"
-          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-          [class.border-gray-200]="!isInvalid('lastName')"
-          [class.focus:ring-primary/40]="!isInvalid('lastName')"
-          [class.border-tertiary]="isInvalid('lastName')"
-          [class.focus:ring-tertiary/30]="isInvalid('lastName')" />
-        @if (isInvalid('lastName')) {
-          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-            <span>⚠️</span> {{ errorMessage('lastName', 'Last Name') }}
-          </p>
-        } @else if (isModified('lastName')) {
-          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-        }
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">National ID (SSN)</label>
-        <input type="text" formControlName="nationalId" (input)="onFieldChange('nationalId')"
-          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-          [class.border-gray-200]="!isInvalid('nationalId')"
-          [class.focus:ring-primary/40]="!isInvalid('nationalId')"
-          [class.border-tertiary]="isInvalid('nationalId')"
-          [class.focus:ring-tertiary/30]="isInvalid('nationalId')" />
-        @if (isInvalid('nationalId')) {
-          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-            <span>⚠️</span> {{ errorMessage('nationalId', 'National ID') }}
-          </p>
-        } @else if (isModified('nationalId')) {
-          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-        }
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Date of Birth</label>
-        <input type="date" formControlName="dateOfBirth" (input)="onFieldChange('dateOfBirth')"
-          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-          [class.border-gray-200]="!isInvalid('dateOfBirth')"
-          [class.focus:ring-primary/40]="!isInvalid('dateOfBirth')"
-          [class.border-tertiary]="isInvalid('dateOfBirth')"
-          [class.focus:ring-tertiary/30]="isInvalid('dateOfBirth')" />
-        @if (isInvalid('dateOfBirth')) {
-          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-            <span>⚠️</span> {{ errorMessage('dateOfBirth', 'Date of Birth') }}
-          </p>
-        } @else if (isModified('dateOfBirth')) {
-          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-        }
-      </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Gender</label>
-        <select formControlName="gender" (change)="onFieldChange('gender')"
-          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-          [class.border-gray-200]="!isInvalid('gender')"
-          [class.focus:ring-primary/40]="!isInvalid('gender')"
-          [class.border-tertiary]="isInvalid('gender')"
-          [class.focus:ring-tertiary/30]="isInvalid('gender')">
-          <option [ngValue]="null" disabled>Select gender</option>
-          <option [ngValue]="0">Female</option>
-          <option [ngValue]="1">Male</option>
-        </select>
-        @if (isInvalid('gender')) {
-          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-            <span>⚠️</span> {{ errorMessage('gender', 'Gender') }}
-          </p>
-        } @else if (isModified('gender')) {
-          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-        }
-      </div>
-
-      <div class="flex flex-col gap-1">
-        <label class="text-xs font-medium text-gray-500">Blood Group</label>
-        <select formControlName="bloodType" (change)="onFieldChange('bloodType')"
-          class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
-          [class.border-gray-200]="!isInvalid('bloodType')"
-          [class.focus:ring-primary/40]="!isInvalid('bloodType')"
-          [class.border-tertiary]="isInvalid('bloodType')"
-          [class.focus:ring-tertiary/30]="isInvalid('bloodType')">
-          <option [ngValue]="null" disabled>Select blood group</option>
-          <option [ngValue]="7">O+</option>
-          <option [ngValue]="8">O-</option>
-          <option [ngValue]="1">A+</option>
-          <option [ngValue]="2">A-</option>
-          <option [ngValue]="3">B+</option>
-          <option [ngValue]="4">B-</option>
-          <option [ngValue]="5">AB+</option>
-          <option [ngValue]="6">AB-</option>
-        </select>
-        @if (isInvalid('bloodType')) {
-          <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-            <span>⚠️</span> {{ errorMessage('bloodType', 'Blood Group') }}
-          </p>
-        } @else if (isModified('bloodType')) {
-          <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-        }
-      </div>
-    </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
       <div class="flex flex-col gap-1">
@@ -232,14 +112,38 @@
     </div>
 
     <div class="flex flex-col gap-1 mt-4">
-      <label class="text-xs font-medium text-gray-500">Residential Address</label>
-      <textarea rows="2" formControlName="address" (input)="onFieldChange('address')"
-        class="border border-gray-200 rounded-lg px-3 py-2.5 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-primary/40"></textarea>
-      @if (isModified('address')) {
-        <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
-      }
-    </div>
+  <label class="text-xs font-medium text-gray-500">City</label>
+  <input type="text" formControlName="city" (input)="onFieldChange('city')"
+    class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+    [class.border-gray-200]="!isInvalid('city')"
+    [class.focus:ring-primary/40]="!isInvalid('city')"
+    [class.border-tertiary]="isInvalid('city')"
+    [class.focus:ring-tertiary/30]="isInvalid('city')" />
+  @if (isInvalid('city')) {
+    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+      <span>⚠️</span> {{ errorMessage('city', 'City') }}
+    </p>
+  } @else if (isModified('city')) {
+    <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+  }
+</div>
 
+<div class="flex flex-col gap-1 mt-4">
+  <label class="text-xs font-medium text-gray-500">Country</label>
+  <input type="text" formControlName="country" (input)="onFieldChange('country')"
+    class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+    [class.border-gray-200]="!isInvalid('country')"
+    [class.focus:ring-primary/40]="!isInvalid('country')"
+    [class.border-tertiary]="isInvalid('country')"
+    [class.focus:ring-tertiary/30]="isInvalid('country')" />
+  @if (isInvalid('country')) {
+    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+      <span>⚠️</span> {{ errorMessage('country', 'Country') }}
+    </p>
+  } @else if (isModified('country')) {
+    <p class="text-primary text-xs mt-0.5">Field modified in this session</p>
+  }
+</div>
     <hr class="border-gray-100 my-7" />
 
     <!-- ===================== Hospital Information ===================== -->

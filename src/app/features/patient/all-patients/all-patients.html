@@ -185,23 +185,35 @@
                 </span>
               </td>
               <td class="px-4 sm:px-6 py-3 text-right">
-                @if (this.urlContainsDoctor) {
-                  <button
-                    type="button"
-                    (click)="openPatient(patient)"
-                    class="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors whitespace-nowrap"
-                  >
-                    Open Patient
-                  </button>
-                } @else {
-                  <button
-                    type="button"
-                    (click)="editPatient(patient)"
-                    class="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors whitespace-nowrap"
-                  >
-                    Edit Patient
-                  </button>
-                }
+                <div class="flex items-center justify-end gap-2">
+                  @if (this.urlContainsDoctor) {
+                    <button
+                      type="button"
+                      (click)="openPatient(patient)"
+                      class="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors whitespace-nowrap"
+                    >
+                      Open Patient
+                    </button>
+                  } @else {
+                    <button
+                      type="button"
+                      (click)="editPatient(patient)"
+                      class="rounded-full bg-primary px-4 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors whitespace-nowrap"
+                    >
+                      Edit Patient
+                    </button>
+                  }
+
+                  @if (Role === 'Admin') {
+                    <button
+                      type="button"
+                      (click)="deletePatient(patient)"
+                      class="rounded-full bg-red-500 px-4 py-1.5 text-xs font-medium text-white hover:bg-red-600 transition-colors whitespace-nowrap"
+                    >
+                      Delete
+                    </button>
+                  }
+                </div>
               </td>
             </tr>
           </tbody>

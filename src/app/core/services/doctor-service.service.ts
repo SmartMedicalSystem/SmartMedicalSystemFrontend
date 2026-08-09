@@ -165,6 +165,9 @@ export class DoctorService {
     return this.http.get<Patient>(`${this.apiUrlP}/by-id/${id}`);
   }
 
+  deletePatient(ssn: string): Observable<void> {
+  return this.http.delete<void>(`${this.apiUrlP}/${ssn}`);
+}
   // ============ Request Labs ============
 
   getLabRequestsBySession(

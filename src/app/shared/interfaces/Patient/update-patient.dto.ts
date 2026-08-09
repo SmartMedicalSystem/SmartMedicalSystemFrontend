@@ -8,4 +8,7 @@ export interface UpdatePatientDto {
   mobileNumber: string;
   address: string;
   bloodType: number;
+  city: string;
+    country: string;   
+
 }

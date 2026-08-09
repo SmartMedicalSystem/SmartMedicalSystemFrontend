@@ -127,6 +127,46 @@
 </div>
       </div>
 
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">City</label>
+          <input
+            type="text"
+            formControlName="city"
+            placeholder="Cairo"
+            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isInvalid('city')"
+            [class.focus:ring-primary/40]="!isInvalid('city')"
+            [class.border-tertiary]="isInvalid('city')"
+            [class.focus:ring-tertiary/30]="isInvalid('city')"
+          />
+          @if (isInvalid('city')) {
+            <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+              <span>⚠️</span> {{ errorMessage('city', 'City') }}
+            </p>
+          }
+        </div>
+
+        <div class="flex flex-col gap-1">
+          <label class="text-xs font-medium text-gray-500">Country</label>
+          <input
+            type="text"
+            formControlName="country"
+            placeholder="Egypt"
+            class="border rounded-lg px-3 py-2.5 text-sm focus:outline-none focus:ring-2"
+            [class.border-gray-200]="!isInvalid('country')"
+            [class.focus:ring-primary/40]="!isInvalid('country')"
+            [class.border-tertiary]="isInvalid('country')"
+            [class.focus:ring-tertiary/30]="isInvalid('country')"
+          />
+          @if (isInvalid('country')) {
+            <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+              <span>⚠️</span> {{ errorMessage('country', 'Country') }}
+            </p>
+          }
+        </div>
+      </div>
+
       <hr class="border-gray-100 my-7" />
 
       <!-- ===================== Professional Information ===================== -->

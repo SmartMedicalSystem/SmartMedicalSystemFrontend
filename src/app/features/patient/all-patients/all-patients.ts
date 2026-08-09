@@ -5,6 +5,9 @@ import { Router, RouterLink } from '@angular/router';
 import { finalize } from 'rxjs';
 import { DoctorService } from '../../../core/services/doctor-service.service';
 import { Patient as ApiPatient } from '../../../shared/interfaces/Doctor/patient.interface';
+import { AuthenticationService } from '../../../core/services/authenticationService.service';
+import { AlertService } from '../../../core/services/alert-service.service';
+
 
 // TODO: تأكد من ترتيب enum BloodType الفعلي في الباك (Domain.Enums.BloodType)
 // وعدّل الترتيب هنا لو مختلف — نفس الملاحظة المتكررة في patient-details.ts
@@ -29,6 +32,7 @@ interface DisplayPatient {
   name: string;
   avatarInitials: string;
   ssn: string;
+  nationalId: string;
   age: number;
   gender: string;
   bloodType: string;
@@ -43,12 +47,16 @@ interface DisplayPatient {
 export class AllPatients implements OnInit {
 
   urlContainsDoctor = false;
+  Role = '';
 
   constructor(
     private router: Router,
-    private doctorService: DoctorService
+    private doctorService: DoctorService,
+    private authService: AuthenticationService,
+    private alertService: AlertService
   ) {
     this.urlContainsDoctor = this.router.url.includes('doctor');
+    this.Role = this.authService.getUserRole() || ''
   }
 
   loading = signal(true);
@@ -129,6 +137,7 @@ export class AllPatients implements OnInit {
       name: `${p.firstName} ${p.lastName}`,
       avatarInitials: `${p.firstName.charAt(0)}${p.lastName.charAt(0)}`.toUpperCase(),
       ssn: this.maskNationalId(p.nationalId),
+      nationalId: String(p.nationalId),
       age: p.age,
       // الباك اند بيرجّع gender كـ string جاهزة ("Male"/"Female")، فمفيش داعي
       // لأي تحويل رقمي هنا (patient.interface.ts: gender: string).
@@ -180,6 +189,32 @@ export class AllPatients implements OnInit {
 
   editPatient(patient: DisplayPatient): void {
     this.router.navigate(['/admin/dashboard/patients/edit-patients', patient.id]);
+  }
+
+  // بيستخدم AlertService (SweetAlert2) لعرض تأكيد قبل الحذف، وبعدين ينده على
+  // DoctorService.deletePatient. أخطاء الحذف بتتعرض كـ SweetAlert alert مش
+  // عن طريق loadError، عشان الجدول ميختفيش من غير ما يحصله refresh.
+  deletePatient(patient: DisplayPatient): void {
+    this.alertService
+      .confirm(
+        `Are you sure you want to delete ${patient.name}? This action cannot be undone.`,
+        'Delete patient?'
+      )
+      .then((result) => {
+        if (!result.isConfirmed) return;
+
+        this.doctorService.deletePatient(patient.nationalId).subscribe({
+          next: () => {
+            this.patients.update((list) => list.filter((p) => p.id !== patient.id));
+            this.totalCount.update((count) => count - 1);
+            this.alertService.success('Patient deleted successfully.');
+          },
+          error: (err) => {
+            console.error(err);
+            this.alertService.error('تعذر حذف المريض.');
+          }
+        });
+      });
   }
 
   onRowsPerPageChange(value: string): void {

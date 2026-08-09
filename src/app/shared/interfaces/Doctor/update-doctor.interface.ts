@@ -7,5 +7,7 @@ export interface UpdateDoctorDto {
   address: string;
   gender: number;
   nationalId: string;
+city: string;
+country: string;
   departmentId: number;
 }

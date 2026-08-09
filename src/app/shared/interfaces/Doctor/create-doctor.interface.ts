@@ -9,4 +9,6 @@ export interface CreateDoctorDto {
   gender: number;
   nationalId: string;
   departmentId: number;
+  city: string;
+  country: string;
 }

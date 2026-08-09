@@ -38,112 +38,18 @@
 
 <form [formGroup]="form">
 
-<!-- ================= Personal ================= -->
-
-<div class="bg-white rounded-xl border border-gray-200 p-6">
-
-<div class="flex items-center gap-2 mb-5">
-
-<svg xmlns="http://www.w3.org/2000/svg"
-class="w-5 h-5 text-primary"
-viewBox="0 0 24 24"
-fill="none"
-stroke="currentColor"
-stroke-width="2">
-
-<circle cx="12" cy="8" r="4"/>
-
-<path d="M4 20c0-4 3.6-6 8-6s8 2 8 6"/>
-
-</svg>
-
-<h2 class="font-semibold">
-Personal Information
-</h2>
-
-</div>
-
-<div class="grid md:grid-cols-2 gap-4">
-
-
-
-<div>
-  <label class="text-xs text-gray-500">Doctor Name</label>
-  <input
-    type="text"
-    formControlName="name"
-    class="w-full border rounded-lg px-3 py-2.5"
-    [class.border-gray-200]="!isInvalid('name')"
-    [class.border-tertiary]="isInvalid('name')"
-  />
-  @if (isInvalid('name')) {
-    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-      <span>⚠️</span> {{ errorMessage('name', 'Doctor Name') }}
-    </p>
-  }
-
-</div>
-
-<div>
-  <label class="text-xs text-gray-500">Gender</label>
-  <select
-    formControlName="gender"
-    class="w-full border rounded-lg px-3 py-2.5"
-    [class.border-gray-200]="!isInvalid('gender')"
-    [class.border-tertiary]="isInvalid('gender')"
-  >
-    <option [ngValue]="null" disabled>Select Gender</option>
-    <option [ngValue]="0">Female</option>
-    <option [ngValue]="1">Male</option>
-  </select>
-  @if (isInvalid('gender')) {
-    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-      <span>⚠️</span> {{ errorMessage('gender', 'Gender') }}
-    </p>
-  }
-</div>
-</div>
-
-<div class="grid md:grid-cols-2 gap-4 mt-4">
-
-<div>
-  <label class="text-xs text-gray-500">Date Of Birth</label>
-  <input
-    type="date"
-    formControlName="dateOfBirth"
-    class="w-full border rounded-lg px-3 py-2.5"
-    [class.border-gray-200]="!isInvalid('dateOfBirth')"
-    [class.border-tertiary]="isInvalid('dateOfBirth')"
-  />
-  @if (isInvalid('dateOfBirth')) {
-    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-      <span>⚠️</span> {{ errorMessage('dateOfBirth', 'Date of Birth') }}
-    </p>
-  }
-</div>
-
-<div>
-  <label class="text-xs text-gray-500">National ID</label>
-  <input
-    type="text"
-    formControlName="nationalId"
-    class="w-full border rounded-lg px-3 py-2.5"
-    [class.border-gray-200]="!isInvalid('nationalId')"
-    [class.border-tertiary]="isInvalid('nationalId')"
-  />
-  @if (isInvalid('nationalId')) {
-    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
-      <span>⚠️</span> {{ errorMessage('nationalId', 'National ID') }}
-    </p>
-  }
-</div>
-</div>
-
-</div>
+<!--
+  ================= Personal Information =================
+  Removed from the UI on purpose: Doctor Name, Gender, Date of Birth, and
+  National ID are no longer editable here. Their form controls still exist
+  in edit-doctors.ts (populated from loadDoctor()) so the values keep being
+  sent back unchanged on save — the backend still requires them on the
+  UpdateDoctorDto. See onSaveChanges() in the component.
+-->
 
 <!-- ================= Professional ================= -->
 
-<div class="bg-white rounded-xl border border-gray-200 p-6 mt-6">
+<div class="bg-white rounded-xl border border-gray-200 p-6">
 
 <div class="flex items-center gap-2 mb-5">
 
@@ -290,6 +196,42 @@ Professional Information
   @if (isInvalid('address')) {
     <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
       <span>⚠️</span> {{ errorMessage('address', 'Address') }}
+    </p>
+  }
+</div>
+
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+
+    <div>
+  <label class="text-xs text-gray-500">City</label>
+  <input
+    type="text"
+    formControlName="city"
+    class="w-full border rounded-lg px-3 py-2.5"
+    [class.border-gray-200]="!isInvalid('city')"
+    [class.border-tertiary]="isInvalid('city')"
+  />
+  @if (isInvalid('city')) {
+    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+      <span>⚠️</span> {{ errorMessage('city', 'City') }}
+    </p>
+  }
+</div>
+
+    <div>
+  <label class="text-xs text-gray-500">Country</label>
+  <input
+    type="text"
+    formControlName="country"
+    class="w-full border rounded-lg px-3 py-2.5"
+    [class.border-gray-200]="!isInvalid('country')"
+    [class.border-tertiary]="isInvalid('country')"
+  />
+  @if (isInvalid('country')) {
+    <p class="flex items-center gap-1 text-tertiary text-xs mt-0.5">
+      <span>⚠️</span> {{ errorMessage('country', 'Country') }}
     </p>
   }
 </div>
