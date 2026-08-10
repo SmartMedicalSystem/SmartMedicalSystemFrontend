@@ -100,17 +100,17 @@ export class Login {
 
         }
 
-        try {
+        // try {
 
-          await this.notificationHub.startConnection();
+        //   await this.notificationHub.startConnection();
 
-          this.notificationStore.loadInitialData();
+        //   this.notificationStore.loadInitialData();
 
-        } catch (error) {
+        // } catch (error) {
 
-          console.error('SignalR failed to connect', error);
+        //   console.error('SignalR failed to connect', error);
 
-        }
+        // }
 
         this.isLoading.set(false);
 
