@@ -94,6 +94,10 @@ export class NotificationHubService {
 
   }
 
+  isConnected(): boolean {
+    return this.hubConnection.state === signalR.HubConnectionState.Connected;
+  }
+
   // ==========================================
   // SignalR Events
   // ==========================================
@@ -227,5 +231,7 @@ export class NotificationHubService {
     this.unreadCount.set(0);
 
   }
+
+
 
 }
