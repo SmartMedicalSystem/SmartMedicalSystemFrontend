@@ -30,7 +30,10 @@ export class NotificationStoreService {
 
     }).subscribe({
 
-      next: ({ notifications, unreadCount }) => {
+      next: ({
+        notifications,
+        unreadCount
+      }) => {
 
         this.notificationHub.setNotifications(
           notifications.items
@@ -42,10 +45,10 @@ export class NotificationStoreService {
 
       },
 
-      error: (error) => {
+      error: error => {
 
         console.error(
-          'Failed to load notifications',
+          '❌ Failed to load notifications',
           error
         );
 
@@ -69,7 +72,9 @@ export class NotificationStoreService {
   // Mark As Read
   // =====================================
 
-  markAsRead(notificationId: number): void {
+  markAsRead(
+    notificationId: number
+  ): void {
 
     this.notificationService
       .markAsRead(notificationId)
@@ -83,10 +88,10 @@ export class NotificationStoreService {
 
         },
 
-        error: (error) => {
+        error: error => {
 
           console.error(
-            'Failed to mark notification as read',
+            '❌ Failed to mark notification as read',
             error
           );
 
@@ -102,41 +107,26 @@ export class NotificationStoreService {
 
   markAllAsRead(): void {
 
-    const unreadNotifications =
-      this.notificationHub
-        .getNotifications()()
-        .filter(notification => !notification.isRead);
+    this.notificationService
+      .markAllAsRead()
+      .subscribe({
 
-    if (unreadNotifications.length === 0) {
-      return;
-    }
+        next: () => {
 
-    unreadNotifications.forEach(notification => {
+          this.notificationHub.markAllAsRead();
 
-      this.notificationService
-        .markAsRead(notification.id)
-        .subscribe({
+        },
 
-          next: () => {
+        error: error => {
 
-            this.notificationHub.markAsRead(
-              notification.id
-            );
+          console.error(
+            '❌ Failed to mark all notifications as read',
+            error
+          );
 
-          },
+        }
 
-          error: (error) => {
-
-            console.error(
-              'Failed to mark notification as read',
-              error
-            );
-
-          }
-
-        });
-
-    });
+      });
 
   }
 
@@ -145,6 +135,7 @@ export class NotificationStoreService {
   // =====================================
 
   clear(): void {
+
     this.notificationHub.clear();
 
   }

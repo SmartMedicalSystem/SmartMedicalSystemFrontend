@@ -11,38 +11,57 @@ export class NotificationHubService {
 
   private hubConnection!: signalR.HubConnection;
 
-  private readonly notifications = signal<INotification[]>([]);
-  private readonly unreadCount = signal(0);
+  private readonly notifications =
+    signal<INotification[]>([]);
+
+  private readonly unreadCount =
+    signal(0);
 
   constructor(
     private authService: AuthenticationService
   ) {
 
-    this.hubConnection = new signalR.HubConnectionBuilder()
-      .withUrl(
-        'https://smartmedicalsystem.runasp.net/notificationHub',
-        {
-          accessTokenFactory: () =>
-            this.authService.getAccessToken() ?? ''
-        }
-      )
-      .withAutomaticReconnect()
-      .build();
+    this.hubConnection =
+      new signalR.HubConnectionBuilder()
+        .withUrl(
+          'https://smartmedicalsystem.runasp.net/notificationHub',
+          {
+            accessTokenFactory: () =>
+              this.authService.getAccessToken() ?? ''
+          }
+        )
+        .withAutomaticReconnect()
+        .build();
 
     // Register events once
     this.registerEvents();
 
     // Connection lifecycle
     this.hubConnection.onreconnecting(error => {
-      console.warn('🔄 SignalR Reconnecting...', error);
+
+      console.warn(
+        '🔄 SignalR Reconnecting...',
+        error
+      );
+
     });
 
     this.hubConnection.onreconnected(connectionId => {
-      console.log('✅ SignalR Reconnected', connectionId);
+
+      console.log(
+        '✅ SignalR Reconnected',
+        connectionId
+      );
+
     });
 
     this.hubConnection.onclose(error => {
-      console.warn('❌ SignalR Closed', error);
+
+      console.warn(
+        '❌ SignalR Closed',
+        error
+      );
+
     });
 
   }
@@ -71,7 +90,10 @@ export class NotificationHubService {
 
     } catch (error) {
 
-      console.error('❌ SignalR Error', error);
+      console.error(
+        '❌ SignalR Error',
+        error
+      );
 
       throw error;
 
@@ -90,12 +112,19 @@ export class NotificationHubService {
 
     await this.hubConnection.stop();
 
-    console.log('🛑 SignalR Disconnected');
+    console.log(
+      '🛑 SignalR Disconnected'
+    );
 
   }
 
   isConnected(): boolean {
-    return this.hubConnection.state === signalR.HubConnectionState.Connected;
+
+    return (
+      this.hubConnection.state ===
+      signalR.HubConnectionState.Connected
+    );
+
   }
 
   // ==========================================
@@ -104,21 +133,22 @@ export class NotificationHubService {
 
   private registerEvents(): void {
 
-    this.hubConnection.off('ReceiveNotification');
+    this.hubConnection.off(
+      'ReceiveNotification'
+    );
 
     this.hubConnection.on(
       'ReceiveNotification',
-      (message: string, sentAt: string) => {
+      (notification: INotification) => {
 
-        console.log('📢 Notification Received');
+        console.log(
+          '📢 Notification Received',
+          notification
+        );
 
-        const notification: INotification = {
+        const newNotification: INotification = {
 
-          id: Date.now(),
-
-          message,
-
-          sentAt,
+          ...notification,
 
           isRead: false,
 
@@ -127,16 +157,20 @@ export class NotificationHubService {
         };
 
         this.notifications.update(list => [
-          notification,
+          newNotification,
           ...list
         ]);
 
-        this.unreadCount.update(count => count + 1);
+        this.unreadCount.update(
+          count => count + 1
+        );
 
+        // Remove "new" state after animation
         setTimeout(() => {
+
           this.notifications.update(list =>
             list.map(n =>
-              n.id === notification.id
+              n.id === newNotification.id
                 ? {
                   ...n,
                   isNew: false
@@ -146,7 +180,9 @@ export class NotificationHubService {
           );
 
         }, 1800);
-      });
+
+      }
+    );
 
   }
 
@@ -155,11 +191,15 @@ export class NotificationHubService {
   // ==========================================
 
   getNotifications() {
+
     return this.notifications.asReadonly();
+
   }
 
   getUnreadCount() {
+
     return this.unreadCount.asReadonly();
+
   }
 
   // ==========================================
@@ -170,7 +210,9 @@ export class NotificationHubService {
     notifications: INotification[]
   ): void {
 
-    this.notifications.set(notifications);
+    this.notifications.set(
+      notifications
+    );
 
   }
 
@@ -178,7 +220,9 @@ export class NotificationHubService {
     count: number
   ): void {
 
-    this.unreadCount.set(count);
+    this.unreadCount.set(
+      count
+    );
 
   }
 
@@ -201,8 +245,8 @@ export class NotificationHubService {
       )
     );
 
-    this.unreadCount.update(count =>
-      Math.max(0, count - 1)
+    this.unreadCount.update(
+      count => Math.max(0, count - 1)
     );
 
   }
@@ -231,7 +275,5 @@ export class NotificationHubService {
     this.unreadCount.set(0);
 
   }
-
-
 
 }

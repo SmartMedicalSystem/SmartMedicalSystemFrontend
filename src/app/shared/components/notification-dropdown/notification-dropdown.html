@@ -25,7 +25,8 @@
 
       @if (notifications().length > 0) {
         <button
-          (click)="markAllAsRead()"
+          type="button"
+          (click)="markAllAsRead(); $event.stopPropagation()"
           class="rounded-lg px-3 py-2 text-xs font-semibold text-primary transition hover:bg-primary/10"
         >
           Mark all
@@ -39,7 +40,7 @@
   @if (notifications().length === 0) {
     <div class="flex flex-col items-center justify-center px-8 py-10">
       <div class="flex h-20 w-20 items-center justify-center rounded-full bg-primary">
-        <i class="fa-solid fa-bell text-4xl text-neutral"> </i>
+        <i class="fa-solid fa-bell text-4xl text-neutral"></i>
       </div>
 
       <h4 class="mt-6 text-xl font-semibold text-gray-700">No Notifications</h4>
@@ -60,7 +61,8 @@
     <div class="max-h-[430px] overflow-y-auto">
       @for (notification of notifications(); track notification.id) {
         <button
-          routerLink="notification"
+          type="button"
+          (click)="onNotificationClick(notification)"
           class="group flex w-full items-start gap-4 border-b border-gray-100 px-6 py-5 text-left transition"
           [class.notification-new]="notification.isNew"
           [class.notification-unread]="!notification.isRead"
@@ -73,7 +75,7 @@
           <div
             class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-blue-100"
           >
-            <i class="fa-solid fa-bell text-primary"> </i>
+            <i class="fa-solid fa-bell text-primary"></i>
           </div>
 
           <!-- Content -->
@@ -91,7 +93,7 @@
               </div>
 
               @if (!notification.isRead) {
-                <span class="mt-2 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-primary"> </span>
+                <span class="mt-2 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-primary"></span>
               }
             </div>
           </div>
@@ -105,7 +107,9 @@
   @if (notifications().length > 0) {
     <div class="border-t bg-gray-50 p-4">
       <button
+        type="button"
         routerLink="notification"
+        (click)="$event.stopPropagation()"
         class="h-11 w-full rounded-xl border border-primary font-medium text-primary transition hover:bg-primary hover:text-white"
       >
         View all notifications →

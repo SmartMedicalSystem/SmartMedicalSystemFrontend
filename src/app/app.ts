@@ -63,7 +63,6 @@ export class App {
       this.notificationStore.loadInitialData();
 
       console.log('🔔 Notifications initialized');
-
     } catch (error) {
 
       console.error(
