@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 
 import { INotification } from '../../../shared/interfaces/Notification/inotification';
+
 import { NotificationHubService } from '../../../core/services/notification-hub.service';
-import { NotificationService } from '../../../core/services/notification.service';
+import { NotificationStoreService } from '../../../core/services/notification-store.service';
+
 import { RelativeTimePipe } from '../../pipes/pipe-transform';
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-notification-dropdown',
@@ -20,56 +22,184 @@ import { RouterLink } from '@angular/router';
 })
 export class NotificationDropdown {
 
-  private readonly notificationHub = inject(NotificationHubService);
-  private readonly notificationService = inject(NotificationService);
+  // ==============================
+  // Services
+  // ==============================
 
-  readonly notifications = this.notificationHub.getNotifications();
-  readonly unreadCount = this.notificationHub.getUnreadCount();
+  private readonly notificationHub =
+    inject(NotificationHubService);
 
-  markAsRead(notification: INotification): void {
+  private readonly notificationStore =
+    inject(NotificationStoreService);
 
-    if (notification.isRead) {
-      return;
+  private readonly router =
+    inject(Router);
+
+  // ==============================
+  // Notifications
+  // ==============================
+
+  readonly notifications =
+    this.notificationHub.getNotifications();
+
+  readonly unreadCount =
+    this.notificationHub.getUnreadCount();
+
+  // ==============================
+  // Notification Click
+  // ==============================
+
+  onNotificationClick(
+    notification: INotification
+  ): void {
+
+    // =====================================
+    // 1. Mark As Read
+    // =====================================
+
+    if (!notification.isRead) {
+
+      this.notificationStore.markAsRead(
+        notification.id
+      );
+
     }
 
-    this.notificationService.markAsRead(notification.id)
-      .subscribe({
+    // =====================================
+    // 2. Navigate
+    // =====================================
 
-        next: () => {
-
-          this.notificationHub.markAsRead(notification.id);
-
-        },
-
-        error: err => {
-
-          console.error(err);
-
-        }
-
-      });
+    this.navigateToNotification(
+      notification
+    );
 
   }
 
+  // ==============================
+  // Navigation
+  // ==============================
+
+  private navigateToNotification(
+    notification: INotification
+  ): void {
+
+    switch (notification.type) {
+
+      // =====================================
+      // Doctor → Lab Technician
+      // =====================================
+
+      case 'LabTestRequested':
+
+        if (!notification.requestLabsId) {
+
+          console.warn(
+            '⚠️ LabTestRequested notification has no requestLabsId',
+            notification
+          );
+
+          return;
+
+        }
+
+        this.router.navigate(
+          [
+            '/labtechnician/dashboard/requests/all-requests'
+          ],
+          {
+            queryParams: {
+              requestLabsId:
+                notification.requestLabsId
+            }
+          }
+        );
+
+        break;
+
+      // =====================================
+      // Lab Technician → Doctor
+      // =====================================
+
+      case 'LabResultReady':
+
+        if (!notification.patientId) {
+
+          console.warn(
+            '⚠️ LabResultReady notification has no patientId',
+            notification
+          );
+
+          return;
+
+        }
+
+        this.router.navigate([
+          '/doctor/dashboard/patients/patient-details',
+          notification.patientId
+        ]);
+
+        break;
+
+      // =====================================
+      // Appointment Reminder
+      // =====================================
+
+      case 'AppointmentReminder':
+
+        console.log(
+          '📅 AppointmentReminder notification clicked',
+          notification
+        );
+
+        /*
+         * Appointment destination will be added
+         * when the required route/id is defined.
+         */
+
+        break;
+
+      // =====================================
+      // AI Report Generated
+      // =====================================
+
+      case 'AIReportGenerated':
+
+        console.log(
+          '🤖 AIReportGenerated notification clicked',
+          notification
+        );
+
+        /*
+         * AI Report destination will be added
+         * when the required route/id is defined.
+         */
+
+        break;
+
+      // =====================================
+      // Unknown Type
+      // =====================================
+
+      default:
+
+        console.warn(
+          '⚠️ Unknown notification type',
+          notification
+        );
+
+        break;
+
+    }
+
+  }
+
+  // ==============================
+  // Mark All As Read
+  // ==============================
+
   markAllAsRead(): void {
 
-    const unreadNotifications =
-      this.notifications().filter(n => !n.isRead);
-
-    unreadNotifications.forEach(notification => {
-
-      this.notificationService
-        .markAsRead(notification.id)
-        .subscribe({
-          next: () => {
-
-            this.notificationHub.markAsRead(notification.id);
-
-          },
-          error: err => console.error(err)
-        });
-
-    });
+    this.notificationStore.markAllAsRead();
 
   }
 
