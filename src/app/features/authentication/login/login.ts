@@ -26,7 +26,7 @@ export class Login {
   ) { }
 
   loginForm = new FormGroup({
-    userNameOrEmail: new FormControl('', [Validators.required, Validators.minLength(8)]),
+    userNameOrEmail: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required, Validators.minLength(8)]),
   });
 
@@ -35,11 +35,6 @@ export class Login {
   get userNameOrEmailRequired() {
     return this.loginForm.get('userNameOrEmail')?.touched &&
       this.loginForm.get('userNameOrEmail')?.hasError('required');
-  }
-
-  get userNameOrEmailInvalid() {
-    return this.loginForm.get('userNameOrEmail')?.touched &&
-      this.loginForm.get('userNameOrEmail')?.hasError('minLength');
   }
 
   get passwordRequired() {
