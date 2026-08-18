@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { DoctorService } from '../../../core/services/doctor-service.service';
 import { PatientResultReadDto } from '../../../shared/interfaces/Doctor/patient-result.interface';
+import { PatientResultElementDto } from '../../../shared/interfaces/Doctor/patient-result-element.interface';
 import {
   PatientFullAIReportDto,
   PatientResultAIAnalysisDto,
@@ -130,15 +131,13 @@ export class PatientDetails implements OnInit {
     return new Date(latest.sessionDate).toLocaleDateString();
   });
 
-  // ---------- Laboratory Results (من PatientResultsController) ----------
+  // ---------- Laboratory Results ----------
+  // الـ PatientResults تُستخدم لمعرفة النتائج الموجودة فعليًا ولتشغيل AI analysis.
+  // تفاصيل عناصر التحليل المعروضة في الجدول تأتي من PatientAIReports/full-report
+  // كـ PatientResultElementSummaryDto.
   loadingResults = signal(true);
   resultsError = signal<string | null>(null);
   labResults = signal<PatientResultReadDto[]>([]);
-
-  private labTestNames = signal<Record<number, string>>({});
-  getTestName(labTestId: number): string {
-    return this.labTestNames()[labTestId] ?? `Lab Test #${labTestId}`;
-  }
 
   // ---------- AI Reports (من PatientAIReportsController) ----------
   loadingAiReport = signal(true);
@@ -146,11 +145,19 @@ export class PatientDetails implements OnInit {
   aiReport = signal<PatientFullAIReportDto | null>(null);
   generatingResultId = signal<number | null>(null);
 
-  // عدد حقيقي محسوب: نتائج تحاليل لسه معملهاش AI analysis (مش placeholder)
   pendingAiAnalysisCount = computed(() => {
-    const analyzedIds = new Set((this.aiReport()?.results ?? []).map((r) => r.patientResultId));
+    const analyzedIds = new Set(
+      (this.aiReport()?.results ?? []).map((r) => r.patientResultId)
+    );
     return this.labResults().filter((r) => !analyzedIds.has(r.id)).length;
   });
+
+  labElementCount = computed(() =>
+    (this.aiReport()?.results ?? []).reduce(
+      (total, result) => total + this.getElementSummaries(result).length,
+      0
+    )
+  );
 
   // ---------- Accordion state ----------
   openSections = signal<Set<SectionId>>(new Set<SectionId>(['personal']));
@@ -193,7 +200,6 @@ export class PatientDetails implements OnInit {
       });
 
     this.loadCurrentDoctorName();
-    this.loadLabTestNames();
     this.loadPatientResults(id);
     this.loadAiReport(id);
     this.loadSessions(id);
@@ -225,27 +231,16 @@ export class PatientDetails implements OnInit {
       });
   }
 
-  private loadLabTestNames(): void {
-    this.doctorService.getLabTests(1, 100).subscribe({
-      next: (res) => {
-        const map: Record<number, string> = {};
-        res.items.forEach((t) => (map[t.id] = t.testName));
-        this.labTestNames.set(map);
-      },
-      error: () => {},
-    });
-  }
-
   private loadPatientResults(patientId: number): void {
     this.loadingResults.set(true);
     this.resultsError.set(null);
 
     this.doctorService
-      .getPatientResultsByPatient(patientId)
+      .getPatientResultsByPatient(patientId, 1, 100)
       .pipe(finalize(() => this.loadingResults.set(false)))
       .subscribe({
         next: (res) => this.labResults.set(res.items),
-        error: () => this.resultsError.set('Failed to load lab results.'),
+        error: () => this.resultsError.set('Failed to load laboratory results.'),
       });
   }
 
@@ -260,6 +255,64 @@ export class PatientDetails implements OnInit {
         next: (report) => this.aiReport.set(report),
         error: () => this.aiReportError.set('Failed to load the AI report.'),
       });
+  }
+
+  getElementSummaries(result: PatientResultAIAnalysisDto): PatientResultElementDto[] {
+    const raw = result as unknown as {
+      elementSummaries?: PatientResultElementDto[];
+      elements?: PatientResultElementDto[];
+      resultElements?: PatientResultElementDto[];
+    };
+
+    return raw.elementSummaries ?? raw.elements ?? raw.resultElements ?? [];
+  }
+
+  getReportTestName(result: PatientResultAIAnalysisDto): string {
+    const raw = result as unknown as {
+      labTestName?: string;
+      testName?: string;
+      name?: string;
+    };
+
+    return raw.labTestName ?? raw.testName ?? raw.name ?? `Patient Result #${result.patientResultId}`;
+  }
+
+  getReportDate(result: PatientResultAIAnalysisDto): string {
+    const raw = result as unknown as {
+      resultDate?: string;
+      testDate?: string;
+      createdAt?: string;
+      date?: string;
+    };
+
+    const value = raw.resultDate ?? raw.testDate ?? raw.createdAt ?? raw.date;
+    return value ? new Date(value).toLocaleString() : '';
+  }
+
+  getFlagClass(flag: string): string {
+    switch (flag?.toLowerCase()) {
+      case 'low':
+        return 'bg-yellow-100 text-yellow-700';
+      case 'high':
+        return 'bg-red-100 text-red-700';
+      case 'normal':
+        return 'bg-green-100 text-green-700';
+      default:
+        return 'bg-gray-100 text-gray-600';
+    }
+  }
+
+  getFlagDotClass(flag: string): string {
+    switch (flag?.toLowerCase()) {
+      case 'low':
+        return 'bg-yellow-500';
+      case 'high':
+        return 'bg-red-500';
+      case 'normal':
+        return 'bg-green-500';
+      default:
+        return 'bg-gray-400';
+    }
   }
 
   generateAnalysisFor(result: PatientResultReadDto): void {

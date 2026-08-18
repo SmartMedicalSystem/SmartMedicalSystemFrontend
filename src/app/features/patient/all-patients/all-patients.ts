@@ -275,6 +275,7 @@ export class AllPatients implements OnInit {
       .askPatientAI({
         patientId: null, // ← الفرق الوحيد عن patient-details: هنا دايمًا null
         question: question,
+        groupByPatient: true
       })
       .pipe(finalize(() => this.chatLoading.set(false)))
       .subscribe({

@@ -228,7 +228,8 @@ sendChatMessage(): void {
   this.doctorService
     .askPatientAI({
       patientId: this.patientId,
-      question: question
+      question: question,
+      groupByPatient: false
     })
     .pipe(
       finalize(() => this.chatLoading.set(false))
