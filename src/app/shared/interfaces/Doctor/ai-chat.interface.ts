@@ -5,6 +5,7 @@ export interface AIChatRequestDto {
   question: string;
   patientId: number | null;
   topK?: number;
+  groupByPatient?: boolean;
 }
 
 // مطابقة لـ Application.DTOs.Rag.RagSourceDto

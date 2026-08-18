@@ -11,6 +11,7 @@ import {
   RequestLabsReadDto,
 } from '../../shared/interfaces/Doctor/request-labs.interface';
 import { LabTestReadDto } from '../../shared/interfaces/Doctor/lab-test.interface';
+import { PatientResultElementDto } from '../../shared/interfaces/Doctor/patient-result-element.interface';
 import {
   DoctorReadDto,
   DoctorCreateDto,
@@ -55,6 +56,7 @@ export type {
   RequestLabsReadDto,
 } from '../../shared/interfaces/Doctor/request-labs.interface';
 export type { LabTestReadDto } from '../../shared/interfaces/Doctor/lab-test.interface';
+export type { PatientResultElementDto } from '../../shared/interfaces/Doctor/patient-result-element.interface';
 export type {
   DoctorReadDto,
   DoctorCreateDto,
@@ -104,6 +106,9 @@ export class DoctorService {
 
   private readonly patientResultsApiUrl =
     'https://smartmedicalsystem.runasp.net/api/PatientResults';
+
+  private readonly patientResultElementsApiUrl =
+    'https://smartmedicalsystem.runasp.net/api/PatientResultElements';
 
   // ⚠️ كان متظبط غلط على https://openrouter.ai/api/v1 (ده الـ base URL بتاع
   // الموديل الخارجي اللي الباك اند بينده بيه من جواه، مش راوت الكونترولر بتاعنا).
@@ -345,6 +350,22 @@ export class DoctorService {
   // مطابقة لـ PatientResultsController.Update
   updatePatientResult(id: number, dto: PatientResultUpdateDto): Observable<PatientResultReadDto> {
     return this.http.put<PatientResultReadDto>(`${this.patientResultsApiUrl}/${id}`, dto);
+  }
+
+  // مطابقة لـ PatientResultElementsController.GetByPatientResult
+  getPatientResultElements(
+    patientResultId: number,
+    pageNumber: number = 1,
+    pageSize: number = 100
+  ): Observable<PaginatedResponse<PatientResultElementDto>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+
+    return this.http.get<PaginatedResponse<PatientResultElementDto>>(
+      `${this.patientResultElementsApiUrl}/by-patient-result/${patientResultId}`,
+      { params }
+    );
   }
 
   // ============ Patient AI Reports ============

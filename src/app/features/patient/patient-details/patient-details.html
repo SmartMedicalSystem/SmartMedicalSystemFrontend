@@ -1,15 +1,32 @@
 <div class="min-h-screen bg-neutral p-3 sm:p-4 md:p-6">
   <div class="max-w-6xl mx-auto space-y-5">
-
     <!-- ============ Breadcrumb ============ -->
     <nav class="text-xs text-gray-400 flex items-center gap-1.5">
       <span class="hover:text-primary cursor-pointer">Dashboard</span>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
-        <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        class="w-3 h-3"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M8.22 5.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 010-1.06z"
+          clip-rule="evenodd"
+        />
       </svg>
       <span class="hover:text-primary cursor-pointer">Patients</span>
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
-        <path fill-rule="evenodd" d="M8.22 5.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 010-1.06z" clip-rule="evenodd" />
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        class="w-3 h-3"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M8.22 5.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L11.94 10 8.22 6.28a.75.75 0 010-1.06z"
+          clip-rule="evenodd"
+        />
       </svg>
       <span class="text-primary font-medium">Patient Details</span>
     </nav>
@@ -17,7 +34,9 @@
     <!-- ============ Page Header ============ -->
     <div>
       <h1 class="text-xl sm:text-2xl font-bold text-gray-900">Patient Details</h1>
-      <p class="text-sm text-gray-500 mt-1">See lab results, AI reports, and patient session history.</p>
+      <p class="text-sm text-gray-500 mt-1">
+        See lab results, AI reports, and patient session history.
+      </p>
     </div>
 
     <!-- ============ Loading State ============ -->
@@ -25,8 +44,20 @@
       *ngIf="loading()"
       class="bg-white rounded-xl border border-gray-100 shadow-sm p-8 flex items-center justify-center gap-3"
     >
-      <svg class="w-5 h-5 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <svg
+        class="w-5 h-5 animate-spin text-primary"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <circle
+          class="opacity-25"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          stroke-width="4"
+        ></circle>
         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
       </svg>
       <span class="text-sm text-gray-500">Loading patient...</span>
@@ -41,517 +72,773 @@
     </div>
 
     <ng-container *ngIf="!loading() && !loadError()">
-
-    <!-- ================= Patient Header ================= -->
-    <div class="grid grid-cols-1 xl:grid-cols-4 gap-5">
-
-      <!-- ================= Patient Info Card ================= -->
-      <div class="xl:col-span-3 bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-
-        <div class="flex flex-col md:flex-row gap-5">
-
-          <!-- Avatar -->
-          <div
-            class="w-24 h-24 rounded-xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary shrink-0">
-            {{ avatarInitials() }}
-          </div>
-
-          <!-- Content -->
-          <div class="flex-1">
-
-            <!-- Header -->
+      <!-- ================= Patient Header ================= -->
+      <div class="grid grid-cols-1 xl:grid-cols-4 gap-5">
+        <!-- ================= Patient Info Card ================= -->
+        <div class="xl:col-span-3 bg-white border border-gray-200 rounded-xl shadow-sm p-5">
+          <div class="flex flex-col md:flex-row gap-5">
+            <!-- Avatar -->
             <div
-              class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-3">
-
-              <div class="flex items-center gap-3 flex-wrap">
-                <h2 class="text-2xl font-bold text-gray-900">
-                  {{ patient().name }}
-                </h2>
-
-                <!-- بيبان بس لما يكون فيه session نشطة للمريض ده -->
-                <span
-                  *ngIf="activeSessionId() !== null"
-                  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold"
-                >
-                  <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
-                  Session #{{ activeSessionId() }} Active
-                </span>
-              </div>
-
+              class="w-24 h-24 rounded-xl bg-primary/10 flex items-center justify-center text-2xl font-bold text-primary shrink-0"
+            >
+              {{ avatarInitials() }}
             </div>
 
-            <!-- Information -->
-            <div class="grid grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-8 mt-5">
+            <!-- Content -->
+            <div class="flex-1">
+              <!-- Header -->
+              <div
+                class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-gray-200 pb-3"
+              >
+                <div class="flex items-center gap-3 flex-wrap">
+                  <h2 class="text-2xl font-bold text-gray-900">
+                    {{ patient().name }}
+                  </h2>
 
-              <div>
-                <p class="text-xs text-gray-500">National ID</p>
-                <p class="font-medium">{{ patient().ssn }}</p>
+                  <!-- بيبان بس لما يكون فيه session نشطة للمريض ده -->
+                  <span
+                    *ngIf="activeSessionId() !== null"
+                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+                    Session #{{ activeSessionId() }} Active
+                  </span>
+                </div>
               </div>
 
-              <div>
-                <p class="text-xs text-gray-500">Age / Gender</p>
-                <p class="font-medium">
-                  {{ patient().age }} / {{ patient().gender }}
-                </p>
-              </div>
+              <!-- Information -->
+              <div class="grid grid-cols-2 lg:grid-cols-3 gap-y-5 gap-x-8 mt-5">
+                <div>
+                  <p class="text-xs text-gray-500">National ID</p>
+                  <p class="font-medium">{{ patient().ssn }}</p>
+                </div>
 
-              <div>
-                <p class="text-xs text-gray-500">Blood Group</p>
-                <p class="font-medium text-red-600">
-                  {{ patient().bloodGroup }}
-                </p>
-              </div>
+                <div>
+                  <p class="text-xs text-gray-500">Age / Gender</p>
+                  <p class="font-medium">{{ patient().age }} / {{ patient().gender }}</p>
+                </div>
 
-              <div>
-                <p class="text-xs text-gray-500">Phone</p>
-                <p class="font-medium">
-                  {{ patient().phone }}
-                </p>
-              </div>
+                <div>
+                  <p class="text-xs text-gray-500">Blood Group</p>
+                  <p class="font-medium text-red-600">
+                    {{ patient().bloodGroup }}
+                  </p>
+                </div>
 
-              <!-- Doctor الحالي اللي فاتح ملف المريض ده - من التوكن -->
-              <div>
-                <p class="text-xs text-gray-500">Doctor</p>
-                <p class="font-medium">
-                  {{ currentDoctorName() || '—' }}
-                </p>
-              </div>
+                <div>
+                  <p class="text-xs text-gray-500">Phone</p>
+                  <p class="font-medium">
+                    {{ patient().phone }}
+                  </p>
+                </div>
 
-              <!-- Last Visit حقيقية - من آخر Session فعلية للمريض -->
-              <div>
-                <p class="text-xs text-gray-500">Last Visit</p>
-                <p class="font-medium">
-                  <span *ngIf="!loadingSessions()">{{ lastVisitLabel() }}</span>
-                  <span *ngIf="loadingSessions()" class="inline-block w-16 h-4 rounded bg-gray-100 animate-pulse"></span>
-                </p>
-              </div>
+                <!-- Doctor الحالي اللي فاتح ملف المريض ده - من التوكن -->
+                <div>
+                  <p class="text-xs text-gray-500">Doctor</p>
+                  <p class="font-medium">
+                    {{ currentDoctorName() || '—' }}
+                  </p>
+                </div>
 
+                <!-- Last Visit حقيقية - من آخر Session فعلية للمريض -->
+                <div>
+                  <p class="text-xs text-gray-500">Last Visit</p>
+                  <p class="font-medium">
+                    <span *ngIf="!loadingSessions()">{{ lastVisitLabel() }}</span>
+                    <span
+                      *ngIf="loadingSessions()"
+                      class="inline-block w-16 h-4 rounded bg-gray-100 animate-pulse"
+                    ></span>
+                  </p>
+                </div>
+              </div>
             </div>
-
           </div>
-
         </div>
 
+        <!-- ================= Quick Actions ================= -->
+        <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
+          <h3 class="text-lg font-semibold mb-5">Quick Actions</h3>
+
+          <div class="space-y-3">
+            <!-- مفيش session نشطة → لازم نبدأ واحدة الأول -->
+            <button
+              *ngIf="activeSessionId() === null"
+              (click)="createSession()"
+              class="w-full flex items-center justify-center gap-2 rounded-lg bg-secondary py-3 text-white font-medium hover:bg-secondary/90 transition"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+
+              Start New Session
+            </button>
+
+            <!-- فيه session نشطة → الإجراءات اللي جواها -->
+            <ng-container *ngIf="activeSessionId() !== null">
+              <button
+                (click)="requestLabTest()"
+                class="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-3 text-white font-medium hover:bg-primary/90 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4v16m8-8H4"
+                  />
+                </svg>
+
+                Request Laboratory Test
+              </button>
+
+              <button
+                (click)="closeSession()"
+                class="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 font-medium text-gray-700 hover:bg-gray-50 transition"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+
+                Close Session
+              </button>
+            </ng-container>
+          </div>
+        </div>
       </div>
 
-      <!-- ================= Quick Actions ================= -->
-      <div class="bg-white border border-gray-200 rounded-xl shadow-sm p-5">
-
-        <h3 class="text-lg font-semibold mb-5">
-          Quick Actions
-        </h3>
-
-        <div class="space-y-3">
-
-          <!-- مفيش session نشطة → لازم نبدأ واحدة الأول -->
-          <button
-            *ngIf="activeSessionId() === null"
-            (click)="createSession()"
-            class="w-full flex items-center justify-center gap-2 rounded-lg bg-secondary py-3 text-white font-medium hover:bg-secondary/90 transition">
-
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+      <!-- ============ Stats Row (كل الأرقام هنا محسوبة من بيانات حقيقية) ============ -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div
+          class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3"
+        >
+          <div
+            class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.966 7.89l.813-2.846A.75.75 0 019 4.5z"
+                clip-rule="evenodd"
+              />
             </svg>
+          </div>
+          <div>
+            <p class="text-lg font-bold text-gray-900">{{ labElementCount() }}</p>
+            <p class="text-xs text-gray-500">Result Elements</p>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3"
+        >
+          <div
+            class="w-9 h-9 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center shrink-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12 6a.75.75 0 01.75.75v5.25a.75.75 0 01-1.5 0V6.75A.75.75 0 0112 6zm0 9a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div>
+            <p class="text-lg font-bold text-gray-900">{{ pendingAiAnalysisCount() }}</p>
+            <p class="text-xs text-gray-500">Pending AI Analysis</p>
+          </div>
+        </div>
+        <div
+          class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3"
+        >
+          <div
+            class="w-9 h-9 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-5 h-5"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </div>
+          <div>
+            <p class="text-lg font-bold text-gray-900">{{ sessions().length }}</p>
+            <p class="text-xs text-gray-500">Total Sessions</p>
+          </div>
+        </div>
+      </div>
 
-            Start New Session
+      <!-- ============ Accordion ============ -->
+      <div class="space-y-3">
+        <!-- ---- Patient Information ---- -->
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <button
+            type="button"
+            (click)="toggleSection('personal')"
+            class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left"
+          >
+            <span class="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-5 h-5 text-primary"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="text-sm font-semibold text-gray-900">Patient Information</span>
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-4 h-4 text-gray-400 transition-transform"
+              [ngClass]="isOpen('personal') ? 'rotate-180' : ''"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
           </button>
 
-          <!-- فيه session نشطة → الإجراءات اللي جواها -->
-          <ng-container *ngIf="activeSessionId() !== null">
-            <button
-              (click)="requestLabTest()"
-              class="w-full flex items-center justify-center gap-2 rounded-lg bg-primary py-3 text-white font-medium hover:bg-primary/90 transition">
+          <div *ngIf="isOpen('personal')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
+            <div>
+              <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                Contact Details
+              </h4>
+              <p class="text-sm text-gray-800">{{ patient().address }}</p>
+              <p class="text-sm text-gray-800 mt-1">{{ patient().phone }}</p>
+            </div>
+          </div>
+        </div>
 
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        <!-- ---- Sessions History (جديدة، بيانات حقيقية، مش مكررة من أي صفحة تانية) ---- -->
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <button
+            type="button"
+            (click)="toggleSection('sessions')"
+            class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left"
+          >
+            <span class="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-5 h-5 text-primary"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z"
+                  clip-rule="evenodd"
+                />
               </svg>
+              <span class="text-sm font-semibold text-gray-900">Sessions History</span>
+              <span class="text-xs text-gray-400">({{ sessions().length }})</span>
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-4 h-4 text-gray-400 transition-transform"
+              [ngClass]="isOpen('sessions') ? 'rotate-180' : ''"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
 
-              Request Laboratory Test
-            </button>
-
-            <button
-              (click)="closeSession()"
-              class="w-full flex items-center justify-center gap-2 rounded-lg border border-gray-300 py-3 font-medium text-gray-700 hover:bg-gray-50 transition">
-
-              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          <div *ngIf="isOpen('sessions')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
+            <div *ngIf="loadingSessions()" class="flex items-center justify-center gap-2 py-6">
+              <svg
+                class="w-4 h-4 animate-spin text-primary"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
               </svg>
+              <span class="text-sm text-gray-500">Loading sessions...</span>
+            </div>
 
-              Close Session
-            </button>
-          </ng-container>
+            <div
+              *ngIf="!loadingSessions() && sessions().length === 0"
+              class="text-sm text-gray-400 text-center py-6"
+            >
+              No sessions recorded for this patient yet.
+            </div>
 
-        </div>
-
-      </div>
-
-    </div>
-
-    <!-- ============ Stats Row (كل الأرقام هنا محسوبة من بيانات حقيقية) ============ -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-            <path fill-rule="evenodd" d="M9 4.5a.75.75 0 01.721.544l.813 2.846a3.75 3.75 0 002.576 2.576l2.846.813a.75.75 0 010 1.442l-2.846.813a3.75 3.75 0 00-2.576 2.576l-.813 2.846a.75.75 0 01-1.442 0l-.813-2.846a3.75 3.75 0 00-2.576-2.576l-2.846-.813a.75.75 0 010-1.442l2.846-.813A3.75 3.75 0 007.966 7.89l.813-2.846A.75.75 0 019 4.5z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-lg font-bold text-gray-900">{{ labResults().length }}</p>
-          <p class="text-xs text-gray-500">Total Lab Tests</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-tertiary/10 text-tertiary flex items-center justify-center shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12 6a.75.75 0 01.75.75v5.25a.75.75 0 01-1.5 0V6.75A.75.75 0 0112 6zm0 9a1.125 1.125 0 100 2.25 1.125 1.125 0 000-2.25z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-lg font-bold text-gray-900">{{ pendingAiAnalysisCount() }}</p>
-          <p class="text-xs text-gray-500">Pending AI Analysis</p>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
-        <div class="w-9 h-9 rounded-lg bg-secondary/10 text-secondary flex items-center justify-center shrink-0">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-            <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
-          </svg>
-        </div>
-        <div>
-          <p class="text-lg font-bold text-gray-900">{{ sessions().length }}</p>
-          <p class="text-xs text-gray-500">Total Sessions</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- ============ Accordion ============ -->
-    <div class="space-y-3">
-
-      <!-- ---- Patient Information ---- -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <button type="button" (click)="toggleSection('personal')"
-          class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
-              <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
-            </svg>
-            <span class="text-sm font-semibold text-gray-900">Patient Information</span>
-          </span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-            class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('personal') ? 'rotate-180' : ''">
-            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
-          </svg>
-        </button>
-
-        <div *ngIf="isOpen('personal')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
-          <div>
-            <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Contact Details</h4>
-            <p class="text-sm text-gray-800">{{ patient().address }}</p>
-            <p class="text-sm text-gray-800 mt-1">{{ patient().phone }}</p>
+            <ol
+              *ngIf="!loadingSessions() && sessions().length > 0"
+              class="relative border-l-2 border-gray-100 ml-2 space-y-6"
+            >
+              <li *ngFor="let s of sessions()" class="ml-4">
+                <span class="absolute -left-[7px] w-3 h-3 rounded-full bg-primary"></span>
+                <p class="text-xs text-gray-400">{{ s.sessionDate | date }}</p>
+                <p class="text-sm font-semibold text-gray-900 mt-0.5">
+                  Session #{{ s.id }}
+                  <span *ngIf="s.doctorName" class="font-normal text-gray-500"
+                    >&middot; {{ s.doctorName }}</span
+                  >
+                </p>
+                <p class="text-sm text-gray-700 mt-1" *ngIf="s.notes">{{ s.notes }}</p>
+              </li>
+            </ol>
           </div>
         </div>
-      </div>
 
-      <!-- ---- Sessions History (جديدة، بيانات حقيقية، مش مكررة من أي صفحة تانية) ---- -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <button type="button" (click)="toggleSection('sessions')"
-          class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
-              <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 017.5 3v1.5h9V3A.75.75 0 0118 3v1.5h.75a3 3 0 013 3v11.25a3 3 0 01-3 3H5.25a3 3 0 01-3-3V7.5a3 3 0 013-3H6V3a.75.75 0 01.75-.75zm13.5 9a1.5 1.5 0 00-1.5-1.5H5.25a1.5 1.5 0 00-1.5 1.5v7.5a1.5 1.5 0 001.5 1.5h13.5a1.5 1.5 0 001.5-1.5v-7.5z" clip-rule="evenodd" />
+        <!-- ---- Laboratory Results ---- -->
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <button
+            type="button"
+            (click)="toggleSection('lab')"
+            class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left"
+          >
+            <span class="flex items-center gap-2 min-w-0">
+              <span
+                class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  class="w-5 h-5"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5m4.75-11.396a24.3 24.3 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3"
+                  />
+                </svg>
+              </span>
+              <span class="text-sm font-semibold text-gray-900 truncate">Laboratory Results</span>
+              <span class="text-xs text-gray-400 whitespace-nowrap"
+                >({{ labElementCount() }} Elements)</span
+              >
+            </span>
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-4 h-4 text-gray-400 transition-transform shrink-0"
+              [ngClass]="isOpen('lab') ? 'rotate-180' : ''"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97z"
+                clip-rule="evenodd"
+              />
             </svg>
-            <span class="text-sm font-semibold text-gray-900">Sessions History</span>
-            <span class="text-xs text-gray-400">({{ sessions().length }})</span>
-          </span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-            class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('sessions') ? 'rotate-180' : ''">
-            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
-          </svg>
-        </button>
+          </button>
 
-        <div *ngIf="isOpen('sessions')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
+          <div *ngIf="isOpen('lab')" class="border-t border-gray-100">
+            <div *ngIf="loadingAiReport()" class="flex items-center justify-center gap-2 py-8 px-4">
+              <svg
+                class="w-5 h-5 animate-spin text-primary"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              <span class="text-sm text-gray-500">Loading laboratory report...</span>
+            </div>
 
-          <div *ngIf="loadingSessions()" class="flex items-center justify-center gap-2 py-6">
-            <svg class="w-4 h-4 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
-            <span class="text-sm text-gray-500">Loading sessions...</span>
-          </div>
+            <div
+              *ngIf="!loadingAiReport() && aiReportError()"
+              class="mx-4 sm:mx-5 my-5 rounded-xl bg-tertiary/10 border border-tertiary/20 px-4 py-3"
+            >
+              <p class="text-sm text-tertiary">{{ aiReportError() }}</p>
+            </div>
 
-          <div *ngIf="!loadingSessions() && sessions().length === 0" class="text-sm text-gray-400 text-center py-6">
-            No sessions recorded for this patient yet.
-          </div>
-
-          <ol *ngIf="!loadingSessions() && sessions().length > 0" class="relative border-l-2 border-gray-100 ml-2 space-y-6">
-            <li *ngFor="let s of sessions()" class="ml-4">
-              <span class="absolute -left-[7px] w-3 h-3 rounded-full bg-primary"></span>
-              <p class="text-xs text-gray-400">{{ s.sessionDate | date }}</p>
-              <p class="text-sm font-semibold text-gray-900 mt-0.5">
-                Session #{{ s.id }}
-                <span *ngIf="s.doctorName" class="font-normal text-gray-500">&middot; {{ s.doctorName }}</span>
+            <div
+              *ngIf="!loadingAiReport() && !aiReportError() && !(aiReport()?.results?.length ?? 0)"
+              class="px-4 sm:px-5 py-10 text-center"
+            >
+              <p class="text-sm font-medium text-gray-700">No laboratory report available yet.</p>
+              <p class="text-xs text-gray-400 mt-1">
+                Generate an AI analysis for a patient result to populate the detailed report.
               </p>
-              <p class="text-sm text-gray-700 mt-1" *ngIf="s.notes">{{ s.notes }}</p>
-            </li>
-          </ol>
+            </div>
+
+            <div
+              *ngIf="
+                !loadingAiReport() && !aiReportError() && (aiReport()?.results?.length ?? 0) > 0
+              "
+              class="p-3 sm:p-5 space-y-5"
+            >
+              <div
+                *ngFor="let analysis of aiReport()?.results"
+                class="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm"
+              >
+                <div
+                  class="px-5 sm:px-6 py-5 text-white bg-gradient-to-r from-indigo-600 via-blue-600 to-blue-500"
+                >
+                  <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+                    <div class="min-w-0">
+                      <p class="text-lg sm:text-xl font-bold truncate">
+                        {{ getReportTestName(analysis) }}
+                      </p>
+                      <p
+                        *ngIf="getReportDate(analysis)"
+                        class="text-xs sm:text-sm text-white/80 mt-1"
+                      >
+                        {{ getReportDate(analysis) }}
+                      </p>
+                    </div>
+                    <span class="text-xs text-white/80 whitespace-nowrap">
+                      Result #{{ analysis.patientResultId }}
+                    </span>
+                  </div>
+                </div>
+
+                <div *ngIf="getElementSummaries(analysis).length > 0" class="overflow-x-auto">
+                  <table class="w-full min-w-[760px] text-left">
+                    <thead class="bg-slate-50 border-b border-gray-200">
+                      <tr>
+                        <th class="px-5 py-4 text-xs font-bold text-gray-800">Element</th>
+                        <th class="px-5 py-4 text-xs font-bold text-gray-800 text-right">Value</th>
+                        <th class="px-5 py-4 text-xs font-bold text-gray-800">Unit</th>
+                        <th class="px-5 py-4 text-xs font-bold text-gray-800">Normal Range</th>
+                        <th class="px-5 py-4 text-xs font-bold text-gray-800 text-center">
+                          Status
+                        </th>
+                      </tr>
+                    </thead>
+
+                    <tbody class="divide-y divide-gray-200">
+                      <tr
+                        *ngFor="let element of getElementSummaries(analysis)"
+                        class="hover:bg-gray-50 transition-colors"
+                      >
+                        <td class="px-5 py-4">
+                          <span class="text-sm font-semibold text-gray-800">{{
+                            element.elementName
+                          }}</span>
+                        </td>
+
+                        <td class="px-5 py-4 text-right">
+                          <span class="text-sm font-semibold text-gray-900">{{
+                            element.value
+                          }}</span>
+                        </td>
+
+                        <td class="px-5 py-4">
+                          <span class="text-sm text-gray-700">{{ element.unit || '—' }}</span>
+                        </td>
+
+                        <td class="px-5 py-4">
+                          <span class="text-sm text-gray-700">
+                            {{ element.normalMin }} - {{ element.normalMax }}
+                          </span>
+                        </td>
+
+                        <td class="px-5 py-4 text-center">
+                          <span
+                            class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
+                            [ngClass]="getFlagClass(element.flag)"
+                          >
+                            <span
+                              class="w-1.5 h-1.5 rounded-full"
+                              [ngClass]="getFlagDotClass(element.flag)"
+                            ></span>
+                            {{ element.flag }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div
+                  *ngIf="getElementSummaries(analysis).length === 0"
+                  class="px-5 sm:px-6 py-7 text-center"
+                >
+                  <p class="text-sm text-gray-500">
+                    No element summaries are available for this result yet.
+                  </p>
+                </div>
+
+              </div>
+
+              <div class="sm:hidden rounded-lg bg-gray-50 border border-gray-100 px-4 py-2">
+                <p class="text-[11px] text-gray-400 text-center">
+                  Swipe horizontally to view all report columns
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ---- AI Reports ---- -->
+        <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+          <button
+            type="button"
+            (click)="toggleSection('ai')"
+            class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left"
+          >
+            <span class="flex items-center gap-2">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+                class="w-5 h-5 text-primary"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3.03 5.47a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-2.25-2.25a.75.75 0 111.06-1.06l1.72 1.72 3.97-3.97a.75.75 0 011.06 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              <span class="text-sm font-semibold text-gray-900">AI Reports</span>
+            </span>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              class="w-4 h-4 text-gray-400 transition-transform"
+              [ngClass]="isOpen('ai') ? 'rotate-180' : ''"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+
+          <div *ngIf="isOpen('ai')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
+            <div *ngIf="loadingAiReport()" class="flex items-center justify-center gap-2 py-6">
+              <svg
+                class="w-4 h-4 animate-spin text-primary"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  class="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  stroke-width="4"
+                ></circle>
+                <path
+                  class="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                ></path>
+              </svg>
+              <span class="text-sm text-gray-500">Loading AI report...</span>
+            </div>
+
+            <div
+              *ngIf="!loadingAiReport() && aiReportError()"
+              class="text-sm text-tertiary text-center py-6"
+            >
+              {{ aiReportError() }}
+            </div>
+
+            <div *ngIf="!loadingAiReport() && !aiReportError() && aiReport()" class="space-y-4">
+              <div
+                *ngIf="aiReport()?.overallAISummary"
+                class="rounded-lg border border-tertiary/20 bg-tertiary/5 p-4"
+              >
+                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                  Overall Summary
+                </p>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                  {{ aiReport()?.overallAISummary }}
+                </p>
+              </div>
+
+              <div
+                *ngIf="(aiReport()?.results?.length ?? 0) === 0"
+                class="text-sm text-gray-400 text-center py-6"
+              >
+                No AI analysis generated yet for this patient's results.
+              </div>
+
+              <div
+                *ngFor="let analysis of aiReport()?.results"
+                class="rounded-lg border border-gray-100 bg-gray-50/60 p-4"
+              >
+                <p class="text-xs text-gray-400 mb-2">Result #{{ analysis.patientResultId }}</p>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                  {{ analysis.aiClassifiedReport }}
+                </p>
+                <p class="text-sm text-gray-700 leading-relaxed mt-2">
+                  {{ analysis.aiSuggestion }}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- ---- Laboratory Results ---- -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <button type="button" (click)="toggleSection('lab')"
-          class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
-              <path fill-rule="evenodd" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-            </svg>
-            <span class="text-sm font-semibold text-gray-900">Laboratory Results</span>
-            <span class="text-xs text-gray-400">({{ labResults().length }} Tests)</span>
-          </span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-            class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('lab') ? 'rotate-180' : ''">
-            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
-          </svg>
-        </button>
+      <!-- ============ Floating AI Chat ============ -->
 
-        <div *ngIf="isOpen('lab')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
-
-          <div *ngIf="loadingResults()" class="flex items-center justify-center gap-2 py-6">
-            <svg class="w-4 h-4 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
-            <span class="text-sm text-gray-500">Loading lab results...</span>
-          </div>
-
-          <div *ngIf="!loadingResults() && resultsError()" class="text-sm text-tertiary text-center py-6">
-            {{ resultsError() }}
-          </div>
-
-          <div *ngIf="!loadingResults() && !resultsError() && labResults().length === 0" class="text-sm text-gray-400 text-center py-6">
-            No lab results available yet.
-          </div>
-
-          <div *ngIf="!loadingResults() && !resultsError() && labResults().length > 0" class="space-y-4">
-            <div *ngFor="let result of labResults()" class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
-              <div class="flex items-center justify-between mb-3">
-                <p class="text-sm font-semibold text-gray-900">{{ getTestName(result.labTestId) }}</p>
-                <span class="text-xs text-gray-400">Session #{{ result.sessionId }}</span>
-              </div>
-
-              <div class="space-y-3">
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Summary</p>
-                  <p class="text-sm text-gray-700 mt-0.5">{{ result.summary }}</p>
-                </div>
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Classification</p>
-                  <p class="text-sm text-gray-700 mt-0.5">{{ result.aiClassifiedReport }}</p>
-                </div>
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Suggestion</p>
-                  <p class="text-sm text-gray-700 mt-0.5">{{ result.aiSuggestion }}</p>
-                </div>
-              </div>
-
-              <div class="flex items-center justify-end mt-3">
-                <button type="button" (click)="generateAnalysisFor(result)" [disabled]="generatingResultId() === result.id"
-                  class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors disabled:opacity-50">
-                  {{ generatingResultId() === result.id ? 'Generating...' : 'Generate AI Analysis' }}
-                </button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- ---- AI Reports ---- -->
-      <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-        <button type="button" (click)="toggleSection('ai')"
-          class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
-              <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zm3.03 5.47a.75.75 0 010 1.06l-4.5 4.5a.75.75 0 01-1.06 0l-2.25-2.25a.75.75 0 111.06-1.06l1.72 1.72 3.97-3.97a.75.75 0 011.06 0z" clip-rule="evenodd" />
-            </svg>
-            <span class="text-sm font-semibold text-gray-900">AI Reports</span>
-          </span>
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-            class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('ai') ? 'rotate-180' : ''">
-            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
-          </svg>
-        </button>
-
-        <div *ngIf="isOpen('ai')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
-
-          <div *ngIf="loadingAiReport()" class="flex items-center justify-center gap-2 py-6">
-            <svg class="w-4 h-4 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-            </svg>
-            <span class="text-sm text-gray-500">Loading AI report...</span>
-          </div>
-
-          <div *ngIf="!loadingAiReport() && aiReportError()" class="text-sm text-tertiary text-center py-6">
-            {{ aiReportError() }}
-          </div>
-
-          <div *ngIf="!loadingAiReport() && !aiReportError() && aiReport()" class="space-y-4">
-            <div *ngIf="aiReport()?.overallAISummary" class="rounded-lg border border-tertiary/20 bg-tertiary/5 p-4">
-              <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Overall Summary</p>
-              <p class="text-sm text-gray-700 leading-relaxed">{{ aiReport()?.overallAISummary }}</p>
-            </div>
-
-            <div *ngIf="(aiReport()?.results?.length ?? 0) === 0" class="text-sm text-gray-400 text-center py-6">
-              No AI analysis generated yet for this patient's results.
-            </div>
-
-            <div *ngFor="let analysis of aiReport()?.results" class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
-              <p class="text-xs text-gray-400 mb-2">Result #{{ analysis.patientResultId }}</p>
-              <p class="text-sm text-gray-700 leading-relaxed">{{ analysis.aiClassifiedReport }}</p>
-              <p class="text-sm text-gray-700 leading-relaxed mt-2">{{ analysis.aiSuggestion }}</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-    </div>
-
-    <!-- ============ Floating AI Chat ============ -->
-
-<div class="fixed bottom-6 right-6 z-50">
-
-  <!-- Chat Window -->
-  <div
-    *ngIf="chatOpen()"
-    class="mb-4 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
-  >
-
-    <!-- Header -->
-    <div
-      class="bg-primary text-white px-4 py-3 flex items-center justify-between"
-    >
-      <div>
-        <h3 class="font-semibold text-sm">
-          Medical AI Assistant
-        </h3>
-
-        <p class="text-xs opacity-80">
-          Patient #{{ patientId }}
-        </p>
-      </div>
-
-      <button
-        type="button"
-        (click)="toggleChat()"
-        class="text-white text-xl leading-none"
-      >
-        ×
-      </button>
-    </div>
-
-
-    <!-- Messages -->
-    <div
-      class="h-80 overflow-y-auto p-4 space-y-3 bg-gray-50"
-    >
-
-      <div
-        *ngFor="let message of chatMessages()"
-        class="flex"
-        [ngClass]="message.role === 'user'
-          ? 'justify-end'
-          : 'justify-start'"
-      >
-
+      <div class="fixed bottom-6 right-6 z-50">
+        <!-- Chat Window -->
         <div
-          class="max-w-[80%] rounded-xl px-3 py-2 text-sm"
-          [ngClass]="message.role === 'user'
-            ? 'bg-primary text-white'
-            : 'bg-white border border-gray-200 text-gray-700'"
+          *ngIf="chatOpen()"
+          class="mb-4 w-80 sm:w-96 bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden"
         >
+          <!-- Header -->
+          <div class="bg-primary text-white px-4 py-3 flex items-center justify-between">
+            <div>
+              <h3 class="font-semibold text-sm">Medical AI Assistant</h3>
 
-          {{ message.content }}
+              <p class="text-xs opacity-80">Patient #{{ patientId }}</p>
+            </div>
 
+            <button type="button" (click)="toggleChat()" class="text-white text-xl leading-none">
+              ×
+            </button>
+          </div>
+
+          <!-- Messages -->
+          <div class="h-80 overflow-y-auto p-4 space-y-3 bg-gray-50">
+            <div
+              *ngFor="let message of chatMessages()"
+              class="flex"
+              [ngClass]="message.role === 'user' ? 'justify-end' : 'justify-start'"
+            >
+              <div
+                class="max-w-[80%] rounded-xl px-3 py-2 text-sm"
+                [ngClass]="
+                  message.role === 'user'
+                    ? 'bg-primary text-white'
+                    : 'bg-white border border-gray-200 text-gray-700'
+                "
+              >
+                {{ message.content }}
+              </div>
+            </div>
+
+            <!-- AI Loading -->
+            <div *ngIf="chatLoading()" class="text-xs text-gray-400">AI is thinking...</div>
+          </div>
+
+          <!-- Input -->
+          <div class="p-3 border-t border-gray-100 flex gap-2 bg-white">
+            <input
+              type="text"
+              placeholder="Ask about patient..."
+              class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+              [ngModel]="chatInput()"
+              (ngModelChange)="chatInput.set($event)"
+              (keydown.enter)="$event.preventDefault(); sendChatMessage()"
+            />
+
+            <button
+              type="button"
+              (click)="sendChatMessage()"
+              [disabled]="chatLoading()"
+              class="px-3 rounded-lg bg-primary text-white text-sm disabled:opacity-50"
+            >
+              Send
+            </button>
+          </div>
         </div>
 
+        <!-- Floating Button -->
+        <button
+          type="button"
+          (click)="toggleChat()"
+          class="w-14 h-14 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-105 transition"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-7 h-7"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8L3 21l1.8-4.2A7.8 7.8 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+            />
+          </svg>
+        </button>
       </div>
-
-
-      <!-- AI Loading -->
-      <div
-        *ngIf="chatLoading()"
-        class="text-xs text-gray-400"
-      >
-        AI is thinking...
-      </div>
-
-    </div>
-
-
-    <!-- Input -->
-    <div
-      class="p-3 border-t border-gray-100 flex gap-2 bg-white"
-    >
-
-      <input
-        type="text"
-        placeholder="Ask about patient..."
-        class="flex-1 rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-primary"
-        [ngModel]="chatInput()"
-        (ngModelChange)="chatInput.set($event)"
-        (keydown.enter)="$event.preventDefault(); sendChatMessage()"
-      />
-
-
-      <button
-        type="button"
-        (click)="sendChatMessage()"
-        [disabled]="chatLoading()"
-        class="px-3 rounded-lg bg-primary text-white text-sm disabled:opacity-50"
-      >
-        Send
-      </button>
-
-    </div>
-
-  </div>
-
-
-
-  <!-- Floating Button -->
-  <button
-    type="button"
-    (click)="toggleChat()"
-    class="w-14 h-14 rounded-full bg-primary text-white shadow-lg flex items-center justify-center hover:scale-105 transition"
-  >
-
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="w-7 h-7"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8L3 21l1.8-4.2A7.8 7.8 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-      />
-
-    </svg>
-
-  </button>
-
-</div>
-
-
     </ng-container>
-
   </div>
 </div>
-
