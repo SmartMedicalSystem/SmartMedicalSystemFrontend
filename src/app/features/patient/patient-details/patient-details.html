@@ -197,8 +197,8 @@
           </svg>
         </div>
         <div>
-          <p class="text-lg font-bold text-gray-900">{{ labResults().length }}</p>
-          <p class="text-xs text-gray-500">Total Lab Tests</p>
+          <p class="text-lg font-bold text-gray-900">{{ labElementCount() }}</p>
+          <p class="text-xs text-gray-500">Result Elements</p>
         </div>
       </div>
       <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 flex items-center gap-3">
@@ -302,68 +302,138 @@
       <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <button type="button" (click)="toggleSection('lab')"
           class="w-full flex items-center justify-between gap-3 px-4 sm:px-5 py-4 text-left">
-          <span class="flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-primary">
-              <path fill-rule="evenodd" d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-            </svg>
-            <span class="text-sm font-semibold text-gray-900">Laboratory Results</span>
-            <span class="text-xs text-gray-400">({{ labResults().length }} Tests)</span>
+          <span class="flex items-center gap-2 min-w-0">
+            <span class="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                <path fill-rule="evenodd"
+                  d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5m4.75-11.396a24.3 24.3 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3" />
+              </svg>
+            </span>
+            <span class="text-sm font-semibold text-gray-900 truncate">Laboratory Results</span>
+            <span class="text-xs text-gray-400 whitespace-nowrap">({{ labElementCount() }} Elements)</span>
           </span>
+
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-            class="w-4 h-4 text-gray-400 transition-transform" [ngClass]="isOpen('lab') ? 'rotate-180' : ''">
-            <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97a.75.75 0 111.06 1.06l-7.5 7.5z" clip-rule="evenodd" />
+            class="w-4 h-4 text-gray-400 transition-transform shrink-0"
+            [ngClass]="isOpen('lab') ? 'rotate-180' : ''">
+            <path fill-rule="evenodd"
+              d="M12.53 16.28a.75.75 0 01-1.06 0l-7.5-7.5a.75.75 0 011.06-1.06L12 14.69l6.97-6.97z"
+              clip-rule="evenodd" />
           </svg>
         </button>
 
-        <div *ngIf="isOpen('lab')" class="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">
-
-          <div *ngIf="loadingResults()" class="flex items-center justify-center gap-2 py-6">
-            <svg class="w-4 h-4 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <div *ngIf="isOpen('lab')" class="border-t border-gray-100">
+          <div *ngIf="loadingAiReport()" class="flex items-center justify-center gap-2 py-8 px-4">
+            <svg class="w-5 h-5 animate-spin text-primary" xmlns="http://www.w3.org/2000/svg" fill="none"
+              viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
             </svg>
-            <span class="text-sm text-gray-500">Loading lab results...</span>
+            <span class="text-sm text-gray-500">Loading laboratory report...</span>
           </div>
 
-          <div *ngIf="!loadingResults() && resultsError()" class="text-sm text-tertiary text-center py-6">
-            {{ resultsError() }}
+          <div *ngIf="!loadingAiReport() && aiReportError()"
+            class="mx-4 sm:mx-5 my-5 rounded-xl bg-tertiary/10 border border-tertiary/20 px-4 py-3">
+            <p class="text-sm text-tertiary">{{ aiReportError() }}</p>
           </div>
 
-          <div *ngIf="!loadingResults() && !resultsError() && labResults().length === 0" class="text-sm text-gray-400 text-center py-6">
-            No lab results available yet.
+          <div *ngIf="!loadingAiReport() && !aiReportError() && !(aiReport()?.results?.length ?? 0)"
+            class="px-4 sm:px-5 py-10 text-center">
+            <p class="text-sm font-medium text-gray-700">No laboratory report available yet.</p>
+            <p class="text-xs text-gray-400 mt-1">
+              Generate an AI analysis for a patient result to populate the detailed report.
+            </p>
           </div>
 
-          <div *ngIf="!loadingResults() && !resultsError() && labResults().length > 0" class="space-y-4">
-            <div *ngFor="let result of labResults()" class="rounded-lg border border-gray-100 bg-gray-50/60 p-4">
-              <div class="flex items-center justify-between mb-3">
-                <p class="text-sm font-semibold text-gray-900">{{ getTestName(result.labTestId) }}</p>
-                <span class="text-xs text-gray-400">Session #{{ result.sessionId }}</span>
+          <div *ngIf="!loadingAiReport() && !aiReportError() && (aiReport()?.results?.length ?? 0) > 0"
+            class="p-3 sm:p-5 space-y-5">
+
+            <div *ngFor="let analysis of aiReport()?.results"
+              class="rounded-2xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+
+              <div class="px-5 sm:px-6 py-5 text-white bg-gradient-to-r from-indigo-600 via-blue-600 to-blue-500">
+                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+                  <div class="min-w-0">
+                    <p class="text-lg sm:text-xl font-bold truncate">{{ getReportTestName(analysis) }}</p>
+                    <p *ngIf="getReportDate(analysis)" class="text-xs sm:text-sm text-white/80 mt-1">
+                      {{ getReportDate(analysis) }}
+                    </p>
+                  </div>
+                  <span class="text-xs text-white/80 whitespace-nowrap">
+                    Result #{{ analysis.patientResultId }}
+                  </span>
+                </div>
               </div>
 
-              <div class="space-y-3">
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">Summary</p>
-                  <p class="text-sm text-gray-700 mt-0.5">{{ result.summary }}</p>
-                </div>
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Classification</p>
-                  <p class="text-sm text-gray-700 mt-0.5">{{ result.aiClassifiedReport }}</p>
-                </div>
-                <div>
-                  <p class="text-xs font-medium text-gray-500 uppercase tracking-wide">AI Suggestion</p>
-                  <p class="text-sm text-gray-700 mt-0.5">{{ result.aiSuggestion }}</p>
-                </div>
+              <div *ngIf="getElementSummaries(analysis).length > 0" class="overflow-x-auto">
+                <table class="w-full min-w-[760px] text-left">
+                  <thead class="bg-slate-50 border-b border-gray-200">
+                    <tr>
+                      <th class="px-5 py-4 text-xs font-bold text-gray-800">Element</th>
+                      <th class="px-5 py-4 text-xs font-bold text-gray-800 text-right">Value</th>
+                      <th class="px-5 py-4 text-xs font-bold text-gray-800">Unit</th>
+                      <th class="px-5 py-4 text-xs font-bold text-gray-800">Normal Range</th>
+                      <th class="px-5 py-4 text-xs font-bold text-gray-800 text-center">Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody class="divide-y divide-gray-200">
+                    <tr *ngFor="let element of getElementSummaries(analysis)"
+                      class="hover:bg-gray-50 transition-colors">
+                      <td class="px-5 py-4">
+                        <span class="text-sm font-semibold text-gray-800">{{ element.elementName }}</span>
+                      </td>
+
+                      <td class="px-5 py-4 text-right">
+                        <span class="text-sm font-semibold text-gray-900">{{ element.value }}</span>
+                      </td>
+
+                      <td class="px-5 py-4">
+                        <span class="text-sm text-gray-700">{{ element.unit || '—' }}</span>
+                      </td>
+
+                      <td class="px-5 py-4">
+                        <span class="text-sm text-gray-700">
+                          {{ element.normalMin }} - {{ element.normalMax }}
+                        </span>
+                      </td>
+
+                      <td class="px-5 py-4 text-center">
+                        <span class="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold"
+                          [ngClass]="getFlagClass(element.flag)">
+                          <span class="w-1.5 h-1.5 rounded-full"
+                            [ngClass]="getFlagDotClass(element.flag)"></span>
+                          {{ element.flag }}
+                        </span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
 
-              <div class="flex items-center justify-end mt-3">
-                <button type="button" (click)="generateAnalysisFor(result)" [disabled]="generatingResultId() === result.id"
-                  class="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-white hover:bg-primary/90 transition-colors disabled:opacity-50">
-                  {{ generatingResultId() === result.id ? 'Generating...' : 'Generate AI Analysis' }}
-                </button>
+              <div *ngIf="getElementSummaries(analysis).length === 0" class="px-5 sm:px-6 py-7 text-center">
+                <p class="text-sm text-gray-500">No element summaries are available for this result yet.</p>
+              </div>
+
+              <div *ngIf="analysis.aiClassifiedReport || analysis.aiSuggestion"
+                class="border-t border-gray-100 bg-gray-50/60 p-4 sm:p-5 space-y-3">
+
+                <div *ngIf="analysis.aiClassifiedReport">
+                  <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">AI Classification</p>
+                  <p class="text-sm text-gray-700 leading-relaxed">{{ analysis.aiClassifiedReport }}</p>
+                </div>
+
+                <div *ngIf="analysis.aiSuggestion">
+                  <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">AI Suggestion</p>
+                  <p class="text-sm text-gray-700 leading-relaxed">{{ analysis.aiSuggestion }}</p>
+                </div>
               </div>
             </div>
-          </div>
 
+            <div class="sm:hidden rounded-lg bg-gray-50 border border-gray-100 px-4 py-2">
+              <p class="text-[11px] text-gray-400 text-center">Swipe horizontally to view all report columns</p>
+            </div>
+          </div>
         </div>
       </div>
 

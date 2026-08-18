@@ -16,7 +16,7 @@ import { getCurrentDoctorIdFromToken } from '../../../../core/utils/jwt-utils';
 
 // الحقول المتاحة فعليًا مجمّعة من مصدرين:
 // - firstName/lastName/email/phoneNumber/address -> ProfileController (self-service)
-// - specialization/contact/gender/dateOfBirth/departmentId -> DoctorsController
+// - specialization/contact/gender/dateOfBirth/departmentId/city/country/postalCode -> DoctorsController
 interface ProfileForm {
   firstName: string;
   lastName: string;
@@ -29,9 +29,6 @@ interface ProfileForm {
   address: string;
   departmentId: number;
   departmentName: string;
-  // ⚠️ GetDoctorById مبيرجعش city/country خالص، لكن DoctorUpdateDto الحقيقي
-  // بيطلبهم كـ required - فمعندناش قيمة قديمة نحمّلها، والدكتور لازم يدخلهم
-  // بنفسه أول مرة (وبعدين هيترحّلوا تلقائيًا مع أي Update تاني).
   city: string;
   country: string;
   postalCode: string;
@@ -63,9 +60,6 @@ export class Profile implements OnInit {
   saveSuccess = signal(false);
 
   // ---------- Photo ----------
-  // photoUrl الراجعة من GetMyProfile مسار نسبي (زي "/uploads/xyz.jpg") محتاج
-  // نحط قدامه base URL السيرفر - نفس المنطق المستخدم في
-  // AuthenticationService.setToken() عشان الصورة تفضل متسقة في كل الصفحة.
   private readonly photoBaseUrl = 'https://smartmedicalsystem.runasp.net/';
 
   private resolvePhotoUrl(path: string | null | undefined): string | null {
@@ -105,11 +99,10 @@ export class Profile implements OnInit {
     departmentId: 0,
     departmentName: '',
     city: '',
-    country: 'Egypt',
+    country: '',
     postalCode: '',
   };
 
-  // TODO: الحقول دي مش موجودة في أي DTO حاليًا — placeholder لحد ما الباك يضيفها
   profileExtra = {
     nationality: '',
     licenseNumber: '',
@@ -121,8 +114,6 @@ export class Profile implements OnInit {
   };
 
   // ========== AI Chat ==========
-  // ملحوظة: هنا بس patientId بتتبعت null دايمًا (مش مربوطة بمريض معين)،
-  // عكس نفس الشات في patient-details اللي بتبعت patientId حقيقي.
   chatOpen = signal(false);
   chatLoading = signal(false);
   chatInput = signal('');
@@ -142,7 +133,6 @@ export class Profile implements OnInit {
   ngOnInit(): void {
     const token = this.authService.getAccessToken();
     const id = getCurrentDoctorIdFromToken(token);
-    // fallback أول تحميل لحد ما رد GetMyProfile يوصل (وده المصدر الأساسي فعليًا)
     const tokenPhotoUrl = this.authService.userImage() || null;
 
     if (!id) {
@@ -155,8 +145,6 @@ export class Profile implements OnInit {
     this.loading.set(true);
     this.loadError.set(null);
 
-    // بيانات Professional من DoctorsController + بيانات Personal/Contact/الصورة
-    // من ProfileController (self-service) - بنجيبهم مع بعض ونجمّعهم في فورم واحد.
     forkJoin({
       doctor: this.doctorService.getDoctorById(id),
       profile: this.doctorService.getMyProfile(id),
@@ -177,17 +165,15 @@ export class Profile implements OnInit {
             address: profile.address ?? doctor.address,
             departmentId: doctor.departmentId,
             departmentName: doctor.departmentName ?? '',
-            // مش راجعين من GetDoctorById - بنسيبهم زي ما هما (فاضيين/الديفولت)
-            // لحد ما الدكتور يدخلهم بنفسه في الفورم.
-            city: this.form.city,
-            country: this.form.country,
-            postalCode: this.form.postalCode,
+            // ⚠️ دلوقتي DoctorsController.GetById فعلاً بيرجع city/country/postalCode
+            // (الباك اتعدل)، فبنقراهم من doctor.* مباشرة بدل ما نسيبهم زي ما هما.
+            city: doctor.city ?? '',
+            country: doctor.country ?? '',
+            postalCode: doctor.postalCode ?? '',
           };
-          // profile.photoUrl (من الداتابيز، عن طريق GetMyProfile) هو المصدر الأساسي
-          // للصورة لأنه الأحدث دايمًا. لو رجع فاضي (مثلاً استجابة ناقصة)، بنرجع
-          // لقيمة التوكن كـ fallback بس - التوكن ممكن يكون فيه صورة قديمة لو
-          // الدكتور غيّرها من غير ما يعمل login/refresh-token جديد.
-          this.currentPhotoUrl.set(this.resolvePhotoUrl(profile.photoUrl) ?? tokenPhotoUrl);
+          this.currentPhotoUrl.set(
+            this.resolvePhotoUrl(profile.photoUrl) ?? this.resolvePhotoUrl(doctor.photoUrl) ?? tokenPhotoUrl
+          );
         },
         error: () => this.loadError.set('Failed to load profile data.'),
       });
@@ -202,8 +188,6 @@ export class Profile implements OnInit {
 
     const file = input.files[0];
     this.selectedImage = file;
-
-    // معاينة فورية قبل الرفع
     this.photoPreviewUrl.set(URL.createObjectURL(file));
   }
 
@@ -255,9 +239,6 @@ export class Profile implements OnInit {
       contact: this.form.contact,
       dateOfBirth: this.form.dateOfBirth,
       email: this.form.email,
-      // ⚠️ الباك اند بيستقبل MobileNumber كـ string مش رقم (الخطأ كان:
-      // "The JSON value could not be converted to System.String")، فمبنحولوش
-      // لرقم هنا زي ما كنا بنعمل قبل كده.
       mobileNumber: this.form.phoneNumber,
       address: this.form.address,
       gender: this.form.gender,
@@ -291,27 +272,21 @@ export class Profile implements OnInit {
             address: profile.address ?? doctor.address,
             departmentId: doctor.departmentId,
             departmentName: doctor.departmentName ?? '',
-            // الرد مبيرجعش city/country (زي GetDoctorById بالظبط)، فبنسيب اللي
-            // إحنا بعتناه لأنه أصبح دلوقتي القيمة المحفوظة فعليًا في الداتابيز.
-            city: this.form.city,
-            country: this.form.country,
-            postalCode: this.form.postalCode,
+            // ⚠️ بعد الحفظ برضو بنقرا city/country/postalCode من رد الـ Update
+            // مباشرة (بدل ما نسيب اللي بعتناه)، بما إن الباك بقى بيرجّعهم فعلاً.
+            city: doctor.city ?? this.form.city,
+            country: doctor.country ?? this.form.country,
+            postalCode: doctor.postalCode ?? this.form.postalCode,
           };
           this.nationalId = doctor.encryptedNationalId ?? this.nationalId;
-          // بعد الحفظ بنعتمد على رد الـ API مباشرة (فيه الصورة الجديدة لو
-          // اتغيّرت)، مش على التوكن، لأن التوكن نفسه لسه شايل القيمة القديمة
-          // لحد ما يتعمل refresh-token/login جديد.
-          this.currentPhotoUrl.set(this.resolvePhotoUrl(profile.photoUrl) ?? this.currentPhotoUrl());
+          const newPhoto = this.resolvePhotoUrl(profile.photoUrl) ?? this.resolvePhotoUrl(doctor.photoUrl) ?? this.currentPhotoUrl();
+          this.currentPhotoUrl.set(newPhoto);
           this.selectedImage = null;
           this.photoPreviewUrl.set(null);
           this.saveSuccess.set(true);
-          this.authService.setUserImage(this.resolvePhotoUrl(profile.photoUrl) ?? this.currentPhotoUrl());
+          this.authService.setUserImage(newPhoto);
         },
         error: (err) => {
-          // بنطبع الـ body الكامل بتاع الخطأ في الـ console + بنوريه في الشاشة
-          // عشان نعرف الحقل اللي الباك اند رافضه بالظبط من غير ما ندوّر يدوي
-          // في Network tab. شايفين شكلين مختلفين من الباك اند لحد دلوقتي:
-          // { Message: "..." } وكمان [{ field, message }] كـ array مباشرة.
           console.error('Save changes failed - full error body:', err?.error);
           const body = err?.error;
           const backendMessage =
@@ -376,10 +351,7 @@ export class Profile implements OnInit {
 
     this.chatMessages.update((messages) => [
       ...messages,
-      {
-        role: 'user',
-        content: question,
-      },
+      { role: 'user', content: question },
     ]);
 
     this.chatInput.set('');
@@ -387,27 +359,22 @@ export class Profile implements OnInit {
 
     this.doctorService
       .askPatientAI({
-        patientId: null, // ← الفرق الوحيد عن patient-details: هنا دايمًا null
+        patientId: null,
         question: question,
+        groupByPatient: true,
       })
       .pipe(finalize(() => this.chatLoading.set(false)))
       .subscribe({
         next: (response) => {
           this.chatMessages.update((messages) => [
             ...messages,
-            {
-              role: 'ai',
-              content: response.answer,
-            },
+            { role: 'ai', content: response.answer },
           ]);
         },
         error: () => {
           this.chatMessages.update((messages) => [
             ...messages,
-            {
-              role: 'ai',
-              content: 'Sorry, something went wrong while contacting AI.',
-            },
+            { role: 'ai', content: 'Sorry, something went wrong while contacting AI.' },
           ]);
         },
       });

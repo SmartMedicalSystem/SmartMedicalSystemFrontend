@@ -14,12 +14,6 @@ export interface Doctor {
 
 // ============ Doctor DTOs ============
 
-// ⚠️ اتصححت بناءً على الـ Response الحقيقي من GetDoctorById (اللي وصلني):
-// - الحقل اسمه phoneNumber مش mobileNumber في الـ Read
-// - National ID بيرجع مشفّر باسم encryptedNationalId مش nationalId
-// - GetById مبيرجعش City/Country خالص حاليًا، فمفيش مصدر نحمّل منه القيمة
-//   القديمة زي ما بنعمل مع NationalId - الحقلين دول لازم ياخدهم الدكتور بنفسه
-//   في الفورم (Update DTO الحقيقي بيطلبهم كـ required).
 export interface DoctorReadDto {
   id: number;
   name: string;
@@ -33,6 +27,10 @@ export interface DoctorReadDto {
   encryptedNationalId: string;
   departmentId: number;
   departmentName?: string;
+  city?: string;
+  country?: string;
+  postalCode?: string;
+  photoUrl?: string;
 }
 
 // TODO: شكل الـ DTO ده تخمين برضو — تأكد من الحقول الفعلية في
@@ -53,10 +51,7 @@ export interface DoctorCreateDto {
   postalCode?: string;
 }
 
-// مطابقة تمامًا لـ Application.DTOs.Doctor.DoctorUpdateDto (الكود الحقيقي اللي بعتهولي):
-// Name, Specialization, Contact, DateOfBirth, Email, MobileNumber(string),
-// Address, Gender, NationalId(string, required), DepartmentId,
-// City(string, required), Country(string, required), PostalCode(string?, اختياري)
+// مطابقة تمامًا لـ Application.DTOs.Doctor.DoctorUpdateDto
 export interface DoctorUpdateDto {
   name: string;
   specialization: string;
