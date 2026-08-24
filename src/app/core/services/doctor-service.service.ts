@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of, switchMap, map, forkJoin } from 'rxjs';
 import { skipLoading } from '../tokens/skip-loading.token';
 // كل الانترفيسات اتشالت من هنا وبقت كل واحدة في ملفها الخاص جوه shared/interfaces
 import { Patient } from '../../shared/interfaces/Doctor/patient.interface';
@@ -334,6 +334,89 @@ export class DoctorService {
     return this.http.get<PaginatedResponse<PatientResultReadDto>>(
       `${this.patientResultsApiUrl}/by-patient/${patientId}`,
       { params }
+    );
+  }
+
+  // مطابقة لـ PatientResultsController.GetByDoctor (مع fallback للتطابق مع backend السيرفر المباشر عن طريق session id)
+  getPatientResultsByDoctor(
+    doctorId: number,
+    pageNumber: number = 1,
+    pageSize: number = 20
+  ): Observable<PaginatedResponse<PatientResultReadDto>> {
+    const emptyPaginated: PaginatedResponse<PatientResultReadDto> = {
+      items: [],
+      pageNumber: 1,
+      pageSize,
+      totalCount: 0,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPreviousPage: false,
+      firstItemIndex: 0,
+      lastItemIndex: 0,
+    };
+
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+
+    return this.http.get<PaginatedResponse<PatientResultReadDto>>(
+      `${this.patientResultsApiUrl}/by-doctor/${doctorId}`,
+      { params }
+    ).pipe(
+      catchError(() => {
+        // Fallback إذا كان سيرفر ASP.NET أونلاين لم يُنشر عليه الراوت الجديد بعد:
+        // بنجيب المرضى ونشوف جلساتهم المطابقة للـ doctorId
+        return this.getAllPatients(1, 20).pipe(
+          switchMap((patientsRes) => {
+            const patients = patientsRes.items || [];
+            if (patients.length === 0) {
+              return of(emptyPaginated);
+            }
+            const requests = patients.map((p) =>
+              forkJoin({
+                sessions: this.getSessionsByPatient(p.id, 1, 50).pipe(
+                  catchError(() => of({ items: [] }))
+                ),
+                results: this.getPatientResultsByPatient(p.id, 1, 50).pipe(
+                  catchError(() => of({ items: [] }))
+                ),
+              })
+            );
+            return forkJoin(requests).pipe(
+              map((patientDataList): PaginatedResponse<PatientResultReadDto> => {
+                const doctorSessionIds = new Set<number>();
+                patientDataList.forEach((pd) => {
+                  (pd.sessions.items || []).forEach((s) => {
+                    if (s.doctorId === doctorId) {
+                      doctorSessionIds.add(s.id);
+                    }
+                  });
+                });
+                const matchedResults: PatientResultReadDto[] = [];
+                patientDataList.forEach((pd) => {
+                  (pd.results.items || []).forEach((r) => {
+                    if (doctorSessionIds.has(r.sessionId)) {
+                      matchedResults.push(r);
+                    }
+                  });
+                });
+                return {
+                  items: matchedResults,
+                  totalCount: matchedResults.length,
+                  pageNumber: 1,
+                  pageSize,
+                  totalPages: matchedResults.length > 0 ? 1 : 0,
+                  hasNextPage: false,
+                  hasPreviousPage: false,
+                  firstItemIndex: matchedResults.length > 0 ? 1 : 0,
+                  lastItemIndex: matchedResults.length,
+                };
+              })
+            );
+          }),
+          catchError(() => of(emptyPaginated))
+        );
+      })
     );
   }
 

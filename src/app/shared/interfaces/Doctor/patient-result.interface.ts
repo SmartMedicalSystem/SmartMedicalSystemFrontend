@@ -1,6 +1,11 @@
 // ============ Patient Results DTOs ============
 // مطابقة لـ Application.DTOs.PatientResult في الباك اند (PatientResultsController)
 
+export enum PatinetResultAIReportStatus {
+  Pending = 1,
+  Approved = 2,
+}
+
 // مطابقة تمامًا لـ Application.DTOs.PatientResult.PatientResultReadDto
 export interface PatientResultReadDto {
   id: number;
@@ -10,9 +15,9 @@ export interface PatientResultReadDto {
   summary: string;
   aiClassifiedReport: string;
   aiSuggestion: string;
+  aiReportStatus: PatinetResultAIReportStatus;
 }
 
-// TODO: شكل الـ DTO ده تخمين — تأكد من الحقول الفعلية في Application.DTOs.PatientResult.PatientResultCreateDto
 export interface PatientResultCreateDto {
   patientId: number;
   sessionId: number;
@@ -22,9 +27,13 @@ export interface PatientResultCreateDto {
   aiSuggestion: string;
 }
 
-// TODO: شكل الـ DTO ده تخمين — تأكد من الحقول الفعلية في Application.DTOs.PatientResult.PatientResultUpdateDto
 export interface PatientResultUpdateDto {
   summary: string;
   aiClassifiedReport: string;
   aiSuggestion: string;
 }
+
+export interface PatientResultStatusUpdateDto {
+  status: PatinetResultAIReportStatus;
+}
+

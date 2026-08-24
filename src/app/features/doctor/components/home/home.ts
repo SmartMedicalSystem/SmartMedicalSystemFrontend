@@ -2,10 +2,11 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { finalize, forkJoin } from 'rxjs';
+import { finalize, forkJoin, catchError, of } from 'rxjs';
 import { DoctorService, DoctorReadDto } from '../../../../core/services/doctor-service.service';
 import { AuthenticationService } from '../../../../core/services/authenticationService.service';
 import { getCurrentDoctorIdFromToken } from '../../../../core/utils/jwt-utils';
+import { PatientResultReadDto, PatinetResultAIReportStatus } from '../../../../shared/interfaces/Doctor/patient-result.interface';
 
 @Component({
   selector: 'app-home',
@@ -25,6 +26,9 @@ export class Home implements OnInit {
   doctor = signal<DoctorReadDto | null>(null);
   totalPatients = signal<number | null>(null);
   totalLabTests = signal<number | null>(null);
+  patientResults = signal<PatientResultReadDto[]>([]);
+
+  PatinetResultAIReportStatus = PatinetResultAIReportStatus;
 
   // ========== AI Chat ==========
   // ملحوظة: هنا بس patientId بتتبعت null دايمًا (مش مربوطة بمريض معين)،
@@ -58,21 +62,46 @@ export class Home implements OnInit {
     this.loading.set(true);
     this.loadError.set(null);
 
-    // pageSize=1 لأن المطلوب بس totalCount من الـ response، مش الداتا نفسها
-    // (الداتا نفسها معروضة أصلاً في صفحة Patients، مش هنكررها هنا).
     forkJoin({
-      doctor: this.doctorService.getDoctorById(doctorId),
-      patients: this.doctorService.getAllPatients(1, 1),
-      labTests: this.doctorService.getLabTests(1, 1),
+      doctor: this.doctorService.getDoctorById(doctorId).pipe(
+        catchError((err) => {
+          console.error('Error fetching doctor profile', err);
+          return of(null);
+        })
+      ),
+      patients: this.doctorService.getAllPatients(1, 1).pipe(
+        catchError((err) => {
+          console.error('Error fetching patients count', err);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 1, totalPages: 0 });
+        })
+      ),
+      labTests: this.doctorService.getLabTests(1, 1).pipe(
+        catchError((err) => {
+          console.error('Error fetching lab tests count', err);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 1, totalPages: 0 });
+        })
+      ),
+      results: this.doctorService.getPatientResultsByDoctor(doctorId, 1, 20).pipe(
+        catchError((err) => {
+          console.error('Error fetching doctor patient results', err);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 });
+        })
+      ),
     })
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: ({ doctor, patients, labTests }) => {
-          this.doctor.set(doctor);
-          this.totalPatients.set(patients.totalCount);
-          this.totalLabTests.set(labTests.totalCount);
+        next: ({ doctor, patients, labTests, results }) => {
+          if (doctor) {
+            this.doctor.set(doctor);
+          }
+          this.totalPatients.set(patients ? patients.totalCount : 0);
+          this.totalLabTests.set(labTests ? labTests.totalCount : 0);
+          this.patientResults.set(results && results.items ? results.items : []);
         },
-        error: () => this.loadError.set('Failed to load dashboard data.'),
+        error: (err) => {
+          console.error('Unexpected error loading dashboard data', err);
+          this.loadError.set('Failed to load dashboard data.');
+        },
       });
   }
 
