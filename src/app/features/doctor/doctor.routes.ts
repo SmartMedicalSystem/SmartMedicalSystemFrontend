@@ -41,6 +41,12 @@ export const doctorRoutes: Routes = [
                 .then(m => m.Profile)
           },
           {
+            path: 'patient-result/:id',
+            loadComponent: () =>
+              import('./components/patient-result-detail/patient-result-detail')
+                .then(m => m.PatientResultDetail)
+          },
+          {
             path: 'patients',
             loadComponent: () =>
               import('../patient/patients')

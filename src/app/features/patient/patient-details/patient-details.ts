@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { finalize } from 'rxjs';
 import { DoctorService } from '../../../core/services/doctor-service.service';
-import { PatientResultReadDto } from '../../../shared/interfaces/Doctor/patient-result.interface';
+import { PatientResultReadDto, PatinetResultAIReportStatus, PatientResultUpdateDto } from '../../../shared/interfaces/Doctor/patient-result.interface';
 import { PatientResultElementDto } from '../../../shared/interfaces/Doctor/patient-result-element.interface';
 import {
   PatientFullAIReportDto,
@@ -144,6 +144,98 @@ export class PatientDetails implements OnInit {
   aiReportError = signal<string | null>(null);
   aiReport = signal<PatientFullAIReportDto | null>(null);
   generatingResultId = signal<number | null>(null);
+
+  PatinetResultAIReportStatus = PatinetResultAIReportStatus;
+
+  // ---------- Overall Summary Editing ----------
+  isEditingOverallSummary = signal(false);
+  editOverallSummaryContent = signal('');
+  savingOverallSummary = signal(false);
+  overallSummarySuccess = signal<string | null>(null);
+
+  toggleEditOverallSummary(): void {
+    if (!this.isEditingOverallSummary()) {
+      this.editOverallSummaryContent.set(this.aiReport()?.overallAISummary || '');
+    }
+    this.isEditingOverallSummary.update(v => !v);
+  }
+
+  saveOverallSummary(): void {
+    if (!this.patientId) return;
+    this.savingOverallSummary.set(true);
+    this.overallSummarySuccess.set(null);
+    const content = this.editOverallSummaryContent();
+    this.doctorService.updateStoredFullPatientReport(this.patientId, { content }).subscribe({
+      next: () => {
+        if (this.aiReport()) {
+          this.aiReport.update(r => r ? { ...r, overallAISummary: content } : null);
+        }
+        this.savingOverallSummary.set(false);
+        this.isEditingOverallSummary.set(false);
+        this.overallSummarySuccess.set('Overall AI Report updated successfully!');
+      },
+      error: () => {
+        this.savingOverallSummary.set(false);
+      }
+    });
+  }
+
+  // ---------- Per-Result AI Analysis Editing ----------
+  editingResultId = signal<number | null>(null);
+  editResultSummary = signal('');
+  editResultClassifiedReport = signal('');
+  editResultSuggestion = signal('');
+  savingResultEdit = signal(false);
+
+  startEditResult(analysis: PatientResultAIAnalysisDto): void {
+    this.editingResultId.set(analysis.patientResultId);
+    this.editResultSummary.set(analysis.summary || '');
+    this.editResultClassifiedReport.set(analysis.aiClassifiedReport || '');
+    this.editResultSuggestion.set(analysis.aiSuggestion || '');
+  }
+
+  cancelEditResult(): void {
+    this.editingResultId.set(null);
+  }
+
+  saveResultEditAndApprove(resultId: number): void {
+    this.savingResultEdit.set(true);
+    const dto: PatientResultUpdateDto = {
+      summary: this.editResultSummary(),
+      aIClassifiedReport: this.editResultClassifiedReport(),
+      aISuggestion: this.editResultSuggestion()
+    };
+
+    this.doctorService.updatePatientResult(resultId, dto).subscribe({
+      next: () => {
+        this.doctorService.updatePatientResultStatus(resultId, { status: PatinetResultAIReportStatus.Approved }).subscribe({
+          next: () => {
+            this.savingResultEdit.set(false);
+            this.editingResultId.set(null);
+            this.loadAiReport(this.patientId);
+            this.loadPatientResults(this.patientId);
+          },
+          error: () => {
+            this.savingResultEdit.set(false);
+            this.editingResultId.set(null);
+            this.loadAiReport(this.patientId);
+          }
+        });
+      },
+      error: () => {
+        this.savingResultEdit.set(false);
+      }
+    });
+  }
+
+  approveResultOnly(resultId: number): void {
+    this.doctorService.updatePatientResultStatus(resultId, { status: PatinetResultAIReportStatus.Approved }).subscribe({
+      next: () => {
+        this.loadAiReport(this.patientId);
+        this.loadPatientResults(this.patientId);
+      }
+    });
+  }
 
   pendingAiAnalysisCount = computed(() => {
     const analyzedIds = new Set(

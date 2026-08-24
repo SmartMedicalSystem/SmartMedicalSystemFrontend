@@ -1,6 +1,11 @@
 // ============ Patient Results DTOs ============
 // مطابقة لـ Application.DTOs.PatientResult في الباك اند (PatientResultsController)
 
+export enum PatinetResultAIReportStatus {
+  Pending = 1,
+  Approved = 2,
+}
+
 // مطابقة تمامًا لـ Application.DTOs.PatientResult.PatientResultReadDto
 export interface PatientResultReadDto {
   id: number;
@@ -8,11 +13,13 @@ export interface PatientResultReadDto {
   sessionId: number;
   labTestId: number;
   summary: string;
-  aiClassifiedReport: string;
-  aiSuggestion: string;
+  // ASP.NET camelCase serializes 'AIClassifiedReport' -> 'aIClassifiedReport'
+  aIClassifiedReport: string;
+  // ASP.NET camelCase serializes 'AISuggestion' -> 'aISuggestion'
+  aISuggestion: string;
+  aiReportStatus: PatinetResultAIReportStatus;
 }
 
-// TODO: شكل الـ DTO ده تخمين — تأكد من الحقول الفعلية في Application.DTOs.PatientResult.PatientResultCreateDto
 export interface PatientResultCreateDto {
   patientId: number;
   sessionId: number;
@@ -22,9 +29,14 @@ export interface PatientResultCreateDto {
   aiSuggestion: string;
 }
 
-// TODO: شكل الـ DTO ده تخمين — تأكد من الحقول الفعلية في Application.DTOs.PatientResult.PatientResultUpdateDto
 export interface PatientResultUpdateDto {
   summary: string;
-  aiClassifiedReport: string;
-  aiSuggestion: string;
+  // Must match ASP.NET camelCase output: 'AIClassifiedReport' -> 'aIClassifiedReport'
+  aIClassifiedReport: string;
+  aISuggestion: string;
 }
+
+export interface PatientResultStatusUpdateDto {
+  status: PatinetResultAIReportStatus;
+}
+

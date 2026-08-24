@@ -1,11 +1,12 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { finalize, forkJoin } from 'rxjs';
+import { Router, RouterLink, NavigationEnd } from '@angular/router';
+import { finalize, forkJoin, catchError, of, filter, Subscription } from 'rxjs';
 import { DoctorService, DoctorReadDto } from '../../../../core/services/doctor-service.service';
 import { AuthenticationService } from '../../../../core/services/authenticationService.service';
 import { getCurrentDoctorIdFromToken } from '../../../../core/utils/jwt-utils';
+import { PatientResultReadDto, PatinetResultAIReportStatus } from '../../../../shared/interfaces/Doctor/patient-result.interface';
 
 @Component({
   selector: 'app-home',
@@ -13,10 +14,13 @@ import { getCurrentDoctorIdFromToken } from '../../../../core/utils/jwt-utils';
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
-export class Home implements OnInit {
+export class Home implements OnInit, OnDestroy {
+  private routerSub?: Subscription;
+
   constructor(
     private doctorService: DoctorService,
-    private authService: AuthenticationService
+    private authService: AuthenticationService,
+    private router: Router
   ) {}
 
   loading = signal(true);
@@ -25,6 +29,16 @@ export class Home implements OnInit {
   doctor = signal<DoctorReadDto | null>(null);
   totalPatients = signal<number | null>(null);
   totalLabTests = signal<number | null>(null);
+  patientResults = signal<PatientResultReadDto[]>([]);
+
+  PatinetResultAIReportStatus = PatinetResultAIReportStatus;
+
+  isApprovedStatus(status: any): boolean {
+    if (status === PatinetResultAIReportStatus.Approved || status === 2 || status === 'Approved' || status === '2') {
+      return true;
+    }
+    return false;
+  }
 
   // ========== AI Chat ==========
   // ملحوظة: هنا بس patientId بتتبعت null دايمًا (مش مربوطة بمريض معين)،
@@ -46,6 +60,25 @@ export class Home implements OnInit {
   ]);
 
   ngOnInit(): void {
+    // Initial load
+    this.loadDashboard();
+
+    // Re-load patient results every time navigation ends on this page
+    // so status changes from the review page are reflected immediately.
+    this.routerSub = this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      if ((event.url as string).includes('/doctor/dashboard/home')) {
+        this.reloadPatientResults();
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.routerSub?.unsubscribe();
+  }
+
+  private loadDashboard(): void {
     const token = this.authService.getAccessToken();
     const doctorId = getCurrentDoctorIdFromToken(token);
 
@@ -58,22 +91,68 @@ export class Home implements OnInit {
     this.loading.set(true);
     this.loadError.set(null);
 
-    // pageSize=1 لأن المطلوب بس totalCount من الـ response، مش الداتا نفسها
-    // (الداتا نفسها معروضة أصلاً في صفحة Patients، مش هنكررها هنا).
     forkJoin({
-      doctor: this.doctorService.getDoctorById(doctorId),
-      patients: this.doctorService.getAllPatients(1, 1),
-      labTests: this.doctorService.getLabTests(1, 1),
+      doctor: this.doctorService.getDoctorById(doctorId).pipe(
+        catchError(err => {
+          console.error('Error fetching doctor by ID', err);
+          return of(null);
+        })
+      ),
+      patients: this.doctorService.getAllPatients(1, 1).pipe(
+        catchError(err => {
+          console.error('Error fetching patients count', err);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 1, totalPages: 0, hasNextPage: false, hasPreviousPage: false, firstItemIndex: 0, lastItemIndex: 0 });
+        })
+      ),
+      labTests: this.doctorService.getLabTests(1, 1).pipe(
+        catchError(err => {
+          console.error('Error fetching lab tests count', err);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 1, totalPages: 0, hasNextPage: false, hasPreviousPage: false, firstItemIndex: 0, lastItemIndex: 0 });
+        })
+      ),
+      results: this.doctorService.getPatientResultsByDoctor(doctorId, 1, 20).pipe(
+        catchError((err) => {
+          console.error('Error fetching doctor patient results', err);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 });
+        })
+      ),
     })
       .pipe(finalize(() => this.loading.set(false)))
       .subscribe({
-        next: ({ doctor, patients, labTests }) => {
-          this.doctor.set(doctor);
-          this.totalPatients.set(patients.totalCount);
-          this.totalLabTests.set(labTests.totalCount);
+        next: ({ doctor, patients, labTests, results }) => {
+          if (doctor) {
+            this.doctor.set(doctor);
+          }
+          this.totalPatients.set(patients ? patients.totalCount : 0);
+          this.totalLabTests.set(labTests ? labTests.totalCount : 0);
+          const sorted = (results && results.items ? results.items : [])
+            .slice()
+            .sort((a, b) => (this.isApprovedStatus(a.aiReportStatus) ? 2 : 1) - (this.isApprovedStatus(b.aiReportStatus) ? 2 : 1));
+          this.patientResults.set(sorted);
         },
-        error: () => this.loadError.set('Failed to load dashboard data.'),
+        error: (err) => {
+          console.error('Unexpected error loading dashboard data', err);
+          this.loadError.set('Failed to load dashboard data.');
+        },
       });
+  }
+
+  private reloadPatientResults(): void {
+    const token = this.authService.getAccessToken();
+    const doctorId = getCurrentDoctorIdFromToken(token);
+    if (!doctorId) return;
+
+    this.doctorService.getPatientResultsByDoctor(doctorId, 1, 20).pipe(
+      catchError(err => {
+        console.error('Error refreshing patient results', err);
+        return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 });
+      })
+    ).subscribe(results => {
+      const sorted = (results && results.items ? results.items : [])
+        .slice()
+        .sort((a, b) => (this.isApprovedStatus(a.aiReportStatus) ? 2 : 1) - (this.isApprovedStatus(b.aiReportStatus) ? 2 : 1));
+      this.patientResults.set(sorted);
+    });
   }
 
   // ========== AI Chat Methods ==========

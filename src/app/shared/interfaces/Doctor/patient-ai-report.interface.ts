@@ -34,3 +34,8 @@ export interface PatientFullAIReportDto {
   overallAISuggestion: string;
   disclaimer: string;
 }
+
+export interface StoredFullReportDto {
+  content: string;
+}
+

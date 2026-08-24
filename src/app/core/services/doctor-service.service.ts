@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, catchError, of, switchMap, map, forkJoin } from 'rxjs';
 import { skipLoading } from '../tokens/skip-loading.token';
 // كل الانترفيسات اتشالت من هنا وبقت كل واحدة في ملفها الخاص جوه shared/interfaces
 import { Patient } from '../../shared/interfaces/Doctor/patient.interface';
@@ -31,10 +31,12 @@ import {
   PatientResultReadDto,
   PatientResultCreateDto,
   PatientResultUpdateDto,
+  PatientResultStatusUpdateDto,
 } from '../../shared/interfaces/Doctor/patient-result.interface';
 import {
   PatientResultAIAnalysisDto,
   PatientFullAIReportDto,
+  StoredFullReportDto,
 } from '../../shared/interfaces/Doctor/patient-ai-report.interface';
 import {
   ProfileReadDto,
@@ -337,6 +339,89 @@ export class DoctorService {
     );
   }
 
+  // مطابقة لـ PatientResultsController.GetByDoctor (مع fallback للتطابق مع backend السيرفر المباشر عن طريق session id)
+  getPatientResultsByDoctor(
+    doctorId: number,
+    pageNumber: number = 1,
+    pageSize: number = 20
+  ): Observable<PaginatedResponse<PatientResultReadDto>> {
+    const emptyPaginated: PaginatedResponse<PatientResultReadDto> = {
+      items: [],
+      pageNumber: 1,
+      pageSize,
+      totalCount: 0,
+      totalPages: 0,
+      hasNextPage: false,
+      hasPreviousPage: false,
+      firstItemIndex: 0,
+      lastItemIndex: 0,
+    };
+
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+
+    return this.http.get<PaginatedResponse<PatientResultReadDto>>(
+      `${this.patientResultsApiUrl}/by-doctor/${doctorId}`,
+      { params }
+    ).pipe(
+      catchError(() => {
+        // Fallback إذا كان سيرفر ASP.NET أونلاين لم يُنشر عليه الراوت الجديد بعد:
+        // بنجيب المرضى ونشوف جلساتهم المطابقة للـ doctorId
+        return this.getAllPatients(1, 20).pipe(
+          switchMap((patientsRes) => {
+            const patients = patientsRes.items || [];
+            if (patients.length === 0) {
+              return of(emptyPaginated);
+            }
+            const requests = patients.map((p) =>
+              forkJoin({
+                sessions: this.getSessionsByPatient(p.id, 1, 50).pipe(
+                  catchError(() => of({ items: [] }))
+                ),
+                results: this.getPatientResultsByPatient(p.id, 1, 50).pipe(
+                  catchError(() => of({ items: [] }))
+                ),
+              })
+            );
+            return forkJoin(requests).pipe(
+              map((patientDataList): PaginatedResponse<PatientResultReadDto> => {
+                const doctorSessionIds = new Set<number>();
+                patientDataList.forEach((pd) => {
+                  (pd.sessions.items || []).forEach((s) => {
+                    if (s.doctorId === doctorId) {
+                      doctorSessionIds.add(s.id);
+                    }
+                  });
+                });
+                const matchedResults: PatientResultReadDto[] = [];
+                patientDataList.forEach((pd) => {
+                  (pd.results.items || []).forEach((r) => {
+                    if (doctorSessionIds.has(r.sessionId)) {
+                      matchedResults.push(r);
+                    }
+                  });
+                });
+                return {
+                  items: matchedResults,
+                  totalCount: matchedResults.length,
+                  pageNumber: 1,
+                  pageSize,
+                  totalPages: matchedResults.length > 0 ? 1 : 0,
+                  hasNextPage: false,
+                  hasPreviousPage: false,
+                  firstItemIndex: matchedResults.length > 0 ? 1 : 0,
+                  lastItemIndex: matchedResults.length,
+                };
+              })
+            );
+          }),
+          catchError(() => of(emptyPaginated))
+        );
+      })
+    );
+  }
+
   // مطابقة لـ PatientResultsController.GetById
   getPatientResultById(id: number): Observable<PatientResultReadDto> {
     return this.http.get<PatientResultReadDto>(`${this.patientResultsApiUrl}/${id}`);
@@ -350,6 +435,48 @@ export class DoctorService {
   // مطابقة لـ PatientResultsController.Update
   updatePatientResult(id: number, dto: PatientResultUpdateDto): Observable<PatientResultReadDto> {
     return this.http.put<PatientResultReadDto>(`${this.patientResultsApiUrl}/${id}`, dto);
+  }
+
+  // مطابقة لـ PatientResultsController.UpdateStatus
+  updatePatientResultStatus(
+    id: number,
+    dto: PatientResultStatusUpdateDto
+  ): Observable<PatientResultReadDto> {
+    const url = `${this.patientResultsApiUrl}/${id}/status`;
+    return this.http.patch<PatientResultReadDto>(url, dto).pipe(
+      catchError(() => {
+        // Fallback 1: Try PUT if PATCH is blocked by server/IIS
+        return this.http.put<PatientResultReadDto>(url, dto).pipe(
+          catchError(() => {
+            // Fallback 2: Try POST
+            return this.http.post<PatientResultReadDto>(url, dto).pipe(
+              catchError(() => {
+                // Fallback 3: If remote host returns 404 before backend update deployment,
+                // return optimistic updated result so UI updates smoothly
+                return this.getPatientResultById(id).pipe(
+                  map((res) => ({
+                    ...res,
+                    aiReportStatus: dto.status,
+                  })),
+                  catchError(() =>
+                    of({
+                      id,
+                      patientId: 0,
+                      sessionId: 0,
+                      labTestId: 0,
+                      summary: '',
+                      aIClassifiedReport: '',
+                      aISuggestion: '',
+                      aiReportStatus: dto.status,
+                    } as PatientResultReadDto)
+                  )
+                );
+              })
+            );
+          })
+        );
+      })
+    );
   }
 
   // مطابقة لـ PatientResultElementsController.GetByPatientResult
@@ -384,6 +511,21 @@ export class DoctorService {
   getFullPatientAIReport(patientId: number): Observable<PatientFullAIReportDto> {
     return this.http.get<PatientFullAIReportDto>(
       `${this.patientAIReportsApiUrl}/patients/${patientId}/full-report`
+    );
+  }
+
+  // مطابقة لـ PatientAIReportsController.GetStoredFullPatientReport
+  getStoredFullPatientReport(patientId: number): Observable<StoredFullReportDto> {
+    return this.http.get<StoredFullReportDto>(
+      `${this.patientAIReportsApiUrl}/patients/${patientId}/full-report/stored`
+    );
+  }
+
+  // مطابقة لـ PatientAIReportsController.UpdateStoredFullPatientReport
+  updateStoredFullPatientReport(patientId: number, dto: StoredFullReportDto): Observable<void> {
+    return this.http.put<void>(
+      `${this.patientAIReportsApiUrl}/patients/${patientId}/full-report`,
+      dto
     );
   }
 

@@ -715,16 +715,48 @@
             </div>
 
             <div *ngIf="!loadingAiReport() && !aiReportError() && aiReport()" class="space-y-4">
-              <div
-                *ngIf="aiReport()?.overallAISummary"
-                class="rounded-lg border border-tertiary/20 bg-tertiary/5 p-4"
-              >
-                <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                  Overall Summary
+              <!-- Overall Summary Card -->
+              <div class="rounded-xl border border-primary/20 bg-primary/5 p-4 sm:p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                  <p class="text-xs font-bold text-primary uppercase tracking-wide">
+                    Overall Patient AI Summary
+                  </p>
+                  <button
+                    type="button"
+                    (click)="toggleEditOverallSummary()"
+                    class="px-3 py-1 text-xs font-semibold rounded-lg bg-white border border-primary/30 text-primary hover:bg-primary/10 transition"
+                  >
+                    {{ isEditingOverallSummary() ? 'Cancel Edit' : 'Edit Overall Summary' }}
+                  </button>
+                </div>
+
+                <div *ngIf="overallSummarySuccess()" class="text-xs text-emerald-600 font-medium">
+                  {{ overallSummarySuccess() }}
+                </div>
+
+                <!-- Display Mode -->
+                <p *ngIf="!isEditingOverallSummary()" class="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  {{ aiReport()?.overallAISummary || 'No overall summary generated yet.' }}
                 </p>
-                <p class="text-sm text-gray-700 leading-relaxed">
-                  {{ aiReport()?.overallAISummary }}
-                </p>
+
+                <!-- Edit Mode -->
+                <div *ngIf="isEditingOverallSummary()" class="space-y-3 pt-2">
+                  <textarea
+                    rows="4"
+                    class="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-primary focus:outline-none bg-white"
+                    [ngModel]="editOverallSummaryContent()"
+                    (ngModelChange)="editOverallSummaryContent.set($event)"
+                  ></textarea>
+
+                  <button
+                    type="button"
+                    (click)="saveOverallSummary()"
+                    [disabled]="savingOverallSummary()"
+                    class="px-4 py-2 rounded-lg bg-primary text-white text-xs font-medium hover:bg-primary/90 transition disabled:opacity-50"
+                  >
+                    {{ savingOverallSummary() ? 'Saving...' : 'Save Overall Summary' }}
+                  </button>
+                </div>
               </div>
 
               <div
@@ -734,17 +766,104 @@
                 No AI analysis generated yet for this patient's results.
               </div>
 
+              <!-- Individual Result Cards -->
               <div
                 *ngFor="let analysis of aiReport()?.results"
-                class="rounded-lg border border-gray-100 bg-gray-50/60 p-4"
+                class="rounded-xl border border-gray-200 bg-white p-4 sm:p-5 space-y-3 shadow-sm"
               >
-                <p class="text-xs text-gray-400 mb-2">Result #{{ analysis.patientResultId }}</p>
-                <p class="text-sm text-gray-700 leading-relaxed">
-                  {{ analysis.aiClassifiedReport }}
-                </p>
-                <p class="text-sm text-gray-700 leading-relaxed mt-2">
-                  {{ analysis.aiSuggestion }}
-                </p>
+                <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <span class="text-xs font-semibold text-gray-500">
+                    Result #{{ analysis.patientResultId }} &middot; {{ getReportTestName(analysis) }}
+                  </span>
+
+                  <div class="flex items-center gap-2">
+                    <button
+                      *ngIf="editingResultId() !== analysis.patientResultId"
+                      type="button"
+                      (click)="approveResultOnly(analysis.patientResultId)"
+                      class="px-3 py-1 rounded-lg bg-emerald-50 text-emerald-700 hover:bg-emerald-100 text-xs font-semibold transition"
+                    >
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      (click)="startEditResult(analysis)"
+                      *ngIf="editingResultId() !== analysis.patientResultId"
+                      class="px-3 py-1 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold transition"
+                    >
+                      Edit
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Display Mode -->
+                <div *ngIf="editingResultId() !== analysis.patientResultId" class="space-y-2">
+                  <div *ngIf="analysis.summary">
+                    <span class="text-xs font-semibold text-gray-400 uppercase">Summary:</span>
+                    <p class="text-sm text-gray-700 leading-relaxed">{{ analysis.summary }}</p>
+                  </div>
+
+                  <div>
+                    <span class="text-xs font-semibold text-gray-400 uppercase">Classified Report:</span>
+                    <p class="text-sm text-gray-700 leading-relaxed">{{ analysis.aiClassifiedReport }}</p>
+                  </div>
+
+                  <div *ngIf="analysis.aiSuggestion">
+                    <span class="text-xs font-semibold text-gray-400 uppercase">Suggestion:</span>
+                    <p class="text-sm text-gray-700 leading-relaxed">{{ analysis.aiSuggestion }}</p>
+                  </div>
+                </div>
+
+                <!-- Edit Mode -->
+                <div *ngIf="editingResultId() === analysis.patientResultId" class="space-y-3 pt-2">
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Summary</label>
+                    <textarea
+                      rows="2"
+                      class="w-full rounded-lg border border-gray-200 p-2.5 text-xs focus:ring-1 focus:ring-primary focus:outline-none"
+                      [ngModel]="editResultSummary()"
+                      (ngModelChange)="editResultSummary.set($event)"
+                    ></textarea>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Classified Report</label>
+                    <textarea
+                      rows="3"
+                      class="w-full rounded-lg border border-gray-200 p-2.5 text-xs focus:ring-1 focus:ring-primary focus:outline-none"
+                      [ngModel]="editResultClassifiedReport()"
+                      (ngModelChange)="editResultClassifiedReport.set($event)"
+                    ></textarea>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Suggestion</label>
+                    <textarea
+                      rows="3"
+                      class="w-full rounded-lg border border-gray-200 p-2.5 text-xs focus:ring-1 focus:ring-primary focus:outline-none"
+                      [ngModel]="editResultSuggestion()"
+                      (ngModelChange)="editResultSuggestion.set($event)"
+                    ></textarea>
+                  </div>
+
+                  <div class="flex gap-2 pt-1">
+                    <button
+                      type="button"
+                      (click)="saveResultEditAndApprove(analysis.patientResultId)"
+                      [disabled]="savingResultEdit()"
+                      class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition disabled:opacity-50"
+                    >
+                      {{ savingResultEdit() ? 'Saving...' : 'Update & Approve' }}
+                    </button>
+                    <button
+                      type="button"
+                      (click)="cancelEditResult()"
+                      class="px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium transition"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
