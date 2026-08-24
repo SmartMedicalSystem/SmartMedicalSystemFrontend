@@ -13,8 +13,10 @@ export interface PatientResultReadDto {
   sessionId: number;
   labTestId: number;
   summary: string;
-  aiClassifiedReport: string;
-  aiSuggestion: string;
+  // ASP.NET camelCase serializes 'AIClassifiedReport' -> 'aIClassifiedReport'
+  aIClassifiedReport: string;
+  // ASP.NET camelCase serializes 'AISuggestion' -> 'aISuggestion'
+  aISuggestion: string;
   aiReportStatus: PatinetResultAIReportStatus;
 }
 
@@ -29,8 +31,9 @@ export interface PatientResultCreateDto {
 
 export interface PatientResultUpdateDto {
   summary: string;
-  aiClassifiedReport: string;
-  aiSuggestion: string;
+  // Must match ASP.NET camelCase output: 'AIClassifiedReport' -> 'aIClassifiedReport'
+  aIClassifiedReport: string;
+  aISuggestion: string;
 }
 
 export interface PatientResultStatusUpdateDto {

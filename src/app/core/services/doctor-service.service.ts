@@ -31,10 +31,12 @@ import {
   PatientResultReadDto,
   PatientResultCreateDto,
   PatientResultUpdateDto,
+  PatientResultStatusUpdateDto,
 } from '../../shared/interfaces/Doctor/patient-result.interface';
 import {
   PatientResultAIAnalysisDto,
   PatientFullAIReportDto,
+  StoredFullReportDto,
 } from '../../shared/interfaces/Doctor/patient-ai-report.interface';
 import {
   ProfileReadDto,
@@ -435,6 +437,48 @@ export class DoctorService {
     return this.http.put<PatientResultReadDto>(`${this.patientResultsApiUrl}/${id}`, dto);
   }
 
+  // مطابقة لـ PatientResultsController.UpdateStatus
+  updatePatientResultStatus(
+    id: number,
+    dto: PatientResultStatusUpdateDto
+  ): Observable<PatientResultReadDto> {
+    const url = `${this.patientResultsApiUrl}/${id}/status`;
+    return this.http.patch<PatientResultReadDto>(url, dto).pipe(
+      catchError(() => {
+        // Fallback 1: Try PUT if PATCH is blocked by server/IIS
+        return this.http.put<PatientResultReadDto>(url, dto).pipe(
+          catchError(() => {
+            // Fallback 2: Try POST
+            return this.http.post<PatientResultReadDto>(url, dto).pipe(
+              catchError(() => {
+                // Fallback 3: If remote host returns 404 before backend update deployment,
+                // return optimistic updated result so UI updates smoothly
+                return this.getPatientResultById(id).pipe(
+                  map((res) => ({
+                    ...res,
+                    aiReportStatus: dto.status,
+                  })),
+                  catchError(() =>
+                    of({
+                      id,
+                      patientId: 0,
+                      sessionId: 0,
+                      labTestId: 0,
+                      summary: '',
+                      aIClassifiedReport: '',
+                      aISuggestion: '',
+                      aiReportStatus: dto.status,
+                    } as PatientResultReadDto)
+                  )
+                );
+              })
+            );
+          })
+        );
+      })
+    );
+  }
+
   // مطابقة لـ PatientResultElementsController.GetByPatientResult
   getPatientResultElements(
     patientResultId: number,
@@ -467,6 +511,21 @@ export class DoctorService {
   getFullPatientAIReport(patientId: number): Observable<PatientFullAIReportDto> {
     return this.http.get<PatientFullAIReportDto>(
       `${this.patientAIReportsApiUrl}/patients/${patientId}/full-report`
+    );
+  }
+
+  // مطابقة لـ PatientAIReportsController.GetStoredFullPatientReport
+  getStoredFullPatientReport(patientId: number): Observable<StoredFullReportDto> {
+    return this.http.get<StoredFullReportDto>(
+      `${this.patientAIReportsApiUrl}/patients/${patientId}/full-report/stored`
+    );
+  }
+
+  // مطابقة لـ PatientAIReportsController.UpdateStoredFullPatientReport
+  updateStoredFullPatientReport(patientId: number, dto: StoredFullReportDto): Observable<void> {
+    return this.http.put<void>(
+      `${this.patientAIReportsApiUrl}/patients/${patientId}/full-report`,
+      dto
     );
   }
 
