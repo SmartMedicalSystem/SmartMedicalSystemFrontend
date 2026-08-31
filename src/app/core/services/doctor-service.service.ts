@@ -4,7 +4,7 @@ import { Observable, catchError, of, switchMap, map, forkJoin } from 'rxjs';
 import { skipLoading } from '../tokens/skip-loading.token';
 // كل الانترفيسات اتشالت من هنا وبقت كل واحدة في ملفها الخاص جوه shared/interfaces
 import { Patient } from '../../shared/interfaces/Doctor/patient.interface';
-import { PaginatedResponse } from  '../../shared/interfaces/Doctor/paginated-response.interface';
+import { PaginatedResponse } from '../../shared/interfaces/Doctor/paginated-response.interface';
 import {
   RequestLabsCreateDto,
   RequestLabsUpdateStatusDto,
@@ -119,18 +119,18 @@ export class DoctorService {
   private readonly patientAIReportsApiUrl =
     'https://smartmedicalsystem.runasp.net/api/PatientAIReports';
 
-    private readonly aiChatApiUrl =
+  private readonly aiChatApiUrl =
     'https://smartmedicalsystem.runasp.net/api/rag/chat';
 
   private readonly profileApiUrl =
     'https://smartmedicalsystem.runasp.net/api/Profile';
 
-    private readonly GENDER_TO_ENUM: Record<string, number> = {
-  Male: 0,
-  Female: 1,
-};
+  private readonly GENDER_TO_ENUM: Record<string, number> = {
+    Male: 0,
+    Female: 1,
+  };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAllPatients(
     pageNumber: number = 1,
@@ -145,26 +145,45 @@ export class DoctorService {
       .set('pageNumber', pageNumber)
       .set('pageSize', pageSize);
 
-    if (search) {
-      params = params.set('search', search);
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
     }
 
-    if (gender) {
-      // الباك اند بيستقبل الـ gender كـ string ("Male" / "Female") مش رقم
+    if (gender && gender !== 'All Genders') {
       params = params.set('gender', gender);
     }
 
-    if (minAge !== undefined) {
+    if (minAge !== undefined && minAge !== null) {
       params = params.set('minAge', minAge);
     }
 
-    if (maxAge !== undefined) {
+    if (maxAge !== undefined && maxAge !== null) {
       params = params.set('maxAge', maxAge);
     }
 
     return this.http.get<PaginatedResponse<Patient>>(this.apiUrlP, {
       params,
-    });
+    }).pipe(
+      catchError(() => {
+        return this.getAllPatientsPaginated(pageNumber, pageSize);
+      })
+    );
+  }
+
+  // مطابقة لـ PatientsController.GetAllPaginated
+  getAllPatientsPaginated(
+    pageNumber: number = 1,
+    pageSize: number = 10
+  ): Observable<PaginatedResponse<Patient>> {
+    const params = new HttpParams()
+      .set('pageNumber', pageNumber)
+      .set('pageSize', pageSize);
+
+    return this.http.get<PaginatedResponse<Patient>>(this.apiUrlP, { params }).pipe(
+      catchError(() => {
+        return this.http.get<PaginatedResponse<Patient>>(`${this.apiUrlP}/paginated`, { params });
+      })
+    );
   }
 
   // مطابقة لـ PatientsController.GetById
@@ -173,8 +192,8 @@ export class DoctorService {
   }
 
   deletePatient(ssn: string): Observable<void> {
-  return this.http.delete<void>(`${this.apiUrlP}/${ssn}`);
-}
+    return this.http.delete<void>(`${this.apiUrlP}/${ssn}`);
+  }
   // ============ Request Labs ============
 
   getLabRequestsBySession(
@@ -226,6 +245,11 @@ export class DoctorService {
     });
   }
 
+  // مطابقة لـ LabTestsController.GetById
+  getLabTestById(id: number): Observable<LabTestReadDto> {
+    return this.http.get<LabTestReadDto>(`${this.labTestsApiUrl}/${id}`);
+  }
+
   // ============ Doctors ============
 
   // مطابقة لـ DoctorsController.GetAll
@@ -271,12 +295,12 @@ export class DoctorService {
 
   // مطابقة لـ DoctorsController.UpdateById -> [HttpPut("by-id/{id:int}")]
   updateDoctor(id: number, dto: DoctorUpdateDto): Observable<DoctorReadDto> {
-  const payload = {
-    ...dto,
-    gender: this.GENDER_TO_ENUM[dto.gender] ?? dto.gender,
-  };
-  return this.http.put<DoctorReadDto>(`${this.doctorsApiUrl}/by-id/${id}`, payload);
-}
+    const payload = {
+      ...dto,
+      gender: this.GENDER_TO_ENUM[dto.gender] ?? dto.gender,
+    };
+    return this.http.put<DoctorReadDto>(`${this.doctorsApiUrl}/by-id/${id}`, payload);
+  }
 
   // // مطابقة لـ DoctorsController.DeleteById -> [HttpDelete("by-id/{id:int}")]
   // deleteDoctor(id: number): Observable<void> {
@@ -442,17 +466,15 @@ export class DoctorService {
     id: number,
     dto: PatientResultStatusUpdateDto
   ): Observable<PatientResultReadDto> {
-    const url = `${this.patientResultsApiUrl}/${id}/status`;
-    return this.http.patch<PatientResultReadDto>(url, dto).pipe(
+    const statusUrl = `${this.patientResultsApiUrl}/${id}/status`;
+    const directUrl = `${this.patientResultsApiUrl}/${id}`;
+
+    return this.http.put<PatientResultReadDto>(directUrl, { status: dto.status, aiReportStatus: dto.status }).pipe(
       catchError(() => {
-        // Fallback 1: Try PUT if PATCH is blocked by server/IIS
-        return this.http.put<PatientResultReadDto>(url, dto).pipe(
+        return this.http.patch<PatientResultReadDto>(statusUrl, dto).pipe(
           catchError(() => {
-            // Fallback 2: Try POST
-            return this.http.post<PatientResultReadDto>(url, dto).pipe(
+            return this.http.put<PatientResultReadDto>(statusUrl, dto).pipe(
               catchError(() => {
-                // Fallback 3: If remote host returns 404 before backend update deployment,
-                // return optimistic updated result so UI updates smoothly
                 return this.getPatientResultById(id).pipe(
                   map((res) => ({
                     ...res,
@@ -573,20 +595,20 @@ export class DoctorService {
   }
   // ============ AI Chat ============
 
-// إرسال سؤال للمساعد الطبي AI الخاص بالمريض
-askPatientAI(
-  dto: AIChatRequestDto
-): Observable<AIChatResponseDto> {
+  // إرسال سؤال للمساعد الطبي AI الخاص بالمريض
+  askPatientAI(
+    dto: AIChatRequestDto
+  ): Observable<AIChatResponseDto> {
 
-  return this.http.post<AIChatResponseDto>(
-    this.aiChatApiUrl,
-    dto,
-    { context: skipLoading() }
-  );
+    return this.http.post<AIChatResponseDto>(
+      this.aiChatApiUrl,
+      dto,
+      { context: skipLoading() }
+    );
 
-}
+  }
 
-private apiUrl = 'https://smartmedicalsystem.runasp.net/api/Doctors';
+  private apiUrl = 'https://smartmedicalsystem.runasp.net/api/Doctors';
 
   // ================= GET BY SSN (nationalId) =================
   getDoctorBySSN(ssn: string): Observable<Doctor> {

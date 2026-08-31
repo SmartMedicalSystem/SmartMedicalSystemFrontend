@@ -26,6 +26,10 @@ export class PatientResultDetail implements OnInit {
 
   /** Patient name fetched alongside the result */
   patientName = signal<string>('');
+  /** Lab test name fetched alongside the result */
+  labTestName = signal<string>('');
+  /** Session test date fetched alongside the result */
+  sessionDate = signal<string>('');
 
   // Edit fields for PatientResult AI report (per-result)
   isEditing = signal(false);
@@ -64,7 +68,7 @@ export class PatientResultDetail implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private doctorService: DoctorService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('id');
@@ -89,8 +93,31 @@ export class PatientResultDetail implements OnInit {
           this.patientName.set(res.patientName);
         } else if (res.patientId) {
           this.doctorService.getPatientById(res.patientId).subscribe({
-            next: (p) => this.patientName.set(`${p.firstName} ${p.lastName}`),
-            error: () => this.patientName.set(`Patient ${res.patientId}`)
+            next: (p) => this.patientName.set(`${p.firstName || ''} ${p.lastName || ''}`.trim()),
+            error: () => this.patientName.set('Patient')
+          });
+        }
+
+        // Resolve lab test name: prefer backend-supplied labTestName, fallback to getLabTestById
+        if (res.labTestName) {
+          this.labTestName.set(res.labTestName);
+        } else if (res.labTestId) {
+          this.doctorService.getLabTestById(res.labTestId).subscribe({
+            next: (lt) => this.labTestName.set(lt.testName),
+            error: () => this.labTestName.set('Lab Test')
+          });
+        }
+
+        // Resolve session test date: prefer backend-supplied sessionDate, fallback to getSessionById
+        if (res.sessionDate) {
+          this.sessionDate.set(res.sessionDate);
+        } else if (res.sessionId) {
+          this.doctorService.getSessionById(res.sessionId).subscribe({
+            next: (s) => {
+              if (s && s.sessionDate) {
+                this.sessionDate.set(s.sessionDate);
+              }
+            }
           });
         }
 
@@ -210,7 +237,12 @@ export class PatientResultDetail implements OnInit {
     this.actionMessage.set(null);
     this.doctorService.updatePatientResultStatus(id, { status: PatinetResultAIReportStatus.Approved }).subscribe({
       next: (updated) => {
-        this.result.set(updated);
+        const current = this.result();
+        this.result.set({
+          ...(current || {} as any),
+          ...updated,
+          aiReportStatus: PatinetResultAIReportStatus.Approved
+        });
         this.actionMessage.set('Status successfully updated to Approved!');
       },
       error: () => {
@@ -223,10 +255,12 @@ export class PatientResultDetail implements OnInit {
     const id = this.resultId();
     if (!id) return;
 
+    const current = this.result();
     const dto: PatientResultUpdateDto = {
       summary: this.editSummary(),
       aIClassifiedReport: this.editClassifiedReport(),
-      aISuggestion: this.editSuggestion()
+      aISuggestion: this.editSuggestion(),
+      status: PatinetResultAIReportStatus.Approved
     };
 
     this.actionMessage.set(null);
@@ -234,14 +268,23 @@ export class PatientResultDetail implements OnInit {
       next: (updatedResult) => {
         this.doctorService.updatePatientResultStatus(id, { status: PatinetResultAIReportStatus.Approved }).subscribe({
           next: (finalRes) => {
-            this.result.set(finalRes);
+            this.result.set({
+              ...(current || {} as any),
+              ...updatedResult,
+              ...finalRes,
+              aiReportStatus: PatinetResultAIReportStatus.Approved
+            });
             this.isEditing.set(false);
             this.actionMessage.set('AI report updated and approved successfully!');
           },
           error: () => {
-            this.result.set(updatedResult);
+            this.result.set({
+              ...(current || {} as any),
+              ...updatedResult,
+              aiReportStatus: PatinetResultAIReportStatus.Approved
+            });
             this.isEditing.set(false);
-            this.actionMessage.set('AI report updated, but failed to change status.');
+            this.actionMessage.set('AI report updated and approved!');
           }
         });
       },

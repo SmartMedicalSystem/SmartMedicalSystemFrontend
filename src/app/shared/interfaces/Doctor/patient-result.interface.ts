@@ -16,11 +16,15 @@ export interface PatientResultReadDto {
   /** The date the session/lab test was performed */
   sessionDate?: string;
   labTestId: number;
+  /** Name of the lab test — populated by backend */
+  labTestName?: string;
   summary: string;
   // ASP.NET camelCase serializes 'AIClassifiedReport' -> 'aIClassifiedReport'
-  aIClassifiedReport: string;
+  aIClassifiedReport?: string;
+  aiClassifiedReport?: string;
   // ASP.NET camelCase serializes 'AISuggestion' -> 'aISuggestion'
-  aISuggestion: string;
+  aISuggestion?: string;
+  aiSuggestion?: string;
   aiReportStatus: PatinetResultAIReportStatus;
 }
 
@@ -29,15 +33,19 @@ export interface PatientResultCreateDto {
   sessionId: number;
   labTestId: number;
   summary: string;
-  aiClassifiedReport: string;
-  aiSuggestion: string;
+  aiClassifiedReport?: string;
+  aIClassifiedReport?: string;
+  aiSuggestion?: string;
+  aISuggestion?: string;
 }
 
 export interface PatientResultUpdateDto {
   summary: string;
-  // Must match ASP.NET camelCase output: 'AIClassifiedReport' -> 'aIClassifiedReport'
-  aIClassifiedReport: string;
-  aISuggestion: string;
+  aIClassifiedReport?: string;
+  aiClassifiedReport?: string;
+  aISuggestion?: string;
+  aiSuggestion?: string;
+  status?: PatinetResultAIReportStatus;
 }
 
 export interface PatientResultStatusUpdateDto {

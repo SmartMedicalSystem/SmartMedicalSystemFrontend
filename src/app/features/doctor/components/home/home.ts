@@ -98,22 +98,22 @@ export class Home implements OnInit, OnDestroy {
           return of(null);
         })
       ),
-      patients: this.doctorService.getAllPatients(1, 1).pipe(
+      patients: this.doctorService.getAllPatients(1, 100).pipe(
         catchError(err => {
           console.error('Error fetching patients count', err);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 1, totalPages: 0, hasNextPage: false, hasPreviousPage: false, firstItemIndex: 0, lastItemIndex: 0 });
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasNextPage: false, hasPreviousPage: false, firstItemIndex: 0, lastItemIndex: 0 });
         })
       ),
-      labTests: this.doctorService.getLabTests(1, 1).pipe(
+      labTests: this.doctorService.getLabTests(1, 100).pipe(
         catchError(err => {
           console.error('Error fetching lab tests count', err);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 1, totalPages: 0, hasNextPage: false, hasPreviousPage: false, firstItemIndex: 0, lastItemIndex: 0 });
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 100, totalPages: 0, hasNextPage: false, hasPreviousPage: false, firstItemIndex: 0, lastItemIndex: 0 });
         })
       ),
-      results: this.doctorService.getPatientResultsByDoctor(doctorId, 1, 20).pipe(
+      results: this.doctorService.getPatientResultsByDoctor(doctorId, 1, 50).pipe(
         catchError((err) => {
           console.error('Error fetching doctor patient results', err);
-          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 });
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 50, totalPages: 0 });
         })
       ),
     })
@@ -125,9 +125,85 @@ export class Home implements OnInit, OnDestroy {
           }
           this.totalPatients.set(patients ? patients.totalCount : 0);
           this.totalLabTests.set(labTests ? labTests.totalCount : 0);
-          const sorted = (results && results.items ? results.items : [])
+
+          const patientMap = new Map<number, string>();
+          if (patients && patients.items) {
+            patients.items.forEach((p: any) => {
+              const name = `${p.firstName || ''} ${p.lastName || ''}`.trim();
+              if (name && p.id) {
+                patientMap.set(p.id, name);
+              }
+            });
+          }
+
+          const labTestMap = new Map<number, string>();
+          if (labTests && labTests.items) {
+            labTests.items.forEach((lt: any) => {
+              if (lt.id && lt.testName) {
+                labTestMap.set(lt.id, lt.testName);
+              }
+            });
+          }
+
+          const mappedResults = (results && results.items ? results.items : []).map(r => {
+            const pName = r.patientName || patientMap.get(r.patientId) || '';
+            const ltName = r.labTestName || labTestMap.get(r.labTestId) || '';
+            return {
+              ...r,
+              patientName: pName,
+              labTestName: ltName
+            };
+          });
+
+          // Resolve any remaining missing patient names or lab test names individually
+          mappedResults.forEach(r => {
+            if (!r.patientName && r.patientId) {
+              this.doctorService.getPatientById(r.patientId).subscribe({
+                next: (p) => {
+                  const resolved = `${p.firstName || ''} ${p.lastName || ''}`.trim();
+                  if (resolved) {
+                    this.patientResults.update(list =>
+                      list.map(item => item.id === r.id ? { ...item, patientName: resolved } : item)
+                    );
+                  }
+                }
+              });
+            }
+
+            if (!r.labTestName && r.labTestId) {
+              this.doctorService.getLabTestById(r.labTestId).subscribe({
+                next: (lt) => {
+                  if (lt.testName) {
+                    this.patientResults.update(list =>
+                      list.map(item => item.id === r.id ? { ...item, labTestName: lt.testName } : item)
+                    );
+                  }
+                }
+              });
+            }
+
+            if (!r.sessionDate && r.sessionId) {
+              this.doctorService.getSessionById(r.sessionId).subscribe({
+                next: (s) => {
+                  if (s && s.sessionDate) {
+                    this.patientResults.update(list =>
+                      list.map(item => item.id === r.id ? { ...item, sessionDate: s.sessionDate } : item)
+                    );
+                  }
+                }
+              });
+            }
+          });
+
+          const sorted = mappedResults
             .slice()
-            .sort((a, b) => (this.isApprovedStatus(a.aiReportStatus) ? 2 : 1) - (this.isApprovedStatus(b.aiReportStatus) ? 2 : 1));
+            .sort((a, b) => {
+              const aApp = this.isApprovedStatus(a.aiReportStatus);
+              const bApp = this.isApprovedStatus(b.aiReportStatus);
+              if (aApp && !bApp) return 1;
+              if (!aApp && bApp) return -1;
+              return b.id - a.id;
+            });
           this.patientResults.set(sorted);
         },
         error: (err) => {
@@ -142,15 +218,83 @@ export class Home implements OnInit, OnDestroy {
     const doctorId = getCurrentDoctorIdFromToken(token);
     if (!doctorId) return;
 
-    this.doctorService.getPatientResultsByDoctor(doctorId, 1, 20).pipe(
-      catchError(err => {
-        console.error('Error refreshing patient results', err);
-        return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 });
-      })
-    ).subscribe(results => {
-      const sorted = (results && results.items ? results.items : [])
+    forkJoin({
+      patients: this.doctorService.getAllPatients(1, 100).pipe(catchError(() => of({ items: [] }))),
+      labTests: this.doctorService.getLabTests(1, 100).pipe(catchError(() => of({ items: [] }))),
+      results: this.doctorService.getPatientResultsByDoctor(doctorId, 1, 50).pipe(
+        catchError(err => {
+          console.error('Error refreshing patient results', err);
+          return of({ items: [], totalCount: 0, pageNumber: 1, pageSize: 50, totalPages: 0 });
+        })
+      )
+    }).subscribe(({ patients, labTests, results }) => {
+      const patientMap = new Map<number, string>();
+      if (patients && (patients as any).items) {
+        (patients as any).items.forEach((p: any) => {
+          const name = `${p.firstName || ''} ${p.lastName || ''}`.trim();
+          if (name && p.id) patientMap.set(p.id, name);
+        });
+      }
+
+      const labTestMap = new Map<number, string>();
+      if (labTests && (labTests as any).items) {
+        (labTests as any).items.forEach((lt: any) => {
+          if (lt.id && lt.testName) labTestMap.set(lt.id, lt.testName);
+        });
+      }
+
+      const mappedResults = (results && results.items ? results.items : []).map(r => ({
+        ...r,
+        patientName: r.patientName || patientMap.get(r.patientId) || '',
+        labTestName: r.labTestName || labTestMap.get(r.labTestId) || ''
+      }));
+
+      mappedResults.forEach(r => {
+        if (!r.patientName && r.patientId) {
+          this.doctorService.getPatientById(r.patientId).subscribe({
+            next: (p) => {
+              const resolved = `${p.firstName || ''} ${p.lastName || ''}`.trim();
+              if (resolved) {
+                this.patientResults.update(list =>
+                  list.map(item => item.id === r.id ? { ...item, patientName: resolved } : item)
+                );
+              }
+            }
+          });
+        }
+        if (!r.labTestName && r.labTestId) {
+          this.doctorService.getLabTestById(r.labTestId).subscribe({
+            next: (lt) => {
+              if (lt.testName) {
+                this.patientResults.update(list =>
+                  list.map(item => item.id === r.id ? { ...item, labTestName: lt.testName } : item)
+                );
+              }
+            }
+          });
+        }
+        if (!r.sessionDate && r.sessionId) {
+          this.doctorService.getSessionById(r.sessionId).subscribe({
+            next: (s) => {
+              if (s && s.sessionDate) {
+                this.patientResults.update(list =>
+                  list.map(item => item.id === r.id ? { ...item, sessionDate: s.sessionDate } : item)
+                );
+              }
+            }
+          });
+        }
+      });
+
+      const sorted = mappedResults
         .slice()
-        .sort((a, b) => (this.isApprovedStatus(a.aiReportStatus) ? 2 : 1) - (this.isApprovedStatus(b.aiReportStatus) ? 2 : 1));
+        .sort((a, b) => {
+          const aApp = this.isApprovedStatus(a.aiReportStatus);
+          const bApp = this.isApprovedStatus(b.aiReportStatus);
+          if (aApp && !bApp) return 1;
+          if (!aApp && bApp) return -1;
+          return b.id - a.id;
+        });
       this.patientResults.set(sorted);
     });
   }

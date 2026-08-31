@@ -113,40 +113,46 @@ export class AllPatients implements OnInit {
     this.doctorService.getAllPatients(
       this.currentPage(),
       this.rowsPerPage(),
-      this.searchTerm || undefined,
+      this.searchTerm ? this.searchTerm.trim() : undefined,
       this.genderFilter === 'All Genders' ? undefined : this.genderFilter,
       this.getMinAge(),
       this.getMaxAge()
     )
     .pipe(finalize(() => this.loading.set(false)))
     .subscribe({
-      next: (res) => {
-        this.patients.set(res.items.map(p => this.toDisplayPatient(p)));
-        this.totalCount.set(res.totalCount);
-        this.totalPages.set(res.totalPages || 1);
+      next: (res: any) => {
+        const rawItems = Array.isArray(res) ? res : (res?.items || res?.data || []);
+        this.patients.set(rawItems.map((p: any) => this.toDisplayPatient(p)));
+        this.totalCount.set(res?.totalCount ?? rawItems.length);
+        this.totalPages.set(res?.totalPages || (res?.totalCount ? Math.ceil(res.totalCount / this.rowsPerPage()) : 1));
       },
-      error: () => {
+      error: (err) => {
+        console.error('Failed to load patients', err);
         this.loadError.set('تعذر تحميل بيانات المرضى.');
       }
     });
   }
 
-  private toDisplayPatient(p: ApiPatient): DisplayPatient {
+  private toDisplayPatient(p: any): DisplayPatient {
+    const fn = p?.firstName || '';
+    const ln = p?.lastName || '';
+    const initial1 = fn.length > 0 ? fn.charAt(0) : 'P';
+    const initial2 = ln.length > 0 ? ln.charAt(0) : '';
+    const rawNid = p?.nationalId !== undefined && p?.nationalId !== null ? p.nationalId : (p?.ssn || p?.id || '');
     return {
-      id: p.id,
-      name: `${p.firstName} ${p.lastName}`,
-      avatarInitials: `${p.firstName.charAt(0)}${p.lastName.charAt(0)}`.toUpperCase(),
-      ssn: this.maskNationalId(p.nationalId),
-      nationalId: String(p.nationalId),
-      age: p.age,
-      // الباك اند بيرجّع gender كـ string جاهزة ("Male"/"Female")، فمفيش داعي
-      // لأي تحويل رقمي هنا (patient.interface.ts: gender: string).
-      gender: p.gender,
-      bloodType: BLOOD_TYPE_MAP[p.bloodType] ?? 'Unknown',
+      id: p?.id ?? 0,
+      name: `${fn} ${ln}`.trim() || `Patient #${p?.id ?? ''}`,
+      avatarInitials: `${initial1}${initial2}`.toUpperCase(),
+      ssn: this.maskNationalId(rawNid),
+      nationalId: String(rawNid),
+      age: p?.age ?? 0,
+      gender: p?.gender !== undefined && p?.gender !== null ? String(p.gender) : 'Unknown',
+      bloodType: (p?.bloodType && (BLOOD_TYPE_MAP as any)[p.bloodType]) ?? (p?.bloodType || 'Unknown'),
     };
   }
 
-  private maskNationalId(id: number): string {
+  private maskNationalId(id: any): string {
+    if (!id) return '—';
     const str = String(id);
     return str.length > 4 ? `**-**-${str.slice(-4)}` : str;
   }

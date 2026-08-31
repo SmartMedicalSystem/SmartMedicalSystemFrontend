@@ -43,15 +43,17 @@
               </h1>
               <p class="text-sm text-gray-500 mt-1 flex flex-wrap items-center gap-x-2">
                 <span class="font-semibold text-gray-700">
-                  {{ patientName() || ('Patient ' + res.patientId) }}
+                  {{ patientName() || res.patientName || 'Patient' }}
+                </span>
+                <span>&middot;</span>
+                <span class="font-medium text-primary bg-primary/10 px-2.5 py-0.5 rounded-lg text-xs">
+                  {{ labTestName() || res.labTestName || 'Lab Test' }}
                 </span>
                 <span>&middot;</span>
                 <span>Session {{ res.sessionId }}</span>
-                <span>&middot;</span>
-                <span>Lab Test {{ res.labTestId }}</span>
-                <span *ngIf="res.sessionDate">&middot;</span>
-                <span *ngIf="res.sessionDate" class="text-primary font-medium">
-                  Test Date: {{ res.sessionDate | date:'mediumDate' }}
+                <span *ngIf="sessionDate() || res.sessionDate">&middot;</span>
+                <span *ngIf="sessionDate() || res.sessionDate" class="text-gray-600 font-medium">
+                  Test Date: {{ (sessionDate() || res.sessionDate) | date:'mediumDate' }}
                 </span>
               </p>
             </div>
@@ -63,7 +65,7 @@
                 </svg>
                 Approved
               </span>
-              <span *ngIf="!isApprovedStatus(res.aiReportStatus)" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700">
+              <span *ngIf="!isApprovedStatus(res.aiReportStatus)" class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 animate-pulse">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -89,7 +91,7 @@
                   <span *ngIf="generatingAI()" class="text-xs text-primary animate-pulse font-normal">(Generating...)</span>
                 </h3>
                 <button
-                  *ngIf="!res.aIClassifiedReport && !generatingAI()"
+                  *ngIf="!(res.aIClassifiedReport || res.aiClassifiedReport) && !generatingAI()"
                   type="button"
                   (click)="generateAIAnalysis(true)"
                   class="text-xs text-primary hover:underline font-semibold"
@@ -107,7 +109,7 @@
               </div>
 
               <div *ngIf="!generatingAI()" class="p-4 rounded-2xl bg-gray-50 text-gray-800 border border-gray-100 text-sm whitespace-pre-wrap">
-                {{ res.aIClassifiedReport || 'No AI classified report generated yet.' }}
+                {{ res.aIClassifiedReport || res.aiClassifiedReport || 'No AI classified report generated yet.' }}
               </div>
             </div>
 
@@ -121,7 +123,7 @@
               </div>
 
               <div *ngIf="!generatingAI()" class="p-4 rounded-2xl bg-gray-50 text-gray-800 border border-gray-100 text-sm whitespace-pre-wrap">
-                {{ res.aISuggestion || 'No AI suggestion provided yet.' }}
+                {{ res.aISuggestion || res.aiSuggestion || 'No AI suggestion provided yet.' }}
               </div>
             </div>
 
