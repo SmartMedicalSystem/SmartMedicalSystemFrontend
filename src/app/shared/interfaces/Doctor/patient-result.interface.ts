@@ -10,7 +10,11 @@ export enum PatinetResultAIReportStatus {
 export interface PatientResultReadDto {
   id: number;
   patientId: number;
+  /** Full name of the patient (FirstName + LastName) — populated by backend */
+  patientName?: string;
   sessionId: number;
+  /** The date the session/lab test was performed */
+  sessionDate?: string;
   labTestId: number;
   summary: string;
   // ASP.NET camelCase serializes 'AIClassifiedReport' -> 'aIClassifiedReport'

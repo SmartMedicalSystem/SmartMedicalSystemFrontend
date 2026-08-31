@@ -14,6 +14,7 @@ export interface PatientResultAIAnalysisDto {
   labTestId: number;
   labTestName: string;
   generatedAtUtc: string;
+  testDate?: string;
   elements: PatientResultElementSummaryDto[];
   summary: string;
   aiClassifiedReport: string;

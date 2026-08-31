@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink, NavigationEnd } from '@angular/router';
 import { finalize, forkJoin, catchError, of, filter, Subscription } from 'rxjs';
@@ -10,7 +10,7 @@ import { PatientResultReadDto, PatinetResultAIReportStatus } from '../../../../s
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, DatePipe],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

@@ -140,9 +140,10 @@
           <table class="w-full text-left text-sm border-collapse">
             <thead>
               <tr class="border-b border-gray-100 text-gray-400 font-medium text-xs uppercase tracking-wider">
-                <th class="py-3 px-4">Result ID</th>
-                <th class="py-3 px-4">Patient ID</th>
-                <th class="py-3 px-4">Session ID</th>
+                <th class="py-3 px-4">Result</th>
+                <th class="py-3 px-4">Patient Name</th>
+                <th class="py-3 px-4">Session</th>
+                <th class="py-3 px-4">Test Date</th>
                 <th class="py-3 px-4">Summary</th>
                 <th class="py-3 px-4">Status</th>
                 <th class="py-3 px-4 text-right">Action</th>
@@ -150,9 +151,14 @@
             </thead>
             <tbody class="divide-y divide-gray-50 text-gray-700">
               <tr *ngFor="let item of patientResults()" class="hover:bg-gray-50/80 transition-colors">
-                <td class="py-4 px-4 font-semibold text-gray-900">#{{ item.id }}</td>
-                <td class="py-4 px-4">#{{ item.patientId }}</td>
-                <td class="py-4 px-4">#{{ item.sessionId }}</td>
+                <td class="py-4 px-4 font-semibold text-gray-900">{{ item.id }}</td>
+                <td class="py-4 px-4 font-medium text-gray-800">
+                  {{ item.patientName || ('Patient ' + item.patientId) }}
+                </td>
+                <td class="py-4 px-4 text-gray-600">{{ item.sessionId }}</td>
+                <td class="py-4 px-4 text-gray-500 text-xs whitespace-nowrap">
+                  {{ item.sessionDate ? (item.sessionDate | date:'mediumDate') : '—' }}
+                </td>
                 <td class="py-4 px-4 max-w-xs truncate">{{ item.summary || 'No summary' }}</td>
                 <td class="py-4 px-4">
                   <span
@@ -183,6 +189,7 @@
             </tbody>
           </table>
         </div>
+
       </div>
 
       <!-- ============ Floating AI Chat ============ -->
