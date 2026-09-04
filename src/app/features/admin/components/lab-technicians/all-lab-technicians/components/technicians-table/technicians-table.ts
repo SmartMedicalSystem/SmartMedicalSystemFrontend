@@ -104,7 +104,7 @@ export class TechniciansTable
           this.filters?.search ?? '',
 
         laboratory:
-          this.filters?.laboratory ?? '',
+          this.filters?.assignedLaboratory ?? '',
 
         employmentStatus:
           this.filters?.employmentStatus,
