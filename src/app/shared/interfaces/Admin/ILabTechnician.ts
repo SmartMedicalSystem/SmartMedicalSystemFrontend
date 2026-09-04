@@ -11,6 +11,7 @@ export interface ILabTechnician {
 
   // Employment
   assignedLaboratory: string;
+  laboratoryId: number;
   jobTitle: string;
   employmentStatus: string;
   workShift: string;

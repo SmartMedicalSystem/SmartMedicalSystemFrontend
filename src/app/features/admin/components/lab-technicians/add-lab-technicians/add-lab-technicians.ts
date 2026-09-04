@@ -6,10 +6,14 @@ import {
 } from '@angular/core';
 
 import {
+  AbstractControl,
+  ValidationErrors,
   FormBuilder,
   ReactiveFormsModule,
   Validators
 } from '@angular/forms';
+
+import { CommonModule } from '@angular/common';
 
 import {
   Router,
@@ -17,12 +21,15 @@ import {
 } from '@angular/router';
 
 import { AdminService } from '../../../../../core/services/admin-service.service';
+
 import Swal from 'sweetalert2';
+
 
 @Component({
   selector: 'app-add-lab-technicians',
   standalone: true,
   imports: [
+    CommonModule,
     ReactiveFormsModule,
     RouterLink
   ],
@@ -32,64 +39,194 @@ import Swal from 'sweetalert2';
 export class AddLabTechnicians {
 
   private fb = inject(FormBuilder);
-
   private adminService = inject(AdminService);
-
   private router = inject(Router);
-
 
   @ViewChild('fileInput')
   fileInput!: ElementRef<HTMLInputElement>;
 
 
+  // =========================================================
+  // Image
+  // =========================================================
+
   selectedImage: File | null = null;
-
   imagePreview: string | null = null;
+  imageError = '';
 
+
+  // =========================================================
+  // Custom Validators
+  // =========================================================
+
+  private egyptianPhoneValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+
+    const value = control.value;
+
+    // Optional field
+    if (!value) {
+      return null;
+    }
+
+    const phone = String(value).replace(/\s+/g, '');
+
+    const pattern =
+      /^(01[0125]\d{8}|\+201[0125]\d{8})$/;
+
+    return pattern.test(phone)
+      ? null
+      : { invalidEgyptianPhone: true };
+  }
+
+
+  private dateOfBirthValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+
+    if (!control.value) {
+      return null;
+    }
+
+    const birthDate = new Date(control.value);
+    const today = new Date();
+
+    if (isNaN(birthDate.getTime())) {
+      return { invalidDate: true };
+    }
+
+    if (birthDate > today) {
+      return { futureDate: true };
+    }
+
+    let age =
+      today.getFullYear() -
+      birthDate.getFullYear();
+
+    const monthDifference =
+      today.getMonth() -
+      birthDate.getMonth();
+
+    if (
+      monthDifference < 0 ||
+      (
+        monthDifference === 0 &&
+        today.getDate() < birthDate.getDate()
+      )
+    ) {
+      age--;
+    }
+
+    if (age < 18) {
+      return { underAge: true };
+    }
+
+    if (age > 100) {
+      return { invalidAge: true };
+    }
+
+    return null;
+  }
+
+
+  private joiningDateValidator(
+    control: AbstractControl
+  ): ValidationErrors | null {
+
+    if (!control.value) {
+      return null;
+    }
+
+    const joiningDate = new Date(control.value);
+    const today = new Date();
+
+    today.setHours(
+      23,
+      59,
+      59,
+      999
+    );
+
+    if (joiningDate > today) {
+      return { futureJoiningDate: true };
+    }
+
+    return null;
+  }
+
+
+  // =========================================================
+  // Form
+  // =========================================================
 
   form = this.fb.group({
 
-    // =========================
+    // -------------------------------------------------------
     // Personal Information
-    // =========================
+    // -------------------------------------------------------
 
     firstName: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50),
+        Validators.pattern(
+          /^[A-Za-z\u0600-\u06FF\s]+$/
+        )
+      ]
     ],
 
     lastName: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50),
+        Validators.pattern(
+          /^[A-Za-z\u0600-\u06FF\s]+$/
+        )
+      ]
     ],
 
     gender: [
-      1,
+      0,
       Validators.required
     ],
 
     dateOfBirth: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        this.dateOfBirthValidator.bind(this)
+      ]
     ],
 
     nationality: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50),
+        Validators.pattern(
+          /^[A-Za-z\u0600-\u06FF\s]+$/
+        )
+      ]
     ],
 
     nationalId: [
       '',
       [
         Validators.required,
-        Validators.maxLength(14)
+        Validators.pattern(/^\d{14}$/)
       ]
     ],
 
 
-    // =========================
+    // -------------------------------------------------------
     // Employment Information
-    // =========================
+    // -------------------------------------------------------
 
     laboratoryId: [
       null,
@@ -98,7 +235,11 @@ export class AddLabTechnicians {
 
     jobTitle: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(100)
+      ]
     ],
 
     employmentStatus: [
@@ -113,77 +254,124 @@ export class AddLabTechnicians {
 
     joiningDate: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        this.joiningDateValidator.bind(this)
+      ]
     ],
 
     yearsOfExperience: [
       0,
       [
         Validators.required,
-        Validators.min(0)
+        Validators.min(0),
+        Validators.max(50),
+        Validators.pattern(/^\d+$/)
       ]
     ],
 
 
-    // =========================
+    // -------------------------------------------------------
     // Contact Information
-    // =========================
+    // -------------------------------------------------------
 
     phoneNumber: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        this.egyptianPhoneValidator.bind(this)
+      ]
     ],
 
     alternativePhone: [
-      ''
+      '',
+      [
+        this.egyptianPhoneValidator.bind(this)
+      ]
     ],
 
     email: [
       '',
       [
         Validators.required,
-        Validators.email
+        Validators.email,
+        Validators.maxLength(150)
       ]
     ],
 
     address: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(5),
+        Validators.maxLength(250)
+      ]
     ],
 
     city: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50),
+        Validators.pattern(
+          /^[A-Za-z\u0600-\u06FF\s]+$/
+        )
+      ]
     ],
 
     country: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(2),
+        Validators.maxLength(50),
+        Validators.pattern(
+          /^[A-Za-z\u0600-\u06FF\s]+$/
+        )
+      ]
     ],
 
     postalCode: [
-      ''
+      '',
+      [
+        Validators.pattern(/^\d{4,10}$/)
+      ]
     ],
 
 
-    // =========================
+    // -------------------------------------------------------
     // Account Information
-    // =========================
+    // -------------------------------------------------------
 
     username: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(4),
+        Validators.maxLength(30),
+        Validators.pattern(
+          /^[a-zA-Z0-9_.-]+$/
+        )
+      ]
     ],
 
     password: [
       '',
-      Validators.required
+      [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.maxLength(100),
+        Validators.pattern(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/
+        )
+      ]
     ],
 
 
-    // =========================
-    // System Settings
-    // =========================
+    // -------------------------------------------------------
+    // Settings
+    // -------------------------------------------------------
 
     allowLogin: [
       true
@@ -208,93 +396,82 @@ export class AddLabTechnicians {
   });
 
 
-  // =========================
+  // =========================================================
   // Image Selection
-  // =========================
+  // =========================================================
 
-  onImageSelected(event: Event): void {
+  onFileSelected(event: Event): void {
 
     const input =
       event.target as HTMLInputElement;
 
+    this.imageError = '';
 
     if (
       !input.files ||
       input.files.length === 0
     ) {
-
       return;
-
     }
 
+    const file = input.files[0];
 
-    const file =
-      input.files[0];
-
-
-    // =========================
-    // Maximum File Size: 5 MB
-    // =========================
-
-    if (
-      file.size >
-      5 * 1024 * 1024
-    ) {
-
-      alert(
-        'Image size must not exceed 5 MB.'
-      );
-
-      input.value = '';
-
-      return;
-
-    }
-
-
-    // =========================
-    // Allowed File Types
-    // =========================
+    // -------------------------------------------------------
+    // File Type
+    // -------------------------------------------------------
 
     const allowedTypes = [
-
       'image/png',
-
       'image/jpeg',
-
       'image/jpg'
-
     ];
 
+    if (!allowedTypes.includes(file.type)) {
 
-    if (
-      !allowedTypes.includes(
-        file.type
-      )
-    ) {
-
-      alert(
-        'Only PNG, JPG and JPEG images are allowed.'
-      );
+      this.imageError =
+        'Only PNG, JPG and JPEG images are allowed.';
 
       input.value = '';
+      this.selectedImage = null;
+      this.imagePreview = null;
 
       return;
-
     }
 
 
-    this.selectedImage =
-      file;
+    // -------------------------------------------------------
+    // File Size - 5 MB
+    // -------------------------------------------------------
+
+    const maxSize =
+      5 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+
+      this.imageError =
+        'Image size must not exceed 5MB.';
+
+      input.value = '';
+      this.selectedImage = null;
+      this.imagePreview = null;
+
+      return;
+    }
 
 
-    // =========================
-    // Image Preview
-    // =========================
+    // -------------------------------------------------------
+    // Save File
+    // -------------------------------------------------------
+
+    this.selectedImage = file;
+
+
+    // -------------------------------------------------------
+    // Preview
+    // -------------------------------------------------------
 
     const reader =
       new FileReader();
-
 
     reader.onload = () => {
 
@@ -303,326 +480,292 @@ export class AddLabTechnicians {
 
     };
 
-
-    reader.readAsDataURL(
-      file
-    );
-
+    reader.readAsDataURL(file);
   }
 
 
-  // =========================
+  // =========================================================
   // Submit
-  // =========================
+  // =========================================================
 
   submit(): void {
 
-
-    // =========================
+    // -------------------------------------------------------
     // Validate Form
-    // =========================
+    // -------------------------------------------------------
 
-    if (
-      this.form.invalid
-    ) {
+    if (this.form.invalid) {
 
       this.form.markAllAsTouched();
 
-      return;
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Information',
+        text: 'Please check the form and correct the highlighted fields.'
+      });
 
+      return;
     }
 
+
+    // -------------------------------------------------------
+    // Validate Image
+    // -------------------------------------------------------
+
+    if (this.imageError) {
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Invalid Image',
+        text: this.imageError
+      });
+
+      return;
+    }
+
+
+    // -------------------------------------------------------
+    // Get Form Values
+    // -------------------------------------------------------
+
+    const value =
+      this.form.getRawValue();
+
+
+    // -------------------------------------------------------
+    // FormData
+    // -------------------------------------------------------
 
     const formData =
       new FormData();
 
 
-    // =========================
+    // -------------------------------------------------------
     // Personal Information
-    // =========================
+    // -------------------------------------------------------
 
     formData.append(
-      'firstName',
+      'FirstName',
+      value.firstName?.trim() ?? ''
+    );
 
-      this.form.value.firstName ?? ''
+    formData.append(
+      'LastName',
+      value.lastName?.trim() ?? ''
+    );
+
+    formData.append(
+      'Gender',
+      String(value.gender ?? '')
+    );
+
+    formData.append(
+      'DateOfBirth',
+      value.dateOfBirth ?? ''
+    );
+
+    formData.append(
+      'Nationality',
+      value.nationality?.trim() ?? ''
+    );
+
+    formData.append(
+      'NationalId',
+      value.nationalId?.trim() ?? ''
     );
 
 
-    formData.append(
-      'lastName',
-
-      this.form.value.lastName ?? ''
-    );
-
-
-    formData.append(
-      'gender',
-
-      String(
-        this.form.value.gender ?? 0
-      )
-    );
-
-
-    formData.append(
-      'dateOfBirth',
-
-      this.form.value.dateOfBirth ?? ''
-    );
-
-
-    formData.append(
-      'nationality',
-
-      this.form.value.nationality ?? ''
-    );
-
-
-    formData.append(
-      'nationalId',
-
-      this.form.value.nationalId ?? ''
-    );
-
-
-    // =========================
+    // -------------------------------------------------------
     // Employment Information
-    // =========================
+    // -------------------------------------------------------
 
     formData.append(
-      'laboratoryId',
+      'LaboratoryId',
+      String(value.laboratoryId ?? '')
+    );
 
-      String(
-        this.form.value.laboratoryId ?? ''
-      )
+    formData.append(
+      'JobTitle',
+      value.jobTitle?.trim() ?? ''
+    );
+
+    formData.append(
+      'EmploymentStatus',
+      String(value.employmentStatus ?? '')
+    );
+
+    formData.append(
+      'WorkShift',
+      String(value.workShift ?? '')
+    );
+
+    formData.append(
+      'JoiningDate',
+      value.joiningDate ?? ''
+    );
+
+    formData.append(
+      'YearsOfExperience',
+      String(value.yearsOfExperience ?? 0)
     );
 
 
-    formData.append(
-      'jobTitle',
-
-      this.form.value.jobTitle ?? ''
-    );
-
-
-    formData.append(
-      'employmentStatus',
-
-      String(
-        this.form.value.employmentStatus ?? 1
-      )
-    );
-
-
-    formData.append(
-      'workShift',
-
-      String(
-        this.form.value.workShift ?? 1
-      )
-    );
-
-
-    formData.append(
-      'joiningDate',
-
-      this.form.value.joiningDate ?? ''
-    );
-
-
-    formData.append(
-      'yearsOfExperience',
-
-      String(
-        this.form.value.yearsOfExperience ?? 0
-      )
-    );
-
-
-    // =========================
+    // -------------------------------------------------------
     // Contact Information
-    // =========================
+    // -------------------------------------------------------
 
     formData.append(
-      'phoneNumber',
+      'PhoneNumber',
+      value.phoneNumber?.trim() ?? ''
+    );
 
-      this.form.value.phoneNumber ?? ''
+    formData.append(
+      'AlternativePhone',
+      value.alternativePhone?.trim() ?? ''
+    );
+
+    formData.append(
+      'Email',
+      value.email?.trim() ?? ''
+    );
+
+    formData.append(
+      'Address',
+      value.address?.trim() ?? ''
+    );
+
+    formData.append(
+      'City',
+      value.city?.trim() ?? ''
+    );
+
+    formData.append(
+      'Country',
+      value.country?.trim() ?? ''
+    );
+
+    formData.append(
+      'PostalCode',
+      value.postalCode?.trim() ?? ''
     );
 
 
-    formData.append(
-      'alternativePhone',
-
-      this.form.value.alternativePhone ?? ''
-    );
-
-
-    formData.append(
-      'email',
-
-      this.form.value.email ?? ''
-    );
-
-
-    formData.append(
-      'address',
-
-      this.form.value.address ?? ''
-    );
-
-
-    formData.append(
-      'city',
-
-      this.form.value.city ?? ''
-    );
-
-
-    formData.append(
-      'country',
-
-      this.form.value.country ?? ''
-    );
-
-
-    formData.append(
-      'postalCode',
-
-      this.form.value.postalCode ?? ''
-    );
-
-
-    // =========================
+    // -------------------------------------------------------
     // Account Information
-    // =========================
+    // -------------------------------------------------------
 
     formData.append(
-      'username',
+      'Username',
+      value.username?.trim() ?? ''
+    );
 
-      this.form.value.username ?? ''
+    formData.append(
+      'Password',
+      value.password ?? ''
     );
 
 
-    formData.append(
-      'password',
+    // -------------------------------------------------------
+    // Settings
+    // -------------------------------------------------------
 
-      this.form.value.password ?? ''
+    formData.append(
+      'AllowLogin',
+      String(value.allowLogin ?? false)
+    );
+
+    formData.append(
+      'AccountActive',
+      String(value.accountActive ?? false)
+    );
+
+    formData.append(
+      'ReceiveNotifications',
+      String(value.receiveNotifications ?? false)
+    );
+
+    formData.append(
+      'SendWelcomeEmail',
+      String(value.sendWelcomeEmail ?? false)
+    );
+
+    formData.append(
+      'SendLoginCredentials',
+      String(value.sendLoginCredentials ?? false)
     );
 
 
-    // =========================
-    // System Settings
-    // =========================
+    // -------------------------------------------------------
+    // Image
+    // -------------------------------------------------------
 
-    formData.append(
-      'allowLogin',
-
-      String(
-        this.form.value.allowLogin ?? false
-      )
-    );
-
-
-    formData.append(
-      'accountActive',
-
-      String(
-        this.form.value.accountActive ?? false
-      )
-    );
-
-
-    formData.append(
-      'receiveNotifications',
-
-      String(
-        this.form.value.receiveNotifications ?? false
-      )
-    );
-
-
-    formData.append(
-      'sendWelcomeEmail',
-
-      String(
-        this.form.value.sendWelcomeEmail ?? false
-      )
-    );
-
-
-    formData.append(
-      'sendLoginCredentials',
-
-      String(
-        this.form.value.sendLoginCredentials ?? false
-      )
-    );
-
-
-    // =========================
-    // Profile Photo
-    // =========================
-
-    if (
-      this.selectedImage
-    ) {
+    if (this.selectedImage) {
 
       formData.append(
-
-        'photoUrl',
-
-        this.selectedImage,
-
-        this.selectedImage.name
-
+        'PhotoUrl',
+        this.selectedImage
       );
-
     }
 
 
-    // =========================
-    // Debug FormData
-    // =========================
-
-    for (
-      const pair of formData.entries()
-    ) {
-
-      console.log(
-        pair[0],
-        pair[1]
-      );
-
-    }
-
-
-    // =========================
-    // Call API
-    // =========================
+    // -------------------------------------------------------
+    // API Call
+    // -------------------------------------------------------
 
     this.adminService
-      .addLabTechnician(
-        formData
-      )
+      .addLabTechnician(formData)
       .subscribe({
-        next: (res) => {
+
+        next: () => {
+
           Swal.fire({
             icon: 'success',
-            text: 'Lab Technician added successfully',
-            showConfirmButton: true
+            title: 'Success',
+            text: 'Laboratory technician added successfully.',
+            confirmButtonText: 'OK'
           }).then(() => {
+
             this.router.navigate([
-              '/admin/dashboard/labtechnicians/all-lab-technicians'
+              '/admin/laboratory-technicians'
             ]);
-          })
+
+          });
+
         },
-        error: (err) => {
+
+
+        error: (err: any) => {
+
+          console.error(
+            'Add Laboratory Technician Error:',
+            err
+          );
+
           Swal.fire({
             icon: 'error',
-            text: err.error.message,
-            showConfirmButton: true
-          })
+            title: 'Error',
+            text:
+              err?.error?.message ??
+              'Failed to add laboratory technician. Please try again later.'
+          });
+
         }
+
       });
+
   }
+
+
+  // =========================================================
+  // Cancel
+  // =========================================================
+
+  cancel(): void {
+
+    this.router.navigate([
+      '/admin/laboratory-technicians'
+    ]);
+
+  }
+
 }

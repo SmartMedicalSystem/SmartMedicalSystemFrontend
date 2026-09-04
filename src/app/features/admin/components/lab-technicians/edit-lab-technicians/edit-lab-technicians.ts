@@ -56,7 +56,7 @@ export class EditLabTechnicians implements OnInit {
   // =========================
 
   technicianNationalId = '';
-
+  laboratoryName = '';
   // =========================
   // Image
   // =========================
@@ -74,43 +74,44 @@ export class EditLabTechnicians implements OnInit {
   // original component used — double check them against your actual
   // backend enum values (they may instead be words like "Male"/"Female").
 
-  form = this.fb.group({
+  // =========================
+// Form
+// =========================
 
-    // Personal Information
-    firstName: ['', Validators.required],
-    lastName: ['', Validators.required],
-    gender: ['Male', Validators.required],
-    dateOfBirth: ['', Validators.required],
-    nationality: ['', Validators.required],
-    nationalId: ['', Validators.required],
+form = this.fb.group({
+  firstName: ['', Validators.required],
+  lastName: ['', Validators.required],
 
-    // Employment Information
-    assignedLaboratory: ['', Validators.required],
-    jobTitle: ['', Validators.required],
-    employmentStatus: ['FullTime', Validators.required],
-    workShift: ['Morning', Validators.required],
-    joiningDate: ['', Validators.required],
-    yearsOfExperience: [0, [Validators.required, Validators.min(0)]],
+  gender: ['1', Validators.required],
 
-    // Contact Information
-    phoneNumber: ['', Validators.required],
-    alternativePhone: [''],
-    email: ['', [Validators.required, Validators.email]],
-    address: ['', Validators.required],
-    city: ['', Validators.required],
-    country: ['', Validators.required],
-    postalCode: [''],
+  dateOfBirth: ['', Validators.required],
+  nationality: ['', Validators.required],
+  nationalId: ['', Validators.required],
 
-    // Account Information
-    username: ['', Validators.required],
-    allowLogin: [true],
-    accountActive: [true],
-    receiveNotifications: [true],
-    sendWelcomeEmail: [true],
-    sendLoginCredentials: [true]
+  laboratoryId: [null as number | null, Validators.required],
+  jobTitle: ['', Validators.required],
 
-  });
+  employmentStatus: ['1', Validators.required],
+  workShift: ['1', Validators.required],
 
+  joiningDate: ['', Validators.required],
+  yearsOfExperience: [0, [Validators.required, Validators.min(0)]],
+
+  phoneNumber: ['', Validators.required],
+  alternativePhone: [''],
+  email: ['', [Validators.required, Validators.email]],
+  address: ['', Validators.required],
+  city: ['', Validators.required],
+  country: ['', Validators.required],
+  postalCode: [''],
+
+  username: ['', Validators.required],
+  allowLogin: [true],
+  accountActive: [true],
+  receiveNotifications: [true],
+  sendWelcomeEmail: [true],
+  sendLoginCredentials: [true]
+});
   // =========================
   // On Init
   // =========================
@@ -138,73 +139,65 @@ export class EditLabTechnicians implements OnInit {
 
   loadTechnician(): void {
 
-    this.adminService
-      .getLabTechnicianById(this.technicianNationalId)
-      .subscribe({
+  this.adminService
+    .getLabTechnicianById(this.technicianNationalId)
+    .subscribe({
 
-        next: (res: ILabTechnician) => {
+      next: (res: ILabTechnician) => {
 
-          // =========================
-          // Patch Form
-          // =========================
+        this.form.patchValue({
 
-          this.form.patchValue({
+          firstName: res.firstName ?? '',
+          lastName: res.lastName ?? '',
 
+          gender: String(res.gender ?? 1),
 
-            // Personal
-            firstName: res.firstName ?? '',
-            lastName: res.lastName ?? '',
-            gender: res.gender ?? '0',
-            dateOfBirth: this.formatDate(res.dateOfBirth),
-            nationality: res.nationality ?? '',
-            nationalId: res.nationalId ?? '',
+          dateOfBirth: this.formatDate(res.dateOfBirth),
+          nationality: res.nationality ?? '',
+          nationalId: res.nationalId ?? '',
+          
+          // IMPORTANT
+          laboratoryId: res.laboratoryId ?? null,
+          
+          jobTitle: res.jobTitle ?? '',
 
-            // Employment
-            assignedLaboratory: res.assignedLaboratory ?? '',
-            jobTitle: res.jobTitle ?? '',
-            employmentStatus: res.employmentStatus ?? '1',
-            workShift: res.workShift ?? '1',
-            joiningDate: this.formatDate(res.joiningDate),
-            yearsOfExperience: res.yearsOfExperience ?? 0,
+          employmentStatus: String(res.employmentStatus ?? 1),
+          workShift: String(res.workShift ?? 1),
 
-            // Contact
-            phoneNumber: res.phoneNumber ?? '',
-            alternativePhone: res.alternativePhone ?? '',
-            email: res.email ?? '',
-            address: res.address ?? '',
-            city: res.city ?? '',
-            country: res.country ?? '',
-            postalCode: res.postalCode ?? '',
+          joiningDate: this.formatDate(res.joiningDate),
+          yearsOfExperience: res.yearsOfExperience ?? 0,
 
-            // Account
-            username: res.username ?? '',
-            allowLogin: res.allowLogin ?? false,
-            accountActive: res.accountActive ?? false,
-            receiveNotifications: res.receiveNotifications ?? false,
-            sendWelcomeEmail: res.sendWelcomeEmail ?? false,
-            sendLoginCredentials: res.sendLoginCredentials ?? false
+          phoneNumber: res.phoneNumber ?? '',
+          alternativePhone: res.alternativePhone ?? '',
+          email: res.email ?? '',
+          address: res.address ?? '',
+          city: res.city ?? '',
+          country: res.country ?? '',
+          postalCode: res.postalCode ?? '',
 
-          });
-          this.disableReadOnlyFields();
+          username: res.username ?? '',
+          allowLogin: res.allowLogin ?? false,
+          accountActive: res.accountActive ?? false,
+          receiveNotifications: res.receiveNotifications ?? false,
+          sendWelcomeEmail: res.sendWelcomeEmail ?? false,
+          sendLoginCredentials: res.sendLoginCredentials ?? false
 
-          // =========================
-          // Existing Photo
-          // =========================
+        });
 
-          this.imagePreview = res.photoUrl
-            ? this.getImageUrl(res.photoUrl)
-            : '/images/blank-profile.png';
+        this.disableReadOnlyFields();
 
-        },
+        this.imagePreview = res.photoUrl
+          ? this.getImageUrl(res.photoUrl)
+          : '/images/blank-profile.png';
+      },
 
-        error: (err) => {
-          console.error('Get Technician Error:', err);
-          alert('Failed to load laboratory technician data.');
-        }
+      error: (err) => {
+        console.error('Get Technician Error:', err);
+        alert('Failed to load laboratory technician data.');
+      }
 
-      });
-
-  }
+    });
+}
   private disableReadOnlyFields(): void {
 
     this.form.get('firstName')?.disable();
@@ -325,15 +318,22 @@ export class EditLabTechnicians implements OnInit {
     formData.append('nationalId', v.nationalId ?? '');
 
     // =========================
-    // Employment Information
-    // =========================
+// Employment Information
+// =========================
 
-    formData.append('assignedLaboratory', v.assignedLaboratory ?? '');
-    formData.append('jobTitle', v.jobTitle ?? '');
-    formData.append('employmentStatus', v.employmentStatus ?? '1');
-    formData.append('workShift', v.workShift ?? '1');
-    formData.append('joiningDate', v.joiningDate ?? '');
-    formData.append('yearsOfExperience', String(v.yearsOfExperience ?? 0));
+formData.append(
+  'laboratoryId',
+  v.laboratoryId?.toString() ?? ''
+);
+
+formData.append('jobTitle', v.jobTitle ?? '');
+formData.append('employmentStatus', v.employmentStatus ?? '1');
+formData.append('workShift', v.workShift ?? '1');
+formData.append('joiningDate', v.joiningDate ?? '');
+formData.append(
+  'yearsOfExperience',
+  String(v.yearsOfExperience ?? 0)
+);
 
     // =========================
     // Contact Information
