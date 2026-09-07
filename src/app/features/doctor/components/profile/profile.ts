@@ -59,6 +59,26 @@ export class Profile implements OnInit {
   saveError = signal<string | null>(null);
   saveSuccess = signal(false);
 
+  // ---------- Validation ----------
+  // Regex واحدة لكل نوع حقل، بنستخدمها هنا كـ safety net ثانية غير الـ pattern
+  // اللي في الـ template، عشان محدش يقدر يبعت داتا غلط للباك حتى لو لعب في الـ DOM.
+  private readonly patterns = {
+    // حروف عربي/إنجليزي + مسافات بس، ممنوع أي أرقام
+    lettersOnly: /^[a-zA-Zأ-ي\s]{2,50}$/,
+    // زي لترز أونلي لكن سامحة بشرطة (-) عشان تخصصات زي "ENT-Surgery"
+    specialization: /^[a-zA-Zأ-ي\s\-]{2,60}$/,
+    // موبايل مصري: 01 + (0/1/2/5) + 8 أرقام = 11 رقم بالظبط
+    egyptianPhone: /^01[0125][0-9]{8}$/,
+    // أرقام بس، طول من 4 ل10 خانات
+    postalCode: /^[0-9]{4,10}$/,
+    // إيميل بسيط
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    // عنوان: حروف + أرقام + علامات ترقيم بسيطة (فيه أرقام لأن العنوان بطبيعته فيه رقم عمارة/شقة)
+    address: /^[a-zA-Zأ-ي0-9\s,\.\-#]{3,120}$/,
+    // كلمة مرور قوية: حرف كبير + حرف صغير + رقم + 8 خانات على الأقل
+    strongPassword: /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,64}$/,
+  };
+
   // ---------- Photo ----------
   private readonly photoBaseUrl = 'https://smartmedicalsystem.runasp.net/';
 
@@ -213,14 +233,66 @@ export class Profile implements OnInit {
     this.confirmPassword = '';
   }
 
+  // ---------- Validation helpers ----------
+
+  /** بيرجع أول رسالة خطأ لو الفورم فيه حقل غير صالح، وإلا null لو كله تمام. */
+  private validateProfileForm(): string | null {
+    const f = this.form;
+
+    if (!this.patterns.lettersOnly.test(f.firstName.trim())) {
+      return 'First name must contain letters only, no numbers.';
+    }
+    if (!this.patterns.lettersOnly.test(f.lastName.trim())) {
+      return 'Last name must contain letters only, no numbers.';
+    }
+    if (!this.patterns.specialization.test(f.specialization.trim())) {
+      return 'Specialization must contain letters only, no numbers.';
+    }
+    if (!this.patterns.email.test(f.email.trim())) {
+      return 'Please enter a valid email address.';
+    }
+    if (!this.patterns.egyptianPhone.test(f.phoneNumber.trim())) {
+      return 'Invalid phone number. It must start with 010/011/012/015 and be 11 digits long.';
+    }
+    if (!this.patterns.address.test(f.address.trim())) {
+      return 'Please enter a valid address.';
+    }
+    if (!this.patterns.lettersOnly.test(f.city.trim())) {
+      return 'City must contain letters only, no numbers.';
+    }
+    if (!this.patterns.lettersOnly.test(f.country.trim())) {
+      return 'Country must contain letters only, no numbers.';
+    }
+    if (f.postalCode && !this.patterns.postalCode.test(f.postalCode.trim())) {
+      return 'Postal code must contain digits only (4 to 10 digits).';
+    }
+
+    return null;
+  }
+
+  /** بيرجع أول رسالة خطأ لفورم تغيير الباسورد، وإلا null. */
+  private validatePasswordForm(): string | null {
+    if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
+      return 'Please fill in all password fields.';
+    }
+    if (!this.patterns.strongPassword.test(this.newPassword)) {
+      return 'New password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a number.';
+    }
+    if (this.newPassword !== this.confirmPassword) {
+      return 'New password and confirmation do not match.';
+    }
+    return null;
+  }
+
   onSaveChanges(): void {
     if (!this.doctorId) {
       this.saveError.set('Cannot save without a valid doctor ID.');
       return;
     }
 
-    if (!this.form.city.trim() || !this.form.country.trim()) {
-      this.saveError.set('City and Country are required.');
+    const validationError = this.validateProfileForm();
+    if (validationError) {
+      this.saveError.set(validationError);
       return;
     }
 
@@ -306,13 +378,9 @@ export class Profile implements OnInit {
     this.passwordError.set(null);
     this.passwordSuccess.set(false);
 
-    if (!this.currentPassword || !this.newPassword || !this.confirmPassword) {
-      this.passwordError.set('Please fill in all password fields.');
-      return;
-    }
-
-    if (this.newPassword !== this.confirmPassword) {
-      this.passwordError.set('New password and confirmation do not match.');
+    const validationError = this.validatePasswordForm();
+    if (validationError) {
+      this.passwordError.set(validationError);
       return;
     }
 
