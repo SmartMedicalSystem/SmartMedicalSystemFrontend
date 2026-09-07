@@ -88,7 +88,7 @@
     </div>
 
     <!-- ============ Form Body ============ -->
-    <form class="px-4 sm:px-6 py-6 space-y-8">
+    <form #profileForm="ngForm" class="px-4 sm:px-6 py-6 space-y-8">
 
       <!-- Personal Information -->
       <section>
@@ -101,13 +101,31 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="firstName">First Name</label>
-            <input id="firstName" type="text" name="firstName" [(ngModel)]="form.firstName" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="firstName" type="text" name="firstName"
+              [(ngModel)]="form.firstName" [ngModelOptions]="{ standalone: true }"
+              #firstNameModel="ngModel"
+              required minlength="2" maxlength="50"
+              pattern="^[a-zA-Zأ-ي\s]{2,50}$"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="firstNameModel.invalid && (firstNameModel.dirty || firstNameModel.touched)"
+              [class.border-gray-300]="!(firstNameModel.invalid && (firstNameModel.dirty || firstNameModel.touched))" />
+            <p *ngIf="firstNameModel.invalid && (firstNameModel.dirty || firstNameModel.touched)" class="mt-1 text-xs text-tertiary">
+              First name must contain letters only (no numbers), 2-50 characters.
+            </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="lastName">Last Name</label>
-            <input id="lastName" type="text" name="lastName" [(ngModel)]="form.lastName" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="lastName" type="text" name="lastName"
+              [(ngModel)]="form.lastName" [ngModelOptions]="{ standalone: true }"
+              #lastNameModel="ngModel"
+              required minlength="2" maxlength="50"
+              pattern="^[a-zA-Zأ-ي\s]{2,50}$"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="lastNameModel.invalid && (lastNameModel.dirty || lastNameModel.touched)"
+              [class.border-gray-300]="!(lastNameModel.invalid && (lastNameModel.dirty || lastNameModel.touched))" />
+            <p *ngIf="lastNameModel.invalid && (lastNameModel.dirty || lastNameModel.touched)" class="mt-1 text-xs text-tertiary">
+              Last name must contain letters only (no numbers), 2-50 characters.
+            </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="gender">Gender</label>
@@ -136,8 +154,17 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="specialization">Specialization</label>
-            <input id="specialization" type="text" name="specialization" [(ngModel)]="form.specialization" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="specialization" type="text" name="specialization"
+              [(ngModel)]="form.specialization" [ngModelOptions]="{ standalone: true }"
+              #specializationModel="ngModel"
+              required minlength="2" maxlength="60"
+              pattern="^[a-zA-Zأ-ي\s\-]{2,60}$"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="specializationModel.invalid && (specializationModel.dirty || specializationModel.touched)"
+              [class.border-gray-300]="!(specializationModel.invalid && (specializationModel.dirty || specializationModel.touched))" />
+            <p *ngIf="specializationModel.invalid && (specializationModel.dirty || specializationModel.touched)" class="mt-1 text-xs text-tertiary">
+              Specialization must contain letters only (no numbers).
+            </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-400 mb-1" for="department">Department</label>
@@ -161,33 +188,88 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div class="sm:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1" for="email">Email Address</label>
-            <input id="email" type="email" name="email" [(ngModel)]="form.email" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="email" type="email" name="email"
+              [(ngModel)]="form.email" [ngModelOptions]="{ standalone: true }"
+              #emailModel="ngModel"
+              required
+              pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="emailModel.invalid && (emailModel.dirty || emailModel.touched)"
+              [class.border-gray-300]="!(emailModel.invalid && (emailModel.dirty || emailModel.touched))" />
+            <p *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)" class="mt-1 text-xs text-tertiary">
+              Please enter a valid email address.
+            </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="phoneNumber">Phone Number</label>
-            <input id="phoneNumber" type="tel" name="phoneNumber" [(ngModel)]="form.phoneNumber" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="phoneNumber" type="tel" name="phoneNumber"
+              [(ngModel)]="form.phoneNumber" [ngModelOptions]="{ standalone: true }"
+              #phoneNumberModel="ngModel"
+              required
+              pattern="^01[0125][0-9]{8}$"
+              inputmode="numeric"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="phoneNumberModel.invalid && (phoneNumberModel.dirty || phoneNumberModel.touched)"
+              [class.border-gray-300]="!(phoneNumberModel.invalid && (phoneNumberModel.dirty || phoneNumberModel.touched))" />
+            <p *ngIf="phoneNumberModel.invalid && (phoneNumberModel.dirty || phoneNumberModel.touched)" class="mt-1 text-xs text-tertiary">
+              Invalid phone number (must start with 010/011/012/015 and be 11 digits).
+            </p>
           </div>
           <div class="sm:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1" for="address">Address</label>
-            <input id="address" type="text" name="address" [(ngModel)]="form.address" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="address" type="text" name="address"
+              [(ngModel)]="form.address" [ngModelOptions]="{ standalone: true }"
+              #addressModel="ngModel"
+              required minlength="3" maxlength="120"
+              pattern="^[a-zA-Zأ-ي0-9\s,\.\-#]{3,120}$"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="addressModel.invalid && (addressModel.dirty || addressModel.touched)"
+              [class.border-gray-300]="!(addressModel.invalid && (addressModel.dirty || addressModel.touched))" />
+            <p *ngIf="addressModel.invalid && (addressModel.dirty || addressModel.touched)" class="mt-1 text-xs text-tertiary">
+              Please enter a valid address.
+            </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="city">City</label>
-            <input id="city" type="text" name="city" [(ngModel)]="form.city" [ngModelOptions]="{ standalone: true }" required
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="city" type="text" name="city"
+              [(ngModel)]="form.city" [ngModelOptions]="{ standalone: true }"
+              #cityModel="ngModel"
+              required minlength="2" maxlength="40"
+              pattern="^[a-zA-Zأ-ي\s]{2,40}$"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="cityModel.invalid && (cityModel.dirty || cityModel.touched)"
+              [class.border-gray-300]="!(cityModel.invalid && (cityModel.dirty || cityModel.touched))" />
+            <p *ngIf="cityModel.invalid && (cityModel.dirty || cityModel.touched)" class="mt-1 text-xs text-tertiary">
+              City must contain letters only (no numbers).
+            </p>
           </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1" for="country">Country</label>
-            <input id="country" type="text" name="country" [(ngModel)]="form.country" [ngModelOptions]="{ standalone: true }" required
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="country" type="text" name="country"
+              [(ngModel)]="form.country" [ngModelOptions]="{ standalone: true }"
+              #countryModel="ngModel"
+              required minlength="2" maxlength="40"
+              pattern="^[a-zA-Zأ-ي\s]{2,40}$"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="countryModel.invalid && (countryModel.dirty || countryModel.touched)"
+              [class.border-gray-300]="!(countryModel.invalid && (countryModel.dirty || countryModel.touched))" />
+            <p *ngIf="countryModel.invalid && (countryModel.dirty || countryModel.touched)" class="mt-1 text-xs text-tertiary">
+              Country must contain letters only (no numbers).
+            </p>
           </div>
           <div class="sm:col-span-2">
             <label class="block text-sm font-medium text-gray-700 mb-1" for="postalCode">Postal Code (optional)</label>
-            <input id="postalCode" type="text" name="postalCode" [(ngModel)]="form.postalCode" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+            <input id="postalCode" type="text" name="postalCode"
+              [(ngModel)]="form.postalCode" [ngModelOptions]="{ standalone: true }"
+              #postalCodeModel="ngModel"
+              pattern="^[0-9]{4,10}$"
+              inputmode="numeric"
+              class="w-full rounded-lg border px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="postalCodeModel.invalid && (postalCodeModel.dirty || postalCodeModel.touched)"
+              [class.border-gray-300]="!(postalCodeModel.invalid && (postalCodeModel.dirty || postalCodeModel.touched))" />
+            <p *ngIf="postalCodeModel.invalid && (postalCodeModel.dirty || postalCodeModel.touched)" class="mt-1 text-xs text-tertiary">
+              Postal code must contain digits only (4 to 10 digits).
+            </p>
           </div>
         </div>
       </section>
@@ -232,7 +314,7 @@
         class="w-full sm:w-auto rounded-lg border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-50">
         Reset
       </button>
-      <button type="button" (click)="onSaveChanges()" [disabled]="saving()"
+      <button type="button" (click)="onSaveChanges()" [disabled]="saving() || profileForm.invalid"
         class="w-full sm:w-auto rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors disabled:opacity-50">
         {{ saving() ? 'Saving...' : 'Save Changes' }}
       </button>
@@ -247,12 +329,14 @@
         <h3 class="text-base font-semibold text-gray-900">Change Password</h3>
       </div>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form #passwordForm="ngForm" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div class="sm:col-span-2">
           <label class="block text-sm font-medium text-gray-700 mb-1" for="currentPassword">Current Password</label>
           <div class="relative">
             <input [type]="showCurrentPassword() ? 'text' : 'password'" id="currentPassword" name="currentPassword"
               [(ngModel)]="currentPassword" [ngModelOptions]="{ standalone: true }"
+              #currentPasswordModel="ngModel"
+              required
               class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
             <button type="button" (click)="toggleCurrentPassword()"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
@@ -268,7 +352,12 @@
           <div class="relative">
             <input [type]="showNewPassword() ? 'text' : 'password'" id="newPassword" name="newPassword"
               [(ngModel)]="newPassword" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+              #newPasswordModel="ngModel"
+              required minlength="8"
+              pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9]).{8,64}$"
+              class="w-full rounded-lg border px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="newPasswordModel.invalid && (newPasswordModel.dirty || newPasswordModel.touched)"
+              [class.border-gray-300]="!(newPasswordModel.invalid && (newPasswordModel.dirty || newPasswordModel.touched))" />
             <button type="button" (click)="toggleNewPassword()"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
@@ -277,13 +366,20 @@
               </svg>
             </button>
           </div>
+          <p *ngIf="newPasswordModel.invalid && (newPasswordModel.dirty || newPasswordModel.touched)" class="mt-1 text-xs text-tertiary">
+            Password must be at least 8 characters and include an uppercase letter, a lowercase letter, and a number.
+          </p>
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1" for="confirmPassword">Confirm Password</label>
           <div class="relative">
             <input [type]="showConfirmPassword() ? 'text' : 'password'" id="confirmPassword" name="confirmPassword"
               [(ngModel)]="confirmPassword" [ngModelOptions]="{ standalone: true }"
-              class="w-full rounded-lg border border-gray-300 px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary" />
+              #confirmPasswordModel="ngModel"
+              required
+              class="w-full rounded-lg border px-3 py-2 pr-10 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              [class.border-tertiary]="confirmPasswordModel.dirty && confirmPassword !== newPassword"
+              [class.border-gray-300]="!(confirmPasswordModel.dirty && confirmPassword !== newPassword)" />
             <button type="button" (click)="toggleConfirmPassword()"
               class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
@@ -292,8 +388,11 @@
               </svg>
             </button>
           </div>
+          <p *ngIf="confirmPasswordModel.dirty && confirmPassword !== newPassword" class="mt-1 text-xs text-tertiary">
+            Password and confirmation do not match.
+          </p>
         </div>
-      </div>
+      </form>
 
       <div *ngIf="passwordError()" class="rounded-xl bg-tertiary/10 border border-tertiary/20 px-4 py-3">
         <p class="text-sm text-tertiary">{{ passwordError() }}</p>
@@ -303,7 +402,7 @@
       </div>
 
       <div class="flex justify-end">
-        <button type="button" (click)="onChangePassword()" [disabled]="changingPassword()"
+        <button type="button" (click)="onChangePassword()" [disabled]="changingPassword() || passwordForm.invalid"
           class="w-full sm:w-auto rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors disabled:opacity-50">
           {{ changingPassword() ? 'Updating...' : 'Update Password' }}
         </button>
