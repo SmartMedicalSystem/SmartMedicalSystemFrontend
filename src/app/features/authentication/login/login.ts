@@ -1,9 +1,17 @@
-import { Component, ElementRef, signal, ViewChild } from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  ElementRef,
+  OnInit,
+  signal,
+  ViewChild,
+} from '@angular/core';
 import { AuthenticationService } from '../../../core/services/authenticationService.service';
 import { Router, RouterLink } from '@angular/router';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { Loader } from "../../../shared/components/loader/loader";
+import { Loader } from '../../../shared/components/loader/loader';
 import Swal from 'sweetalert2';
 import { NotificationHubService } from '../../../core/services/notification-hub.service';
 import { NotificationStoreService } from '../../../core/services/notification-store.service';
@@ -14,16 +22,41 @@ import { NotificationStoreService } from '../../../core/services/notification-st
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
-
+export class Login implements OnInit {
   isLoading = signal(false);
 
   constructor(
     private authService: AuthenticationService,
     private router: Router,
     private notificationHub: NotificationHubService,
-    private notificationStore: NotificationStoreService
-  ) { }
+    private notificationStore: NotificationStoreService,
+  ) {}
+  ngOnInit(): void {
+    Swal.fire({
+      title: 'Demo Accounts',
+      html: `
+      <div style="text-align: left;">
+        <p><strong>Admin</strong></p>
+        <p>Email: mohamedsaiedhassan308@gmail.com</p>
+        <p>Password: Admin@12345</p>
+
+        <hr>
+
+        <p><strong>Doctor</strong></p>
+        <p>Email: mohamed48289@gmail.com</p>
+        <p>Password: Doctor@12345</p>
+
+        <hr>
+
+        <p><strong>Lab Technician</strong></p>
+        <p>Email: lotfykhattab95@gmail.com</p>
+        <p>Password: LabTech@12345</p>
+      </div>
+    `,
+      icon: 'info',
+      confirmButtonText: 'Got it',
+    });
+  }
 
   loginForm = new FormGroup({
     userNameOrEmail: new FormControl('', [Validators.required]),
@@ -33,24 +66,29 @@ export class Login {
   // ================= Getters =================
 
   get userNameOrEmailRequired() {
-    return this.loginForm.get('userNameOrEmail')?.touched &&
-      this.loginForm.get('userNameOrEmail')?.hasError('required');
+    return (
+      this.loginForm.get('userNameOrEmail')?.touched &&
+      this.loginForm.get('userNameOrEmail')?.hasError('required')
+    );
   }
 
   get passwordRequired() {
-    return this.loginForm.get('password')?.touched &&
-      this.loginForm.get('password')?.hasError('required');
+    return (
+      this.loginForm.get('password')?.touched &&
+      this.loginForm.get('password')?.hasError('required')
+    );
   }
 
   get passwordInvalid() {
-    return this.loginForm.get('password')?.touched &&
-      this.loginForm.get('password')?.hasError('minlength');
+    return (
+      this.loginForm.get('password')?.touched &&
+      this.loginForm.get('password')?.hasError('minlength')
+    );
   }
 
   // ================= Login =================
 
   login(): void {
-
     if (this.loginForm.invalid) {
       this.loginForm.markAllAsTouched();
       return;
@@ -58,25 +96,22 @@ export class Login {
 
     const loginObj = {
       userNameOrEmail: this.loginForm.get('userNameOrEmail')?.value ?? '',
-      password: this.loginForm.get('password')?.value ?? ''
+      password: this.loginForm.get('password')?.value ?? '',
     };
 
     this.isLoading.set(true);
 
     this.authService.login(loginObj).subscribe({
-
       next: async (res) => {
-
         Swal.fire({
           icon: 'success',
           text: res.message,
-          showConfirmButton: true
+          showConfirmButton: true,
         });
 
         const role = this.authService.getUserRole();
 
         switch (role) {
-
           case 'Doctor':
             await this.router.navigate(['doctor']);
             break;
@@ -92,7 +127,6 @@ export class Login {
           default:
             await this.router.navigate(['403']);
             break;
-
         }
 
         // try {
@@ -108,23 +142,18 @@ export class Login {
         // }
 
         this.isLoading.set(false);
-
       },
 
       error: (err) => {
-
         Swal.fire({
           icon: 'error',
           text: err.error.Message,
-          showConfirmButton: true
+          showConfirmButton: true,
         });
 
         this.isLoading.set(false);
-
-      }
-
+      },
     });
-
   }
 
   // ================= Password =================
@@ -135,22 +164,18 @@ export class Login {
   toggle = signal(true);
 
   togglePassword(): void {
-
     if (this.toggle()) {
-
       this.eye.nativeElement.classList.remove('fa-eye-slash');
       this.eye.nativeElement.classList.add('fa-eye');
 
       this.inp.nativeElement.type = 'text';
-
     } else {
-
       this.eye.nativeElement.classList.add('fa-eye-slash');
       this.eye.nativeElement.classList.remove('fa-eye');
 
       this.inp.nativeElement.type = 'password';
     }
 
-    this.toggle.update(value => !value);
+    this.toggle.update((value) => !value);
   }
 }
