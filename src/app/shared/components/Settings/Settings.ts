@@ -14,8 +14,8 @@ export interface UserProfile {
 @Component({
   selector: 'app-settings',
   imports: [CommonModule, FormsModule],
-  templateUrl: './settings.html',
-  styleUrl: './settings.css',
+  templateUrl: './Settings.html',
+  styleUrl: './Settings.css',
 })
 export class Settings {
   profile = signal<UserProfile>({
@@ -24,7 +24,7 @@ export class Settings {
     email: 'j.vance@medial.com',
     phone: '+1 (555) 012-3456',
     department: 'Radiology & Imaging',
-    avatarUrl: 'https://i.pravatar.cc/150?img=12'
+    avatarUrl: 'https://i.pravatar.cc/150?img=12',
   });
 
   labs = ['Main Wing Lab-04', 'East Wing Lab-01', 'West Wing Lab-02'];
@@ -43,23 +43,23 @@ export class Settings {
   passwordLastUpdated = signal('3 months ago');
 
   toggleBarcodeScanner() {
-    this.barcodeScanner.update(v => !v);
+    this.barcodeScanner.update((v) => !v);
   }
 
   toggleAutoPrintLabels() {
-    this.autoPrintLabels.update(v => !v);
+    this.autoPrintLabels.update((v) => !v);
   }
 
   toggleEmailNotifications() {
-    this.emailNotifications.update(v => !v);
+    this.emailNotifications.update((v) => !v);
   }
 
   toggleNewTestRequests() {
-    this.newTestRequests.update(v => !v);
+    this.newTestRequests.update((v) => !v);
   }
 
   toggleUrgentCriticalAlerts() {
-    this.urgentCriticalAlerts.update(v => !v);
+    this.urgentCriticalAlerts.update((v) => !v);
   }
 
   onEditProfile() {
@@ -82,7 +82,7 @@ export class Settings {
       autoPrintLabels: this.autoPrintLabels(),
       emailNotifications: this.emailNotifications(),
       newTestRequests: this.newTestRequests(),
-      urgentCriticalAlerts: this.urgentCriticalAlerts()
+      urgentCriticalAlerts: this.urgentCriticalAlerts(),
     });
   }
 }
